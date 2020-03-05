@@ -16,10 +16,10 @@
   </el-menu>
 </template>
 
-<script lang="ts">
+<script>
 export default {
   computed: {
-    activeLink(): unknown {
+    activeLink() {
       return `/${this.$route.path.split("/")[1]}`;
     },
 

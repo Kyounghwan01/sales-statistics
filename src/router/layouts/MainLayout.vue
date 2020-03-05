@@ -26,43 +26,34 @@ export default {
     // isLoggedIn() {
     //   return this.$store.getters['auth/isLoggedIn'];
     // },
-
     // expireOn() {
     //   return _.get(this.studio, 'expire_on');
     // },
-
     // expireIn() {
     //   return this.$utils.getDaysDiff(this.expireOn);
     // },
-
     // showExpirationNotice() {
     //   return this.studio.name && 0 <= this.expireIn && this.expireIn <= 7;
     // },
-
     // showExpirationAlert() {
     //   return this.isLoggedIn && this.expireIn < 0;
     // },
-
     // expirationAlertTitle() {
     //   if (this.expireIn > 7) return null;
-
     //   let message = `${this.studio.name} 서비스 계정 만료일은 <b>${this.$filters.dateKorean(
     //     this.expireOn,
     //   )}</b> 입니다. 기간 연장은 카카오톡 플러스친구 ‘스튜디오메이트’ 또는 고객센터로 문의주세요. (02-6952-5533, 5366)`;
-
     //   if (this.expireIn === 0) {
     //     message = `${this.studio.name} 서비스 <b>계정 만료</b>일입니다. 내일부터 사용이 제한됩니다. 기간 연장은 카카오톡 플러스친구 ‘스튜디오메이트’ 또는 고객센터로 문의주세요. (02-6952-5533, 5366)`;
     //   }
-
     //   return message;
     // },
-
-    contentStyle(): object | null {
-      if (!this.borderTop) return null;
-      return {
-        borderTop: `3px solid ${this.borderTop}`
-      };
-    }
+    // contentStyle(): any {
+    //   if (!this.borderTop) return null;
+    //   return {
+    //     borderTop: `3px solid ${this.borderTop}`
+    //   };
+    // }
   },
 
   // watch: {
