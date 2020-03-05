@@ -5,9 +5,12 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "start": "yarn serve"
   },
   "dependencies": {
+    "element-ui": "^2.13.0",
+    "firebase": "^7.9.3",
+    "moment": "^2.24.0",
     "vue": "^2.6.11",
     "vue-router": "^3.1.5",
     "vuex": "^3.1.2"
