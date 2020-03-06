@@ -40,7 +40,7 @@
   .plus {
     color: white;
     position: absolute;
-    top: 5px;
+    top: 0px;
     display: block;
     bottom: 0;
     left: 2px;

@@ -2,7 +2,7 @@
   <div class="main">
     <MainHeader class="main__header" />
 
-    <section class="main__contents" :class="{ padded }" :style="contentStyle">
+    <section class="main__contents" :class="{ padded }">
       <slot />
     </section>
   </div>

@@ -5,13 +5,6 @@
         <h3>고객 관리</h3>
       </div>
       <MembersList :members="userData" />
-      <el-input></el-input>
-      <el-date-picker
-        v-model="value1"
-        type="date"
-        placeholder="Select date and time"
-      >
-      </el-date-picker>
       <AddMemberButton @click="$router.push('/users/create')" />
     </section>
   </MainLayout>
@@ -36,9 +29,7 @@ export default {
       userData: [
         {
           name: "nkh",
-          grade: "청년",
-          mobile: "01022349891",
-          division: "청년부",
+          phone: "01022349891",
           address: "신장동",
           registeredAt: "1993-01-23"
         }

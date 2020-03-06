@@ -11,7 +11,7 @@ firebase.initializeApp({
   appId: "1:874265141163:web:855b6c359b94c26b"
 });
 
-const database = firebase.database();
+export const database = firebase.database();
 
 export default {
   getData: () => {
@@ -27,5 +27,19 @@ export default {
           rej(err);
         });
     });
-  }
+  },
+
+  setMember: async (data: object) => {
+    const a = await database
+      .ref("names")
+      .push(data)
+      .then(data => {
+        const key = data.key;
+        console.log(data);
+        console.log(key);
+      });
+    console.log(a);
+    // return database.ref("names").push().set(data);
+  },
+  getMember: () => database.ref("names")
 };

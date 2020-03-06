@@ -1,28 +1,15 @@
 <template>
   <el-table
     :data="members"
-    @cell-click="handleCellClick"
     empty-text="회원이 없습니다"
     row-class-name="members-list__row"
     fit
   >
+    <!-- @cell-click="handleCellClick" -->
     <el-table-column fixed="left" label="이름" min-width="80" align="center">
       <template v-slot="scope">
         <div class="members-list__name">
           {{ scope.row.name }}
-        </div>
-      </template>
-    </el-table-column>
-
-    <el-table-column
-      label="직분"
-      min-width="80"
-      header-align="center"
-      align="center"
-    >
-      <template v-slot="scope">
-        <div class="members-list__grade">
-          {{ scope.row.grade }}
         </div>
       </template>
     </el-table-column>
@@ -34,8 +21,8 @@
       align="center"
     >
       <template v-slot="scope">
-        <div class="members-list__mobile">
-          {{ scope.row.mobile }}
+        <div class="members-list__phone">
+          {{ scope.row.phone }}
         </div>
       </template>
     </el-table-column>
@@ -48,23 +35,11 @@
     >
       <template v-slot="scope">
         <div class="members-list__registered-at">
-          {{ scope.row.registered_at }}
+          {{ scope.row.registeredAt }}
         </div>
       </template>
     </el-table-column>
 
-    <el-table-column
-      label="소속"
-      min-width="140"
-      header-align="center"
-      align="center"
-    >
-      <template v-slot="scope">
-        <div class="members-list__division">
-          {{ scope.row.division }}
-        </div>
-      </template>
-    </el-table-column>
     <el-table-column
       label="주소"
       min-width="140"
