@@ -44,7 +44,7 @@
 
 <script>
 import MainLayout from "@/router/layouts/MainLayout";
-import { database } from "@/api/modules/firebase";
+// import { database } from "@/api/modules/firebase";
 export default {
   components: {
     MainLayout
@@ -62,7 +62,7 @@ export default {
     };
   },
   async created() {
-    const a = await database.ref("names").once("value");
+    const a = await this.$api.firebase.getMember().once("value");
     this.memberData = await a.val();
     console.log(a);
     // this.memberData = this.$api.firebase.getMember().;

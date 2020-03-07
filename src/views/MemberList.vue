@@ -5,6 +5,9 @@
         <h3>고객 관리</h3>
       </div>
       <MembersList :members="userData" />
+      <div class="div">
+        {{ memberList }}
+      </div>
       <AddMemberButton @click="$router.push('/users/create')" />
     </section>
   </MainLayout>
@@ -35,12 +38,15 @@ export default {
         }
       ]
     };
+  },
+  async created() {
+    await this.$store.dispatch("members/getMember");
+  },
+  computed: {
+    memberList() {
+      return this.$store.getters["members/member"];
+    }
   }
-  // async created() {
-  //   let a = await this.$api.firebase.getData();
-  //   this.test = a;
-  //   console.log(this.test);
-  // }
 };
 </script>
 
