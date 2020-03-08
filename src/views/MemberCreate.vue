@@ -10,7 +10,7 @@
     <div class="registered-at">
       <label>등록일 : </label>
       <el-date-picker
-        v-model="data.registeredAt"
+        v-model="data.registreDate"
         type="date"
         placeholder="등록일을 입력해주세요"
         format="yyyy년 M월 d일"
@@ -31,6 +31,14 @@
       <el-input
         v-model="data.address"
         placeholder="주소를 입력해주세요"
+      ></el-input>
+    </div>
+
+    <div class="content">
+      <label> 비고 : </label>
+      <el-input
+        v-model="data.content"
+        placeholder="참고사항입력해수세요, 낫필수"
       ></el-input>
     </div>
     <ul>
@@ -54,10 +62,11 @@ export default {
     return {
       data: {
         name: null,
-        registeredAt: null,
+        registreDate: null,
         phone: null,
         address: null,
-        salesData: []
+        content: null,
+        salesData: [],
       },
       memberData: null
     };
@@ -89,8 +98,11 @@ export default {
     async registredUser() {
       const sendData = {
         name: this.data.name,
-        content: this.data.address,
-        password: this.data.phone
+        content: this.data.content,
+        password: this.data.phone,
+        phone: this.data.phone,
+        address: this.data.address,
+        registreDate: this.data.registreDate
       };
       const res = await axios.post(
         "https://9wnw9kggv9.execute-api.ap-northeast-2.amazonaws.com/2020-03-07/board",

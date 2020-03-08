@@ -3,6 +3,7 @@ import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
 import MemberList from "../views/MemberList.vue";
 import MemberCreate from "@/views/MemberCreate.vue";
+import MemberDetail from "@/views/MemberDetail.vue";
 
 Vue.use(VueRouter);
 
@@ -21,6 +22,11 @@ const routes = [
     path: "/users/create",
     name: "create_user",
     component: MemberCreate
+  },
+  {
+    path: "/users/:id",
+    name: "detail_user",
+    component: MemberDetail
   }
 ];
 

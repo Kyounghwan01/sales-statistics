@@ -52,6 +52,19 @@
         </div>
       </template>
     </el-table-column>
+
+    <el-table-column
+      label="최근 변경일"
+      min-width="140"
+      header-align="center"
+      align="center"
+    >
+      <template v-slot="scope">
+        <div class="members-list__address">
+          {{ scope.row.lastDate.slice(0, -14) }}
+        </div>
+      </template>
+    </el-table-column>
   </el-table>
 </template>
 
@@ -69,7 +82,7 @@ export default {
 
   methods: {
     handleCellClick(row) {
-      this.$router.push("/users/detail?id=" + row.id);
+      this.$router.push(`/users/${row.id}`);
     }
     // getUserGrade({ user_grade }) {
     //   if (!user_grade) return null;
