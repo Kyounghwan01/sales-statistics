@@ -4,8 +4,15 @@ import Vue from 'vue'
 interface firebase {
   getData: Function
 }
+
+interface user {
+  getUser: Function,
+  createUser: Function
+}
+
 interface apis {
-  firebase: firebase
+  firebase: firebase,
+  user: user
 }
 
 //이곳이 가장 중요한 곳입니다.

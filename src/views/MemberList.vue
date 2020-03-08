@@ -4,10 +4,7 @@
       <div class="user-list__header">
         <h3>고객 관리</h3>
       </div>
-      <MembersList :members="userData" />
-      <div class="div">
-        {{ memberList }}
-      </div>
+      <MembersList :users="userList" v-loading="loading" />
       <AddMemberButton @click="$router.push('/users/create')" />
     </section>
   </MainLayout>
@@ -40,11 +37,18 @@ export default {
     };
   },
   async created() {
-    await this.$store.dispatch("members/getMember");
+    await this.$store.dispatch("users/getUser");
   },
   computed: {
     memberList() {
       return this.$store.getters["members/member"];
+    },
+    userList() {
+      console.log(this.$store.getters["users/user"]);
+      return this.$store.getters["users/user"];
+    },
+    loading() {
+      return this.$store.getters["users/userLoading"];
     }
   }
 };

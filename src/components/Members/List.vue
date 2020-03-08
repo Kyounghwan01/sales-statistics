@@ -1,11 +1,11 @@
 <template>
   <el-table
-    :data="members"
+    :data="users"
     empty-text="회원이 없습니다"
     row-class-name="members-list__row"
+    @cell-click="handleCellClick"
     fit
   >
-    <!-- @cell-click="handleCellClick" -->
     <el-table-column fixed="left" label="이름" min-width="80" align="center">
       <template v-slot="scope">
         <div class="members-list__name">
@@ -35,7 +35,7 @@
     >
       <template v-slot="scope">
         <div class="members-list__registered-at">
-          {{ scope.row.registeredAt }}
+          {{ scope.row.registreDate }}
         </div>
       </template>
     </el-table-column>
@@ -58,17 +58,19 @@
 <script>
 export default {
   props: {
-    members: Array
+    users: Array
     // showAppLink: { type: Boolean, default: true },
     // showLastAttendedOn: { type: Boolean, default: false },
   },
 
+  created() {
+    console.log(this.users);
+  },
+
   methods: {
-    // handleCellClick(row, column) {
-    //   if (column.label !== '앱연결') {
-    //     this.$router.push('/users/detail?id=' + row.id);
-    //   }
-    // },
+    handleCellClick(row) {
+      this.$router.push("/users/detail?id=" + row.id);
+    }
     // getUserGrade({ user_grade }) {
     //   if (!user_grade) return null;
     //   const { exceeded, exceededAt } = this.$utils.checkBytesOfString(user_grade.name, 5);

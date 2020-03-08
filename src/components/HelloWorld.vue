@@ -1,16 +1,28 @@
 <template>
   <div class="hello">
     <div class="div">123</div>
+    <ul>
+      <li v-for="member in data" :key="member._ud">
+        {{ member.name }}
+        {{ member.content }}
+      </li>
+    </ul>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
+// import axios from "axios";
 
 export default Vue.extend({
   name: "HelloWorld",
   props: {
     msg: String
+  },
+  data() {
+    return {
+      data: [] as unknown
+    };
   }
   // computed() {
 

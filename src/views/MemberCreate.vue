@@ -45,6 +45,7 @@
 <script>
 import MainLayout from "@/router/layouts/MainLayout";
 // import { database } from "@/api/modules/firebase";
+import axios from "axios";
 export default {
   components: {
     MainLayout
@@ -62,9 +63,11 @@ export default {
     };
   },
   async created() {
-    const a = await this.$api.firebase.getMember().once("value");
-    this.memberData = await a.val();
-    console.log(a);
+    // const res = await axios.get(
+    //   "https://9wnw9kggv9.execute-api.ap-northeast-2.amazonaws.com/2020-03-07/board"
+    // );
+    // this.memberData = res.data;
+    // console.log(this.memberData);
     // this.memberData = this.$api.firebase.getMember().;
     // console.log(this.memberData);
   },
@@ -83,8 +86,17 @@ export default {
       const isMaxLength = e.srcElement.value.replace(/-/g, "").length >= 11;
       if (!isNumber || isMaxLength) e.preventDefault();
     },
-    registredUser() {
-      this.$api.firebase.setMember(this.data);
+    async registredUser() {
+      const sendData = {
+        name: this.data.name,
+        content: this.data.address,
+        password: this.data.phone
+      };
+      const res = await axios.post(
+        "https://9wnw9kggv9.execute-api.ap-northeast-2.amazonaws.com/2020-03-07/board",
+        sendData
+      );
+      console.log(res);
     }
   }
 };
