@@ -3,6 +3,7 @@
     <section class="user-list">
       <div class="user-list__header">
         <h3>고객 관리</h3>
+        <div class="total">총 : {{ userList.length }} 명</div>
       </div>
       <MembersList :users="userList" v-loading="loading" />
       <AddMemberButton @click="$router.push('/users/create')" />
@@ -57,14 +58,20 @@ export default {
 <style lang="scss" scoped>
 .user-list {
   padding: 10px 80px;
-  height: 100vh;
-  overflow-y: auto;
+  /* height: 100vh;
+  overflow-y: auto; */
   &__header {
+    display: flex;
+    justify-content: space-between;
     h3 {
       font-size: 28px;
       font-weight: bold;
       letter-spacing: normal;
       margin: 15px;
+    }
+    .total {
+      line-height: 68px;
+      font-size: 18px;
     }
   }
 }

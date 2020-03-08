@@ -88,8 +88,8 @@ export default {
 
 <style lang="scss" scoped>
 .main {
-  width: 100vw;
-  height: 100vh;
+  width: 98.9vw;
+  height: 99vh;
   overflow: hidden;
 
   /* display: grid;

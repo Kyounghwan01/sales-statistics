@@ -1,71 +1,73 @@
 <template>
-  <el-table
-    :data="users"
-    empty-text="회원이 없습니다"
-    row-class-name="members-list__row"
-    @cell-click="handleCellClick"
-    fit
-  >
-    <el-table-column fixed="left" label="이름" min-width="80" align="center">
-      <template v-slot="scope">
-        <div class="members-list__name">
-          {{ scope.row.name }}
-        </div>
-      </template>
-    </el-table-column>
-
-    <el-table-column
-      label="전화번호"
-      min-width="140"
-      header-align="center"
-      align="center"
+  <div class="test">
+    <el-table
+      :data="users"
+      empty-text="회원이 없습니다"
+      row-class-name="members-list__row"
+      @cell-click="handleCellClick"
+      fit
     >
-      <template v-slot="scope">
-        <div class="members-list__phone">
-          {{ scope.row.phone }}
-        </div>
-      </template>
-    </el-table-column>
+      <el-table-column fixed="left" label="이름" min-width="80" align="center">
+        <template v-slot="scope">
+          <div class="members-list__name">
+            {{ scope.row.name }}
+          </div>
+        </template>
+      </el-table-column>
 
-    <el-table-column
-      label="등록일"
-      min-width="140"
-      header-align="center"
-      align="center"
-    >
-      <template v-slot="scope">
-        <div class="members-list__registered-at">
-          {{ scope.row.registreDate }}
-        </div>
-      </template>
-    </el-table-column>
+      <el-table-column
+        label="전화번호"
+        min-width="140"
+        header-align="center"
+        align="center"
+      >
+        <template v-slot="scope">
+          <div class="members-list__phone">
+            {{ scope.row.phone }}
+          </div>
+        </template>
+      </el-table-column>
 
-    <el-table-column
-      label="주소"
-      min-width="140"
-      header-align="center"
-      align="center"
-    >
-      <template v-slot="scope">
-        <div class="members-list__address">
-          {{ scope.row.address }}
-        </div>
-      </template>
-    </el-table-column>
+      <el-table-column
+        label="등록일"
+        min-width="140"
+        header-align="center"
+        align="center"
+      >
+        <template v-slot="scope">
+          <div class="members-list__registered-at">
+            {{ scope.row.registreDate }}
+          </div>
+        </template>
+      </el-table-column>
 
-    <el-table-column
-      label="최근 변경일"
-      min-width="140"
-      header-align="center"
-      align="center"
-    >
-      <template v-slot="scope">
-        <div class="members-list__address">
-          {{ scope.row.lastDate.slice(0, -14) }}
-        </div>
-      </template>
-    </el-table-column>
-  </el-table>
+      <el-table-column
+        label="주소"
+        min-width="140"
+        header-align="center"
+        align="center"
+      >
+        <template v-slot="scope">
+          <div class="members-list__address">
+            {{ scope.row.address }}
+          </div>
+        </template>
+      </el-table-column>
+
+      <el-table-column
+        label="최근 변경일"
+        min-width="140"
+        header-align="center"
+        align="center"
+      >
+        <template v-slot="scope">
+          <div class="members-list__address">
+            {{ scope.row.lastDate.slice(0, -14) }}
+          </div>
+        </template>
+      </el-table-column>
+    </el-table>
+  </div>
 </template>
 
 <script>
@@ -114,6 +116,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.test {
+  height: 600px;
+  overflow-y: auto;
+  text-align: center;
+}
 /* .members-list {
   &__name {
     display: grid;

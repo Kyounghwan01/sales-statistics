@@ -53,7 +53,6 @@
 <script>
 import MainLayout from "@/router/layouts/MainLayout";
 // import { database } from "@/api/modules/firebase";
-import axios from "axios";
 export default {
   components: {
     MainLayout
@@ -66,20 +65,12 @@ export default {
         phone: null,
         address: null,
         content: null,
-        salesData: [],
+        salesData: []
       },
       memberData: null
     };
   },
-  async created() {
-    // const res = await axios.get(
-    //   "https://9wnw9kggv9.execute-api.ap-northeast-2.amazonaws.com/2020-03-07/board"
-    // );
-    // this.memberData = res.data;
-    // console.log(this.memberData);
-    // this.memberData = this.$api.firebase.getMember().;
-    // console.log(this.memberData);
-  },
+
   methods: {
     formatContact(number) {
       if (!number) return;
@@ -95,7 +86,33 @@ export default {
       const isMaxLength = e.srcElement.value.replace(/-/g, "").length >= 11;
       if (!isNumber || isMaxLength) e.preventDefault();
     },
+
+    valid() {
+      const title = "회원 추가 실패";
+      let message = "회원 추가 실패하였습니다. 다시 시도해주세요";
+      if (!this.data.name) {
+        message = "회사명을 입력해 주세요";
+        this.$alert(message, title, { showClose: false });
+        return false;
+      } else if (!this.data.registreDate) {
+        message = "등록일을 선택해주세요";
+        this.$alert(message, title, { showClose: false });
+        return false;
+      } else if (!this.data.phone) {
+        message = "휴대폰 번호를 입력해 주세요";
+        this.$alert(message, title, { showClose: false });
+        return false;
+      } else if (!this.data.address) {
+        message = "주소를 입력해 주세요";
+        this.$alert(message, title, { showClose: false });
+        return false;
+      }
+
+      return true;
+    },
+
     async registredUser() {
+      if (!this.valid()) return;
       const sendData = {
         name: this.data.name,
         content: this.data.content,
@@ -104,11 +121,21 @@ export default {
         address: this.data.address,
         registreDate: this.data.registreDate
       };
-      const res = await axios.post(
-        "https://9wnw9kggv9.execute-api.ap-northeast-2.amazonaws.com/2020-03-07/board",
-        sendData
-      );
-      console.log(res);
+      const res = await this.$api.user.createUser(sendData);
+      let title = "회원 추가 성공";
+      let message = "회원 추가 성공하였습니다.";
+
+      if (res.status === 200) {
+        this.$alert(message, title, { showClose: false }).then(() =>
+          this.$router.push("/users")
+        );
+      } else {
+        title = "회원 추가 실패";
+        message = "회원 추가 실패하였습니다. 다시 시도해주세요";
+        this.$alert(message, title, { showClose: false }).then(() =>
+          this.$router.push("/users")
+        );
+      }
     }
   }
 };
