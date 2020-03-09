@@ -1,7 +1,6 @@
 <template>
-  <div class="main">
+  <div>
     <MainHeader class="main__header" />
-
     <section class="main__contents" :class="{ padded }">
       <slot />
     </section>
@@ -88,7 +87,7 @@ export default {
 
 <style lang="scss" scoped>
 .main {
-  width: 98.9vw;
+  width: 99vw;
   height: 99vh;
   overflow: hidden;
 
