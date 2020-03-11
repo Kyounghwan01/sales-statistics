@@ -30,7 +30,6 @@ Vue.prototype.$api = api;
 let app: object;
 
 firebase.auth().onAuthStateChanged(user => {
-  console.log(user);
   if (!app) {
     app = new Vue({
       router,

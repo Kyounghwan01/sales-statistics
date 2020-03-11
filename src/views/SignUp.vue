@@ -10,7 +10,7 @@
       </div> -->
 
         <div class="header">
-          <h3>로그인</h3>
+          <h3>회원가입</h3>
         </div>
         <div class="id">
           <div class="label-group">
@@ -19,7 +19,7 @@
           </div>
           <div class="input-group">
             <el-input
-              v-model="data.loginId"
+              v-model="data.registredId"
               placeholder="example@naver.com"
             ></el-input>
           </div>
@@ -32,7 +32,7 @@
           </div>
           <div class="input-group">
             <el-input
-              v-model="data.loginPassword"
+              v-model="data.registredPassword"
               type="password"
               placeholder="비밀번호를 입력해주세요"
             ></el-input>
@@ -40,55 +40,14 @@
         </div>
 
         <div class="login-button">
-          <el-button @click="login">로그인</el-button>
+          <el-button @click="signUp">회원가입</el-button>
         </div>
-        <div class="register padding-top">
-          <el-button @click="$router.push('/sign-up')">회원가입</el-button>
-        </div>
-
-        <!-- <div class="registred">
-        <div class="header">
-          <h3>회원가입</h3>
-        </div>
-
-        <div class="registred-id">
-          <div class="label-group">
-            <label>01 </label>
-            <label>아이디</label>
-          </div>
-          <div class="input-group">
-            <el-input
-              v-model="data.registredId"
-              placeholder="아이디를 입력해주세요"
-            ></el-input>
-          </div>
-        </div>
-
-        <div class="registred-password">
-          <div class="label-group">
-            <label>02 </label>
-            <label>패스워드</label>
-          </div>
-          <div class="input-group">
-            <el-input
-              v-model="data.registredPassword"
-              placeholder="비밀번호를 입력해주세요"
-            ></el-input>
-          </div>
-        </div>
-      </div> -->
-
-        <!-- <BottomActionBar>
-        <el-button @click="login">로그인</el-button>
-        <el-button @click="registredData">등록</el-button>
-      </BottomActionBar> -->
       </section>
     </div>
   </MainLayout>
 </template>
 
 <script>
-// @ is an alias to /src
 import MainLayout from "@/router/layouts/MainLayout";
 import * as firebase from "firebase/app";
 import "firebase/auth";
@@ -100,51 +59,13 @@ export default {
   data() {
     return {
       data: {
-        loginId: null,
-        loginPassword: null,
         registredId: null,
         registredPassword: null
-      },
-      loggedIn: false
+      }
     };
   },
-  created() {
-    this.check();
-  },
-
   methods: {
-    check() {
-      firebase.auth().onAuthStateChanged(user => {
-        this.loggedIn = !!user;
-        // if (user) {
-        //   this.loggedIn = true;
-        // } else {
-        //   this.loggedIn = false;
-        // }
-      });
-    },
-    async login() {
-      try {
-        const res = await firebase
-          .auth()
-          .signInWithEmailAndPassword(
-            this.data.loginId,
-            this.data.loginPassword
-          );
-        console.log("login", res);
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    async logout() {
-      try {
-        const data = await firebase.auth().signOut();
-        console.log(data);
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    async registredData() {
+    async signUp() {
       try {
         const user = await firebase
           .auth()
@@ -152,15 +73,23 @@ export default {
             this.data.registredId,
             this.data.registredPassword
           );
-        console.log(user);
+        if (user) {
+          this.$alert("회원가입 성공하였습니다.", "회원가입 성공", {
+            showClose: false,
+            dangerouslyUseHTMLString: true
+          }).then(() => this.$router.push("/"));
+        }
       } catch (err) {
-        console.log(err);
+        this.$alert(err.message, "회원가입 실패", {
+          showClose: false,
+          dangerouslyUseHTMLString: true
+        });
       }
-      console.log(this.data.registredId, this.data.registredPassword);
     }
   }
 };
 </script>
+
 <style lang="scss" scoped>
 .outter {
   width: 100%;

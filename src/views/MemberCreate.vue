@@ -221,7 +221,7 @@ export default {
 .create-user {
   padding: 10px 160px;
   overflow-y: auto;
-  height: 80vh;
+  height: 85vh;
   h3 {
     font-size: 28px;
     font-weight: bold;
