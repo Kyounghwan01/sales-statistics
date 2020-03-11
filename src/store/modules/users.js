@@ -29,7 +29,6 @@ export const mutations = {
   },
 
   SET_USER(state, user) {
-    console.log(user);
     state.user = user;
   }
 };
@@ -39,7 +38,6 @@ export const actions = {
     try {
       commit("SET_USER_LOADING", true);
       const res = await api.user.getUser();
-      console.log(res);
       commit("SET_USER", res.data);
     } catch (error) {
       commit("SET_USER", []);

@@ -63,6 +63,7 @@ export default {
   justify-content: space-between;
   width: 100%;
   margin: auto;
+  height: 25px;
 }
 
 .bottom-action-bar__back-button {

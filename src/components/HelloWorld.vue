@@ -6,12 +6,20 @@
         {{ member.name }}
         {{ member.content }}
       </li>
+      <el-time-select
+        format="HH:mm"
+        value-format="HH:mm"
+        v-model="bookingLimitTime"
+        :picker-options="{ start: '00:00', step: '00:01', end: '23:59' }"
+        :clearable="false"
+      />
     </ul>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
+import moment from "moment";
 // import axios from "axios";
 
 export default Vue.extend({
@@ -21,12 +29,20 @@ export default Vue.extend({
   },
   data() {
     return {
-      data: [] as unknown
+      data: [] as unknown,
+      time: "2020-01-23 10:00" as string
     };
+  },
+  computed: {
+    bookingLimitTime: {
+      get(): string {
+        return moment(this.time).format("HH:mm");
+      },
+      set(value: string) {
+        this.time = `${this.time.slice(0, -6)} ${value}`;
+      }
+    }
   }
-  // computed() {
-
-  // }
 });
 </script>
 

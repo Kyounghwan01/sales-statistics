@@ -9,6 +9,10 @@ import MainLayout from "@/router/layouts/MainLayout";
 export default {
   components: {
     MainLayout
+  },
+  async created() {
+    const a = await this.$api.user.getCurrentUser(this.$route.params.id);
+    console.log(a);
   }
 };
 </script>

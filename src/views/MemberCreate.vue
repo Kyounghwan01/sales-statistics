@@ -6,7 +6,7 @@
         <el-tooltip
           class="item"
           effect="light"
-          content="고객 추가를 위해 필수항목을 적고 등록 완료 버튼을 누르세요"
+          content="고객 추가를 위해 필수항목을 적고 등록 버튼을 누르세요"
           placement="top"
         >
           <i
@@ -109,12 +109,8 @@
           @click="deleteMember"
           >회원 삭제</el-button
         > -->
-        <el-button :disabled="isSaving" @click="registredUser"
-          >회원 등록 완료</el-button
-        >
+        <el-button v-loading="isSaving" @click="registredUser">등록</el-button>
       </BottomActionBar>
-
-      <!-- <el-button type="primary" @click="registredUser">등록</el-button> -->
     </section>
   </MainLayout>
 </template>
@@ -122,7 +118,6 @@
 <script>
 import MainLayout from "@/router/layouts/MainLayout";
 import BottomActionBar from "@/components/BottomActionBar";
-// import { database } from "@/api/modules/firebase";
 export default {
   components: {
     MainLayout,
@@ -138,7 +133,8 @@ export default {
         content: null,
         salesData: []
       },
-      memberData: null
+      memberData: null,
+      isSaving: false
     };
   },
 
@@ -184,6 +180,7 @@ export default {
 
     async registredUser() {
       if (!this.valid()) return;
+      this.isSaving = true;
       const sendData = {
         name: this.data.name,
         content: this.data.content,
@@ -197,12 +194,14 @@ export default {
       let message = "회원 추가 성공하였습니다.";
 
       if (res.status === 200) {
+        this.isSaving = false;
         this.$alert(message, title, { showClose: false }).then(() =>
           this.$router.push("/users")
         );
       } else {
         title = "회원 추가 실패";
         message = "회원 추가 실패하였습니다. 다시 시도해주세요";
+        this.isSaving = false;
         this.$alert(message, title, { showClose: false }).then(() =>
           this.$router.push("/users")
         );
@@ -250,6 +249,12 @@ export default {
 
   /deep/ .el-input {
     width: 70%;
+  }
+  /deep/ .el-button {
+    height: 30px;
+    line-height: 6px;
+    width: 70px;
+    margin-right: 20px;
   }
 }
 </style>

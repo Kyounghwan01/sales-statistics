@@ -45,7 +45,6 @@ export default {
       return this.$store.getters["members/member"];
     },
     userList() {
-      console.log(this.$store.getters["users/user"]);
       return this.$store.getters["users/user"];
     },
     loading() {
@@ -58,8 +57,6 @@ export default {
 <style lang="scss" scoped>
 .user-list {
   padding: 10px 80px;
-  /* height: 100vh;
-  overflow-y: auto; */
   &__header {
     display: flex;
     justify-content: space-between;

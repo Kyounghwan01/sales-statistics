@@ -34,7 +34,7 @@
     "tests/**/*.ts",
     "tests/**/*.tsx",
     "types/local.d.ts",
-    "types/vue-global.d.ts", "src/store/index.ts", "src/store/modules/members.js", "src/store/modules/index.js"
+    "types/vue-global.d.ts", "src/store/index.ts", "src/store/modules/users.js", "src/store/modules/index.js"
   ],
   "exclude": [
     "node_modules"

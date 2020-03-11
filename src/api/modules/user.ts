@@ -6,6 +6,8 @@ const BASE_URL =
 export default {
   getUser: () => axios.get(BASE_URL),
 
+  getCurrentUser: (id: string) => axios.get(`${BASE_URL}/${id}`),
+
   createUser: async (data: object) => {
     return axios.post(BASE_URL, data);
   }
