@@ -42,6 +42,9 @@
         <div class="login-button">
           <el-button @click="signUp">회원가입</el-button>
         </div>
+         <div class="register padding-top">
+          <el-button @click="$router.push('/')">로그인</el-button>
+        </div>
       </section>
     </div>
   </MainLayout>

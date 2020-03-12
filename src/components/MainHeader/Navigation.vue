@@ -13,10 +13,14 @@
     >
       {{ link.name }}
     </el-menu-item>
+    <span class="logout" @click="logout">로그아웃</span>
   </el-menu>
 </template>
 
 <script>
+import * as firebase from "firebase/app";
+import "firebase/auth";
+
 export default {
   computed: {
     activeLink() {
@@ -32,6 +36,24 @@ export default {
       ];
 
       return links;
+    }
+  },
+  methods: {
+    logout() {
+      this.$confirm("로그아웃 하시겠습니까?", "로그아웃", {
+        showClose: true
+      })
+        .then(async () => {
+          console.log("Asd");
+          try {
+            await firebase.auth().signOut();
+          } catch (error) {
+            this.$alert("로그아웃 에러", "로그아웃 실패");
+          } finally {
+            this.$router.push("/");
+          }
+        })
+        .catch(() => console.log("로그인 취소"));
     }
   }
 };
@@ -58,5 +80,16 @@ export default {
       right: 2px;
     }
   }
+}
+.logout {
+  font-size: 14px;
+  color: #909399;
+  position: absolute;
+  top: 22px;
+  right: 10px;
+}
+.logout:hover {
+  cursor: pointer;
+  color: dodgerblue;
 }
 </style>

@@ -6,6 +6,7 @@ import MemberList from "../views/MemberList.vue";
 import MemberCreate from "@/views/MemberCreate.vue";
 import MemberDetail from "@/views/MemberDetail.vue";
 import * as firebase from "firebase/app";
+import store from '@/store';
 import "firebase/auth";
 
 Vue.use(VueRouter);
@@ -14,17 +15,15 @@ const routes = [
   {
     path: "/",
     name: "Home",
-    component: Home
+    component: Home,
     // meta: {
-    //   beforeResolve(to: any, from: object, next: any) {
-    //     const requiresAuth = to.matched.some((record: any) => {
-    //       record.meta.requiresAuth;
-    //     });
-    //     const isAuthenticated = firebase.auth().currentUser;
-    //     if (requiresAuth && !isAuthenticated) {
-    //       next("/");
+    //   beforeEach(to: any, from: object, next: any) {
+    //     const data = store.getters['auth/loginData'];
+    //     console.log(data);
+    //     if(store.getters['auth/loginData']) {
+    //       next('/users')
     //     } else {
-    //       next("/users");
+    //       next();
     //     }
     //   }
     // }
@@ -60,16 +59,17 @@ const router = new VueRouter({
   routes
 });
 
-// router.beforeEach((to, from, next) => {
-//   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
-//   const isAuthenticated = firebase.auth().currentUser;
-//   if (requiresAuth && !isAuthenticated) {
-//     //next("/login");
-//     next("/");
-//   } else {
-//     next();
-//   }
-// });
+router.beforeEach((to, from, next) => {
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  const isAuthenticated = firebase.auth().currentUser;
+  store.commit('auth/SET_LOGIN_DATA', isAuthenticated);
+
+  if (requiresAuth && !isAuthenticated) {
+    next("/");
+  } else {
+    next();
+  }
+});
 
 router.beforeResolve(async (to, from, next) => {
   try {
