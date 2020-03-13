@@ -7,7 +7,9 @@ interface firebase {
 
 interface user {
   getUser: Function,
-  createUser: Function
+  createUser: Function,
+  getCurrentUser: Function,
+  updateUser: Function
 }
 
 interface apis {

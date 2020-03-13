@@ -3,7 +3,7 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import Element from "element-ui";
-import Vuelidate from 'vuelidate';
+import Vuelidate from "vuelidate";
 import moment from "moment";
 import api from "./api";
 import "element-ui/lib/theme-chalk/index.css";
@@ -28,10 +28,12 @@ firebase.initializeApp(firebaseConfig);
 
 Vue.config.productionTip = false;
 Vue.prototype.$api = api;
+Vue.prototype.moment = moment;
 
 let app: object;
 
 firebase.auth().onAuthStateChanged(user => {
+  console.log(user);
   if (!app) {
     app = new Vue({
       router,

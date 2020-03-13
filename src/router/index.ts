@@ -6,7 +6,7 @@ import MemberList from "../views/MemberList.vue";
 import MemberCreate from "@/views/MemberCreate.vue";
 import MemberDetail from "@/views/MemberDetail.vue";
 import * as firebase from "firebase/app";
-import store from '@/store';
+import store from "@/store";
 import "firebase/auth";
 
 Vue.use(VueRouter);
@@ -15,7 +15,7 @@ const routes = [
   {
     path: "/",
     name: "Home",
-    component: Home,
+    component: Home
   },
   {
     path: "/sign-up",
@@ -31,6 +31,12 @@ const routes = [
   {
     path: "/users/create",
     name: "create_user",
+    component: MemberCreate,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: "/users/edit/:id",
+    name: "edut_user",
     component: MemberCreate,
     meta: { requiresAuth: true }
   },
@@ -51,7 +57,7 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
   const isAuthenticated = firebase.auth().currentUser;
-  store.commit('auth/SET_LOGIN_DATA', isAuthenticated);
+  store.commit("auth/SET_LOGIN_DATA", isAuthenticated);
 
   if (requiresAuth && !isAuthenticated) {
     next("/");

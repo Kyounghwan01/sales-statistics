@@ -15,16 +15,7 @@
           ></i>
         </el-tooltip>
       </div>
-      <!-- <el-tooltip effect="light" placement="right">
-        <p slot="content">
-          그룹 수업은 폐강 시간 기준으로 최소 수강 인원 미달시<br />
-          자동으로 삭제되며 회원의 예약은 취소됩니다.
-        </p>
-        <i
-          class="el-icon-question"
-          :style="{ color: '#64AEFF', fontSize: '18px' }"
-        ></i>
-      </el-tooltip> -->
+
       <div class="name">
         <div class="label-group">
           <label>01 </label>
@@ -109,7 +100,15 @@
           @click="deleteMember"
           >회원 삭제</el-button
         > -->
-        <el-button v-loading="isSaving" @click="registredUser">등록</el-button>
+        <el-button v-if="!edit" v-loading="isSaving" @click="registredUser"
+          >등록</el-button
+        >
+        <el-button v-if="edit" v-loading="isSaving" @click="deleteUser"
+          >삭제</el-button
+        >
+        <el-button v-if="edit" v-loading="isSaving" @click="updateUser"
+          >수정</el-button
+        >
       </BottomActionBar>
     </section>
   </MainLayout>
@@ -134,8 +133,16 @@ export default {
         salesData: []
       },
       memberData: null,
-      isSaving: false
+      isSaving: false,
+      edit: false
     };
+  },
+
+  created() {
+    if (this.$route.params) {
+      this.edit = true;
+      this.data = { ...this.$route.query.data };
+    }
   },
 
   methods: {
@@ -205,6 +212,54 @@ export default {
         this.$alert(message, title, { showClose: false }).then(() =>
           this.$router.push("/users")
         );
+      }
+    },
+
+    async updateUser() {
+      if (!this.valid()) return;
+      this.isSaving = true;
+      const sendData = {
+        name: this.data.name,
+        content: this.data.content,
+        password: this.data.phone,
+        phone: this.data.phone,
+        address: this.data.address,
+        registreDate: this.data.registreDate
+      };
+      const res = await this.$api.user.updateUser(
+        sendData,
+        this.$route.params.id
+      );
+      let title = "회원 수정 성공";
+      let message = "회원 수정 성공하였습니다.";
+      if (res.status === 200) {
+        this.isSaving = false;
+        this.$alert(message, title, { showClose: false }).then(() =>
+          this.$router.push("/users")
+        );
+      } else {
+        title = "회원 수정 실패";
+        message = "관리자에게 문의해주세요";
+        this.isSaving = false;
+        this.$alert(message, title, { showClose: false });
+      }
+    },
+
+    async deleteUser() {
+      this.isSaving = true;
+      const res = await this.$api.user.deleteUser(this.$route.params.id);
+      let title = "회원 삭제 성공";
+      let message = "회원 삭제 성공하였습니다.";
+      if (res.status === 200) {
+        this.isSaving = false;
+        this.$alert(message, title, { showClose: false }).then(() =>
+          this.$router.push("/users")
+        );
+      } else {
+        title = "회원 삭제 실패";
+        message = "관리자에게 문의해주세요";
+        this.isSaving = false;
+        this.$alert(message, title, { showClose: false });
       }
     }
   }

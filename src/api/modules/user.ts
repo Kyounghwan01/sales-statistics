@@ -10,5 +10,13 @@ export default {
 
   createUser: async (data: object) => {
     return axios.post(BASE_URL, data);
+  },
+
+  updateUser: async (data: object, id: number) => {
+    return axios.put(`${BASE_URL}/${id}`, data);
+  },
+
+  deleteUser: async (id: number) => {
+    return axios.delete(`${BASE_URL}/${id}`);
   }
 };

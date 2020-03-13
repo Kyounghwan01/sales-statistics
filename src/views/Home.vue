@@ -125,15 +125,12 @@ export default {
       });
     },
     async login() {
-      let isError = false;
       ["loginId", "loginPassword"].forEach(key => {
         if (!this.$v.data[key].required || !this.$v.data[key].email) {
-          isError = true;
           this.$v.data[key].$touch();
         }
       });
 
-      if (isError) return;
       this.loading = true;
       try {
         const res = await firebase
