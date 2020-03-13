@@ -3,6 +3,7 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import Element from "element-ui";
+import Vuelidate from 'vuelidate';
 import moment from "moment";
 import api from "./api";
 import "element-ui/lib/theme-chalk/index.css";
@@ -11,6 +12,7 @@ import firebase from "firebase/app";
 
 moment.locale("ko");
 Vue.use(Element, { locale });
+Vue.use(Vuelidate);
 
 const firebaseConfig = {
   apiKey: "AIzaSyBC7gyEeahwratDj8pMkYNsKPuZPe5Ezpg",
@@ -30,7 +32,6 @@ Vue.prototype.$api = api;
 let app: object;
 
 firebase.auth().onAuthStateChanged(user => {
-  console.log(user)
   if (!app) {
     app = new Vue({
       router,

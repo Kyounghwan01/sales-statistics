@@ -78,10 +78,6 @@ export default {
     // showLastAttendedOn: { type: Boolean, default: false },
   },
 
-  created() {
-    console.log(this.users);
-  },
-
   methods: {
     handleCellClick(row) {
       this.$router.push(`/users/${row.id}`);

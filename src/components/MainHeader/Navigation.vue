@@ -44,7 +44,6 @@ export default {
         showClose: true
       })
         .then(async () => {
-          console.log("Asd");
           try {
             await firebase.auth().signOut();
           } catch (error) {
@@ -53,7 +52,7 @@ export default {
             this.$router.push("/");
           }
         })
-        .catch(() => console.log("로그인 취소"));
+        .catch(() => false);
     }
   }
 };

@@ -19,9 +19,23 @@
           </div>
           <div class="input-group">
             <el-input
-              v-model="data.registredId"
+              :class="
+                ($v.data.registredId.$dirty && !$v.data.registredId.required) ||
+                ($v.data.registredId.$dirty && !$v.data.registredId.email)
+                  ? 'error'
+                  : null
+              "
+              v-model.trim="$v.data.registredId.$model"
               placeholder="example@naver.com"
             ></el-input>
+            <div class="invalid-feedback">
+              <span class="required" v-if="!$v.data.registredId.required"
+                >이메일은 필수값 입니다</span
+              >
+              <span class="required" v-if="!$v.data.registredId.email"
+                >이메일 형식을 맞춰주세요</span
+              >
+            </div>
           </div>
         </div>
 
@@ -32,17 +46,38 @@
           </div>
           <div class="input-group">
             <el-input
-              v-model="data.registredPassword"
+              :class="
+                ($v.data.registredPassword.$dirty &&
+                  !$v.data.registredPassword.required) ||
+                ($v.data.registredPassword.$dirty &&
+                  !$v.data.registredPassword.maxLength) ||
+                ($v.data.registredPassword.$dirty &&
+                  !$v.data.registredPassword.minLength)
+                  ? 'error'
+                  : null
+              "
+              v-model="$v.data.registredPassword.$model"
               type="password"
               placeholder="비밀번호를 입력해주세요"
             ></el-input>
+            <div class="invalid-feedback">
+              <span class="required" v-if="!$v.data.registredPassword.required"
+                >비밀번호는 필수값 입니다</span
+              >
+              <span class="required" v-if="!$v.data.registredPassword.minLength"
+                >비밀번호를 6자리 이상으로 맞춰주세요</span
+              >
+              <span class="required" v-if="!$v.data.registredPassword.maxLength"
+                >비밀번호를 10자리 이하로 맞춰주세요</span
+              >
+            </div>
           </div>
         </div>
 
         <div class="login-button">
           <el-button @click="signUp">회원가입</el-button>
         </div>
-         <div class="register padding-top">
+        <div class="register padding-top">
           <el-button @click="$router.push('/')">로그인</el-button>
         </div>
       </section>
@@ -52,6 +87,13 @@
 
 <script>
 import MainLayout from "@/router/layouts/MainLayout";
+import { validationMixin } from "vuelidate";
+import {
+  required,
+  email,
+  minLength,
+  maxLength
+} from "vuelidate/lib/validators";
 import * as firebase from "firebase/app";
 import "firebase/auth";
 
@@ -67,8 +109,31 @@ export default {
       }
     };
   },
+  mixins: [validationMixin],
+  validations: {
+    data: {
+      registredId: { required, email },
+      registredPassword: {
+        required,
+        minLength: minLength(6),
+        maxLength: maxLength(10)
+      }
+    }
+  },
   methods: {
     async signUp() {
+      let isError = false;
+      ["registredId", "registredPassword"].forEach(key => {
+        if (!this.$v.data[key].required || !this.$v.data[key].email) {
+          isError = true;
+          this.$v.data[key].$touch();
+        }
+        if (!this.$v.data[key].maxLength || !this.$v.data[key].minLength) {
+          this.$v.data[key].$touch();
+        }
+      });
+
+      if (isError) return;
       try {
         const user = await firebase
           .auth()
@@ -149,6 +214,21 @@ export default {
   padding: 20px;
   /deep/ .el-input {
     width: 460px;
+  }
+}
+.error {
+  border: 1px solid red;
+  border-radius: 4px;
+  /deep/ .el-input__inner {
+    border: none;
+  }
+}
+.invalid-feedback {
+  height: 15px;
+  .required {
+    color: red;
+    margin-left: 5px;
+    font-size: 13px;
   }
 }
 </style>

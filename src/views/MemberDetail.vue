@@ -10,9 +10,8 @@ export default {
   components: {
     MainLayout
   },
-  async created() {
-    const a = await this.$api.user.getCurrentUser(this.$route.params.id);
-    console.log(a);
+  created() {
+    this.$api.user.getCurrentUser(this.$route.params.id);
   }
 };
 </script>

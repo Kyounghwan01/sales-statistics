@@ -10,23 +10,12 @@ import store from '@/store';
 import "firebase/auth";
 
 Vue.use(VueRouter);
-// eslint-disable-next-line
+
 const routes = [
   {
     path: "/",
     name: "Home",
     component: Home,
-    // meta: {
-    //   beforeEach(to: any, from: object, next: any) {
-    //     const data = store.getters['auth/loginData'];
-    //     console.log(data);
-    //     if(store.getters['auth/loginData']) {
-    //       next('/users')
-    //     } else {
-    //       next();
-    //     }
-    //   }
-    // }
   },
   {
     path: "/sign-up",
@@ -69,31 +58,6 @@ router.beforeEach((to, from, next) => {
   } else {
     next();
   }
-});
-
-router.beforeResolve(async (to, from, next) => {
-  try {
-    for (const route of to.matched) {
-      await new Promise((resolve, reject) => {
-        if (route.meta && route.meta.beforeResolve) {
-          route.meta.beforeResolve(to, from, (...args: Array<any>) => {
-            if (args.length) {
-              next(...args);
-              reject(new Error("redirected"));
-            } else {
-              resolve();
-            }
-          });
-        } else {
-          resolve();
-        }
-      });
-    }
-  } catch (error) {
-    return;
-  }
-
-  next();
 });
 
 export default router;
