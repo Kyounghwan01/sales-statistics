@@ -7,7 +7,6 @@
           <PlainButton class="update-button" @click="goToUserEdit"
             >회원 정보 수정</PlainButton
           >
-          <!-- <el-button class="header__update">회원 정보 수정</el-button> -->
         </div>
         <div class="header__content-group">
           <div class="reg-date">등록일 : {{ formRegistreDate }}</div>

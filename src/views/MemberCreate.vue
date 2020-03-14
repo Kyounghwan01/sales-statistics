@@ -243,18 +243,15 @@ export default {
         sendData,
         this.$route.params.id
       );
-      let title = "회원 수정 성공";
-      let message = "회원 수정 성공하였습니다.";
       if (res.status === 200) {
         this.isSaving = false;
-        this.$alert(message, title, { showClose: false }).then(() =>
-          this.$router.push("/users")
-        );
+        this.$message("회원 수정 성공");
+        this.$router.push("/users");
       } else {
-        title = "회원 수정 실패";
-        message = "관리자에게 문의해주세요";
         this.isSaving = false;
-        this.$alert(message, title, { showClose: false });
+        this.$alert("관리자에게 문의해주세요", "회원 수정 실패", {
+          showClose: false
+        });
       }
     },
 

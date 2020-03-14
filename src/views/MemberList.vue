@@ -6,7 +6,7 @@
         <div class="total">총 : {{ userList.length }} 명</div>
       </div>
       <MembersList :users="userList" v-loading="loading" />
-      <AddMemberButton @click="$router.push('/users/create')" />
+      <AddButton @click="$router.push('/users/create')" />
     </section>
   </MainLayout>
 </template>
@@ -14,13 +14,13 @@
 <script>
 import MainLayout from "@/router/layouts/MainLayout";
 import MembersList from "@/components/Members/List";
-import AddMemberButton from "@/components/AddMemberButton";
+import AddButton from "@/components/AddButton";
 
 export default {
   components: {
     MainLayout,
     MembersList,
-    AddMemberButton
+    AddButton
   },
   props: {
     msg: String
