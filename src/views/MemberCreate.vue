@@ -23,9 +23,14 @@
         </div>
         <div class="input-group">
           <el-input
-            v-model="data.name"
+            v-model="$v.data.name.$model"
             placeholder="회사명을 입력해주세요"
           ></el-input>
+        </div>
+        <div class="invalid-feedback">
+          <span class="required" v-if="!$v.data.name.required"
+            >회사명은 필수값 입니다</span
+          >
         </div>
       </div>
 
@@ -37,10 +42,15 @@
         <div class="input-group">
           <el-input
             placeholder="휴대폰 번호를 입력해주세요"
-            v-model="data.phone"
+            v-model="$v.data.phone.$model"
             :value="formatContact(data.phone)"
             @keypress.native="validateKey"
           ></el-input>
+        </div>
+        <div class="invalid-feedback">
+          <span class="required" v-if="!$v.data.phone.$model"
+            >휴대폰 번호는 필수값 입니다</span
+          >
         </div>
       </div>
 
@@ -51,9 +61,14 @@
         </div>
         <div class="input-group">
           <el-input
-            v-model="data.address"
+            v-model="$v.data.address.$model"
             placeholder="주소를 입력해주세요"
           ></el-input>
+        </div>
+        <div class="invalid-feedback">
+          <span class="required" v-if="!$v.data.address.required"
+            >주소는 필수값 입니다</span
+          >
         </div>
       </div>
 
@@ -64,13 +79,18 @@
         </div>
         <div class="input-group">
           <el-date-picker
-            v-model="data.registreDate"
+            v-model="$v.data.registreDate.$model"
             type="date"
             placeholder="등록일을 입력해주세요"
             format="yyyy년 M월 d일"
             value-format="yyyy-MM-dd"
             :clearable="false"
           ></el-date-picker>
+        </div>
+        <div class="invalid-feedback">
+          <span class="required" v-if="!$v.data.registreDate.required"
+            >주소는 필수값 입니다</span
+          >
         </div>
       </div>
 
@@ -82,24 +102,12 @@
         <div class="input-group">
           <el-input
             v-model="data.content"
-            placeholder="참고사항입력해수세요, 낫필수"
+            placeholder="비고를 입력해주세요. 필수 값은 아닙니다"
           ></el-input>
         </div>
       </div>
-      <ul>
-        <li v-for="el in memberData" :key="el.name">
-          {{ el }}
-        </li>
-      </ul>
 
       <BottomActionBar>
-        <!-- <el-button
-          v-if="!!member && canDeleteMembers"
-          :disabled="isSaving"
-          type="danger"
-          @click="deleteMember"
-          >회원 삭제</el-button
-        > -->
         <el-button v-if="!edit" v-loading="isSaving" @click="registredUser"
           >등록</el-button
         >
@@ -117,6 +125,8 @@
 <script>
 import MainLayout from "@/router/layouts/MainLayout";
 import BottomActionBar from "@/components/BottomActionBar";
+import { validationMixin } from "vuelidate";
+import { required } from "vuelidate/lib/validators";
 export default {
   components: {
     MainLayout,
@@ -129,17 +139,25 @@ export default {
         registreDate: null,
         phone: null,
         address: null,
-        content: null,
-        salesData: []
+        content: null
       },
-      memberData: null,
       isSaving: false,
       edit: false
     };
   },
 
+  mixins: [validationMixin],
+  validations: {
+    data: {
+      name: { required },
+      registreDate: { required },
+      phone: { required },
+      address: { required }
+    }
+  },
+
   created() {
-    if (this.$route.params) {
+    if (this.$route.params.id) {
       this.edit = true;
       this.data = { ...this.$route.query.data };
     }
@@ -150,7 +168,7 @@ export default {
       if (!number) return;
       if (number.length > 10) {
         this.data.phone = number.replace(
-          /(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,
+          /(^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,
           "$1-$2-$3"
         );
       }
@@ -168,16 +186,16 @@ export default {
         message = "회사명을 입력해 주세요";
         this.$alert(message, title, { showClose: false });
         return false;
-      } else if (!this.data.registreDate) {
-        message = "등록일을 선택해주세요";
-        this.$alert(message, title, { showClose: false });
-        return false;
       } else if (!this.data.phone) {
         message = "휴대폰 번호를 입력해 주세요";
         this.$alert(message, title, { showClose: false });
         return false;
       } else if (!this.data.address) {
         message = "주소를 입력해 주세요";
+        this.$alert(message, title, { showClose: false });
+        return false;
+      } else if (!this.data.registreDate) {
+        message = "등록일을 선택해주세요";
         this.$alert(message, title, { showClose: false });
         return false;
       }
@@ -188,15 +206,10 @@ export default {
     async registredUser() {
       if (!this.valid()) return;
       this.isSaving = true;
-      const sendData = {
-        name: this.data.name,
-        content: this.data.content,
-        password: this.data.phone,
-        phone: this.data.phone,
-        address: this.data.address,
-        registreDate: this.data.registreDate
-      };
-      const res = await this.$api.user.createUser(sendData);
+      const res = await this.$api.user.createUser({
+        ...this.data,
+        password: this.data.phone
+      });
       let title = "회원 추가 성공";
       let message = "회원 추가 성공하였습니다.";
 
@@ -310,6 +323,21 @@ export default {
     line-height: 6px;
     width: 70px;
     margin-right: 20px;
+  }
+}
+.error {
+  border: 1px solid red;
+  border-radius: 4px;
+  /deep/ .el-input__inner {
+    border: none;
+  }
+}
+.invalid-feedback {
+  height: 15px;
+  .required {
+    color: red;
+    margin-left: 30px;
+    font-size: 13px;
   }
 }
 </style>
