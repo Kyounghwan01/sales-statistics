@@ -74,8 +74,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-section {
-}
 .header {
   padding: 0 160px;
   height: 200px;
