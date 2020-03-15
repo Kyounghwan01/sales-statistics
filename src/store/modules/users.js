@@ -3,7 +3,9 @@ import api from "@/api";
 export const state = {
   userLoading: false,
 
-  user: []
+  user: [],
+  copyUser: [],
+  currentUser: {}
 
   // userTickets: [],
   // userTicketsLoading: false,
@@ -20,7 +22,10 @@ export const state = {
 export const getters = {
   userLoading: state => state.userLoading,
 
-  user: state => state.user
+  user: state => state.user,
+  copyUser: state => state.copyUser,
+
+  currentUser: state => state.currentUser
 };
 
 export const mutations = {
@@ -30,6 +35,21 @@ export const mutations = {
 
   SET_USER(state, user) {
     state.user = user;
+    state.copyUser = user;
+  },
+
+  FILTER_USER(state, keyword) {
+    state.user = state.copyUser;
+    const newArray = state.user.filter(
+      userData =>
+        userData.name.toLowerCase().includes(keyword) ||
+        userData.phone.includes(keyword)
+    );
+    state.user = newArray;
+  },
+
+  SET_CURRENT_USER(state, currentUser) {
+    state.currentUser = currentUser;
   }
 };
 
@@ -42,6 +62,25 @@ export const actions = {
     } catch (error) {
       commit("SET_USER", []);
       commit("SET_USER_LOADING", false);
+    } finally {
+      commit("SET_USER_LOADING", false);
+    }
+  },
+
+  async filterUser({ commit }, keyword) {
+    commit("FILTER_USER", keyword);
+  },
+
+  async getCurrentUser({ commit }, id) {
+    try {
+      commit("SET_USER_LOADING", true);
+      const res = await api.user.getCurrentUser(id);
+      commit("SET_CURRENT_USER", res.data);
+      return "success";
+    } catch (error) {
+      commit("SET_CURRENT_USER", {});
+      commit("SET_USER_LOADING", false);
+      return "fail";
     } finally {
       commit("SET_USER_LOADING", false);
     }

@@ -3,17 +3,22 @@
     <section>
       <div class="header">
         <div class="header__name-group">
-          <h3 class="header__name">{{ user.name }}</h3>
+          <h3 class="header__name">{{ currentUserData.name }}</h3>
           <PlainButton class="update-button" @click="goToUserEdit"
             >회원 정보 수정</PlainButton
           >
         </div>
         <div class="header__content-group">
           <div class="reg-date">등록일 : {{ formRegistreDate }}</div>
-          <div class="phone">핸드폰번호 : {{ user.phone }}</div>
-          <div class="address">주소 : {{ user.address }}</div>
+          <div class="phone">핸드폰번호 : {{ currentUserData.phone }}</div>
+          <div class="address">주소 : {{ currentUserData.address }}</div>
           <div class="content">
-            메모 : {{ user.content ? user.content : "메모가 없습니다" }}
+            메모 :
+            {{
+              currentUserData.content
+                ? currentUserData.content
+                : "메모가 없습니다"
+            }}
           </div>
         </div>
       </div>
@@ -49,7 +54,6 @@ export default {
         address: "경기하남",
         registreDate: '2020-03-25"',
         phone: "010-2234-9891",
-        history: [],
         id: 38,
         lastDate: "2020-03-11T10:13:23.430Z"
       },
@@ -61,16 +65,31 @@ export default {
       ]
     };
   },
+
   async created() {
     this.loading = true;
-    // const res = await this.$api.user.getCurrentUser(this.$route.params.id);
-    // this.user = res.data;
+
+    const res = await this.$store.dispatch(
+      "users/getCurrentUser",
+      this.$route.params.id
+    );
+
+    if (res === "fail") {
+      this.$message("회원 정보 로딩 실패 다시 접속하세요");
+      this.$router.push("/users");
+    }
+
     this.loading = false;
   },
 
   computed: {
     formRegistreDate() {
-      return this.moment(this.user.registreDate).format("YYYY년 M월 D일");
+      return this.moment(this.currentUserData.registreDate).format(
+        "YYYY년 M월 D일"
+      );
+    },
+    currentUserData() {
+      return this.$store.getters["users/currentUser"];
     }
   },
   // watch: {
@@ -101,7 +120,7 @@ export default {
 <style lang="scss" scoped>
 .header {
   padding: 0 160px;
-  height: 200px;
+  height: 21vh;
   display: flex;
   justify-content: space-between;
   background-color: #f8f8f8;
@@ -123,7 +142,7 @@ export default {
     max-width: 400px;
   }
   &__content-group {
-    margin-top: 40px;
+    margin-top: 10px;
     div {
       margin: 10px;
     }

@@ -3,7 +3,13 @@
     <section class="user-list">
       <div class="user-list__header">
         <h3>고객 관리</h3>
-        <div class="total">총 : {{ userList.length }} 명</div>
+        <div class="search-box">
+          <el-input
+            v-model="keyword"
+            placeholder="이름 또는 전화번호 입력하세요"
+          ></el-input>
+          <div class="total">총 : {{ userList.length }} 명</div>
+        </div>
       </div>
       <MembersList :users="userList" v-loading="loading" />
       <AddButton @click="$router.push('/users/create')" />
@@ -34,7 +40,8 @@ export default {
           address: "신장동",
           registeredAt: "1993-01-23"
         }
-      ]
+      ],
+      keyword: null
     };
   },
   async created() {
@@ -49,6 +56,11 @@ export default {
     },
     loading() {
       return this.$store.getters["users/userLoading"];
+    }
+  },
+  watch: {
+    keyword: function() {
+      this.$store.dispatch("users/filterUser", this.keyword);
     }
   }
 };
@@ -66,9 +78,20 @@ export default {
       letter-spacing: normal;
       margin: 15px;
     }
+    .search-box {
+      display: flex;
+      width: 300px;
+      padding-right: 30px;
+      border-radius: 14px;
+      /deep/ .el-input__inner {
+        border-radius: 80px;
+        width: 200px;
+      }
+    }
     .total {
-      line-height: 68px;
+      width: 100px;
       font-size: 18px;
+      line-height: 40px;
     }
   }
 }
