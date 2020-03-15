@@ -17,7 +17,11 @@
           </div>
         </div>
       </div>
-      <div class="body"></div>
+      <div class="body">
+        <Tabs :tabs="tabs" :activeName="currentTab" :changeTabs="changeTabs" />
+        <OrderHistory v-if="currentTab === 'history'" />
+        <OrderCreate v-if="currentTab === 'writeTrade'" />
+      </div>
     </section>
   </MainLayout>
 </template>
@@ -25,10 +29,16 @@
 <script>
 import MainLayout from "@/router/layouts/MainLayout.vue";
 import PlainButton from "@/components/PlainButton.vue";
+import OrderCreate from "@/components/Order/OrderCreate";
+import OrderHistory from "@/components/Order/OrderHistory";
+import Tabs from "@/components/Tabs.vue";
 export default {
   components: {
     MainLayout,
-    PlainButton
+    PlainButton,
+    Tabs,
+    OrderCreate,
+    OrderHistory
   },
   data() {
     return {
@@ -43,7 +53,12 @@ export default {
         id: 38,
         lastDate: "2020-03-11T10:13:23.430Z"
       },
-      loading: false
+      loading: false,
+      currentTab: "history",
+      tabs: [
+        { value: "history", label: "거래내역" },
+        { value: "writeTrade", label: "거래작성" }
+      ]
     };
   },
   async created() {
@@ -52,11 +67,18 @@ export default {
     // this.user = res.data;
     this.loading = false;
   },
+
   computed: {
     formRegistreDate() {
       return this.moment(this.user.registreDate).format("YYYY년 M월 D일");
     }
   },
+  // watch: {
+  //   currentTab: function(value) {
+  //     console.log(value);
+  //   }
+  // },
+
   methods: {
     goToUserEdit() {
       const id = this.$route.params.id;
@@ -68,6 +90,9 @@ export default {
         phone: this.user.phone
       };
       this.$router.push({ path: `/users/edit/${id}`, query: { data: data } });
+    },
+    changeTabs(tabName) {
+      this.currentTab = tabName;
     }
   }
 };
@@ -80,6 +105,7 @@ export default {
   display: flex;
   justify-content: space-between;
   background-color: #f8f8f8;
+  border-bottom: 2px solid rgba(gray, 0.15);
   &__name-group {
     display: flex;
   }
@@ -110,5 +136,10 @@ export default {
   position: relative;
   top: 50px;
   margin-left: 30px;
+}
+.body {
+  padding: 0 160px;
+  position: relative;
+  bottom: 40px;
 }
 </style>

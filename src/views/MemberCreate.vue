@@ -111,7 +111,12 @@
         <el-button v-if="!edit" v-loading="isSaving" @click="registredUser"
           >등록</el-button
         >
-        <el-button v-if="edit" v-loading="isSaving" @click="deleteUser"
+        <el-button
+          type="danger"
+          v-if="edit"
+          plain
+          v-loading="isSaving"
+          @click="deleteUser"
           >삭제</el-button
         >
         <el-button v-if="edit" v-loading="isSaving" @click="updateUser"
@@ -316,7 +321,7 @@ export default {
     width: 70%;
   }
   /deep/ .el-button {
-    height: 30px;
+    height: 35px;
     line-height: 6px;
     width: 70px;
     margin-right: 20px;
