@@ -2,13 +2,15 @@
   <MainLayout :padded="false">
     <section class="create-user">
       <div class="header">
-        <h3>고객 추가</h3>
-        <el-tooltip
-          class="item"
-          effect="light"
-          content="고객 추가를 위해 필수항목을 적고 등록 버튼을 누르세요"
-          placement="top"
-        >
+        <h3>{{ edit ? "고객 수정" : "고객 추가" }}</h3>
+        <el-tooltip class="item" effect="light" placement="top">
+          <p v-if="edit" slot="content">
+            고객 추가를 위해 필수항목을 적고 수정 버튼을 누르세요<br />
+            고객 삭제시 삭제 버튼을 누르세요
+          </p>
+          <p v-else slot="content">
+            고객 추가를 위해 필수항목을 적고 등록 버튼을 누르세요
+          </p>
           <i
             class="el-icon-question"
             :style="{ color: '#64AEFF', fontSize: '18px' }"
@@ -284,6 +286,9 @@ export default {
 <style lang="scss" scope>
 .header {
   display: flex;
+  p {
+    width: 10px;
+  }
   i {
     margin: 22px 0 0 10px;
   }

@@ -24,7 +24,10 @@
       </div>
       <div class="body">
         <Tabs :tabs="tabs" :activeName="currentTab" :changeTabs="changeTabs" />
-        <OrderHistory v-if="currentTab === 'history'" />
+        <OrderHistory
+          v-if="currentTab === 'history'"
+          :changeTabs="changeTabs"
+        />
         <OrderCreate v-if="currentTab === 'writeTrade'" />
       </div>
     </section>
@@ -160,5 +163,6 @@ export default {
   padding: 0 160px;
   position: relative;
   bottom: 40px;
+  height: 70vh;
 }
 </style>

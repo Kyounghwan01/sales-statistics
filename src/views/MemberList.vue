@@ -8,7 +8,9 @@
             v-model="keyword"
             placeholder="이름 또는 전화번호 입력하세요"
           ></el-input>
-          <div class="total">총 : {{ userList.length }} 명</div>
+          <div class="total">
+            총 : <b>{{ userList.length }}</b> 명
+          </div>
         </div>
       </div>
       <MembersList :users="userList" v-loading="loading" />
@@ -90,8 +92,10 @@ export default {
     }
     .total {
       width: 100px;
-      font-size: 18px;
       line-height: 40px;
+      font-family: NotoSansKR;
+      font-size: 18px;
+      color: #8a8a8a;
     }
   }
 }
