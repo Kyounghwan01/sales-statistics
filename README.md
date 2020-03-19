@@ -82,7 +82,7 @@ body: {
 1. 전체 주문 조회
 ```
 GET: https://9wnw9kggv9.execute-api.ap-northeast-2.amazonaws.com/2020-03-07/order
-
+ㅈ
 페이지네이션 작업 필요
 ```
 2. 고객별 주문 조회
@@ -99,7 +99,7 @@ GET: https://9wnw9kggv9.execute-api.ap-northeast-2.amazonaws.com/2020-03-07/orde
 
 ```
 
-4. 고객벽 기간별 주문 조회
+4. 고객별 기간별 주문 조회
 ```
 GET: https://9wnw9kggv9.execute-api.ap-northeast-2.amazonaws.com/2020-03-07/order/38?start_date=20200123&end_date=20200320
 ```
