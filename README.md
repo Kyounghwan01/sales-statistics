@@ -148,3 +148,8 @@ body:
 ```
 DELETE: https://9wnw9kggv9.execute-api.ap-northeast-2.amazonaws.com/2020-03-07/order/5e7207ef4bdb80000715689d
 ```
+
+
+
+진행사항
+- orderCreate - validate 작성할것

@@ -64,7 +64,6 @@ export default {
   display: flex;
   border: none;
   overflow-x: auto;
-  overflow-y: hidden;
 
   &__item {
     position: relative;

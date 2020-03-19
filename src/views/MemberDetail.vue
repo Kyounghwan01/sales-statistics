@@ -123,7 +123,7 @@ export default {
 <style lang="scss" scoped>
 .header {
   padding: 0 160px;
-  height: 21vh;
+  height: 20vh;
   display: flex;
   justify-content: space-between;
   background-color: #f8f8f8;
@@ -163,6 +163,6 @@ export default {
   padding: 0 160px;
   position: relative;
   bottom: 40px;
-  height: 70vh;
+  height: 69vh;
 }
 </style>

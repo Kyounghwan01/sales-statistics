@@ -9,7 +9,7 @@ import api from "./api";
 import "element-ui/lib/theme-chalk/index.css";
 import locale from "element-ui/lib/locale/lang/ko";
 import firebase from "firebase/app";
-import filters from '@/filters';
+import filters from "@/filters";
 
 moment.locale("ko");
 Vue.use(Element, { locale });

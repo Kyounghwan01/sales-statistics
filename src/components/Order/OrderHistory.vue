@@ -1,9 +1,7 @@
 <template>
   <section v-loading="orderLoading">
-    <div v-if="orderHistory && orderHistory.length">
-      오더히드토리
-      {{ orderHistory }}
-      <!--  -->
+    <div v-if="orders.length">
+      {{ orders }}
     </div>
     <div v-else class="no-data">
       <span>거래 내역이 없습니다</span>
@@ -15,29 +13,30 @@
 export default {
   data() {
     return {
-      orderLoading: false
+      orderLoading: false,
+      page: 0,
+      limit: 10
     };
   },
   async created() {
     this.orderLoading = true;
-    const res = await this.$store.dispatch("order/getOrders", {
+    const res = await this.$store.dispatch("order/getOrdersByUser", {
       id: Number(this.$route.params.id),
-      page: 0,
-      limit: 10
+      page: this.page,
+      limit: this.limit
     });
-    console.log(res);
-    // if (res.status === 200) {
-    //   this.orderLoading = false;
-    // } else {
-    //   //       this.$router.push(`/users/${row.id}`);
-
-    //   console.log("Asd");
-    //   this.orderLoading = false;
-    // }
+    if (res === "success") {
+      this.orderLoading = false;
+    } else {
+      this.orderLoading = false;
+      this.$router.push("/users");
+      this.$message("회원 정보 로딩 실패 다시 접속하세요");
+    }
   },
+
   computed: {
-    orderHistory() {
-      return this.$store.getters["users/currentUser"].order_history;
+    orders() {
+      return this.$store.getters["order/orders"];
     }
   }
 };

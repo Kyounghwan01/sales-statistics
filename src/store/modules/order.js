@@ -57,7 +57,7 @@ export const mutations = {
 };
 
 export const actions = {
-  async getOrders({ commit }, params) {
+  async getOrdersByUser({ commit }, params) {
     try {
       commit("SET_ORDER_LOADING", true);
       const res = await api.order.getOrderByUser(
@@ -65,12 +65,12 @@ export const actions = {
         params.page,
         params.limit
       );
-      commit("SET_ORDERS", res.order);
-      return res;
-      //order가 없을때 500에러는 아니고, 그냥 빈배열 날려준다.
+      commit("SET_ORDERS", res.data.order);
+      return "success";
     } catch (error) {
       commit("SET_ORDERS", []);
       commit("SET_ORDER_LOADING", false);
+      return "fail";
     } finally {
       commit("SET_ORDER_LOADING", false);
     }

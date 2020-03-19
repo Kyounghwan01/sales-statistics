@@ -19,7 +19,7 @@
         </div>
         <div class="input-group">
           <el-date-picker
-            v-model="data.date"
+            v-model="$v.data.date.$model"
             type="date"
             placeholder="거래일을 입력해주세요"
             format="yyyy년 M월 d일"
@@ -75,11 +75,7 @@
           <label>단가 :</label>
         </div>
         <div class="input-group">
-          <PriceInput
-            v-model="data.unitPrice"
-            unit="원"
-            @input="handleInputAmount('count')"
-          />
+          <PriceInput v-model="data.unitPrice" unit="원" />
         </div>
       </div>
 
@@ -89,11 +85,7 @@
           <label>갯수 :</label>
         </div>
         <div class="input-group">
-          <PriceInput
-            v-model="data.count"
-            unit="개"
-            @input="handleInputAmount('unit-price')"
-          />
+          <PriceInput v-model="data.count" unit="개" />
         </div>
       </div>
 
@@ -103,7 +95,7 @@
           <label>총액 :</label>
         </div>
         <div class="input-group">
-          <el-input v-model="test" disabled>
+          <el-input v-model="totalPrice" disabled>
             <span slot="suffix">원</span>
           </el-input>
         </div>
@@ -115,17 +107,13 @@
           <label>위수금 :</label>
         </div>
         <div class="input-group">
-          <PriceInput
-            v-model="data.outstanding"
-            unit="원"
-            @input="handleInputAmount('count')"
-          />
+          <PriceInput v-model="data.outstanding" unit="원" />
         </div>
         <span>없으면 0 원</span>
       </div>
     </div>
     <BottomActionBar>
-      <el-button>저장</el-button>
+      <el-button v-loading="isSaving" @click="saveOrder">저장</el-button>
       <!-- <el-button v-if="!edit" v-loading="isSaving" @click="registredUser"
           >등록</el-button
         > -->
@@ -136,42 +124,81 @@
 <script>
 import PriceInput from "@/components/PriceInput";
 import BottomActionBar from "@/components/BottomActionBar";
+import { validationMixin } from "vuelidate";
+import { required } from "vuelidate/lib/validators";
+
+const DEFAULT_DATA = {
+  type: true,
+  date: null,
+  price: 0,
+  memo: null,
+  goods: null,
+  unitPrice: 0,
+  count: 0,
+  outstanding: 0
+};
 
 export default {
-  /*
-  type: true: 매입, false: 매출
-  date: '2020-03-02'
-  price: 총가격 100
-  memo: string
-  goods: 상품명 :string
-  unitPrice: 개별 가격 10
-  count: 카운트 10
-  outstanding: 미수금. 있다면 숫자(미수금 값) 없다면 -1;
-  */
   components: {
     PriceInput,
     BottomActionBar
   },
   data() {
     return {
+      isSaving: false,
       data: {
         type: true,
-        salesDate: null,
-        unitPrice: null,
-        count: null
+        date: null,
+        price: 0,
+        memo: null,
+        goods: null,
+        unitPrice: 0,
+        count: 0,
+        outstanding: 0
       }
     };
   },
 
+  mixins: [validationMixin],
+  validations: {
+    data: {
+      type: { required },
+      date: { required },
+      goods: { required },
+      unitPrice: { required },
+      count: { required },
+      outstanding: { required }
+    }
+  },
+
   computed: {
-    test() {
+    totalPrice() {
       return this.$filters.comma(this.data.unitPrice * this.data.count);
     }
   },
 
   methods: {
     handleInputAmount(key) {
-      console.log(key, this.data);
+      console.log(key);
+    },
+
+    async saveOrder() {
+      this.isSaving = true;
+      const newDate = Number(this.data.date.split("-").join(""));
+
+      const res = await this.$api.order.createOrder(
+        Number(this.$route.params.id),
+        {
+          ...this.data,
+          date: newDate,
+          price: this.data.count * this.data.unitPrice
+        }
+      );
+      if (res.status === 200) {
+        this.isSaving = false;
+        this.$message("주문 정보 추가 환료");
+        this.data = DEFAULT_DATA;
+      }
     }
   }
 };
@@ -184,12 +211,10 @@ export default {
   display: flex;
   .sales {
     width: 49%;
-    /* background-color: rgba(blue, 0.2); */
     margin: 10px;
   }
   .purchase {
     width: 49%;
-    /* background-color: rgba(red, 0.2); */
     margin: 10px;
   }
 }
