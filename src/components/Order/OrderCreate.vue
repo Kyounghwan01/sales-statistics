@@ -19,6 +19,9 @@
         </div>
         <div class="input-group">
           <el-date-picker
+            :class="
+              $v.data.date.$dirty && !$v.data.date.required ? 'error' : null
+            "
             v-model="$v.data.date.$model"
             type="date"
             placeholder="거래일을 입력해주세요"
@@ -34,18 +37,19 @@
           <label>03 </label>
           <label>상품명 : </label>
         </div>
-        <div class="input-group">
+
+        <div
+          :class="[
+            'input-group',
+            $v.data.goods.$dirty && !$v.data.goods.required ? 'error' : null
+          ]"
+        >
           <el-input
+            v-model="$v.data.goods.$model"
             class="goods-input"
-            v-model="data.goods"
             placeholder="상품명을 입력해주세요"
           ></el-input>
         </div>
-        <!-- <div class="invalid-feedback">
-          <span class="required" v-if="!$v.data.name.required"
-            >회사명은 필수값 입니다</span
-          >
-        </div> -->
       </div>
 
       <div class="registered-at">
@@ -60,11 +64,6 @@
             placeholder="메모를 입력해주세요"
           ></el-input>
         </div>
-        <!-- <div class="invalid-feedback">
-          <span class="required" v-if="!$v.data.name.required"
-            >회사명은 필수값 입니다</span
-          >
-        </div> -->
       </div>
     </div>
 
@@ -75,7 +74,15 @@
           <label>단가 :</label>
         </div>
         <div class="input-group">
-          <PriceInput v-model="data.unitPrice" unit="원" />
+          <PriceInput
+            :class="
+              $v.data.unitPrice.$dirty && !$v.data.unitPrice.required
+                ? 'error'
+                : null
+            "
+            v-model="$v.data.unitPrice.$model"
+            unit="원"
+          />
         </div>
       </div>
 
@@ -85,7 +92,13 @@
           <label>갯수 :</label>
         </div>
         <div class="input-group">
-          <PriceInput v-model="data.count" unit="개" />
+          <PriceInput
+            :class="
+              $v.data.count.$dirty && !$v.data.count.required ? 'error' : null
+            "
+            v-model="$v.data.count.$model"
+            unit="개"
+          />
         </div>
       </div>
 
@@ -130,11 +143,11 @@ import { required } from "vuelidate/lib/validators";
 const DEFAULT_DATA = {
   type: true,
   date: null,
-  price: 0,
+  price: null,
   memo: null,
   goods: null,
-  unitPrice: 0,
-  count: 0,
+  unitPrice: null,
+  count: null,
   outstanding: 0
 };
 
@@ -149,11 +162,11 @@ export default {
       data: {
         type: true,
         date: null,
-        price: 0,
+        price: null,
         memo: null,
         goods: null,
-        unitPrice: 0,
-        count: 0,
+        unitPrice: null,
+        count: null,
         outstanding: 0
       }
     };
@@ -182,7 +195,38 @@ export default {
       console.log(key);
     },
 
+    valid() {
+      ["date", "goods", "unitPrice", "count"].forEach(key => {
+        if (!this.$v.data[key].required) {
+          this.$v.data[key].$touch();
+        }
+      });
+
+      const title = "주문 추가 실패";
+      let message = "주문 추가 실패하였습니다. 다시 시도해주세요";
+      if (!this.data.date) {
+        message = "주문일을 입력해 주세요";
+        this.$alert(message, title, { showClose: false });
+        return false;
+      } else if (!this.data.goods) {
+        message = "상품명 입력해 주세요";
+        this.$alert(message, title, { showClose: false });
+        return false;
+      } else if (!this.data.unitPrice) {
+        message = "단가를 입력해 주세요";
+        this.$alert(message, title, { showClose: false });
+        return false;
+      } else if (!this.data.count) {
+        message = "갯수를 입력해 주세요";
+        this.$alert(message, title, { showClose: false });
+        return false;
+      }
+      return true;
+    },
+
     async saveOrder() {
+      if (!this.valid()) return;
+
       this.isSaving = true;
       const newDate = Number(this.data.date.split("-").join(""));
 
@@ -196,8 +240,9 @@ export default {
       );
       if (res.status === 200) {
         this.isSaving = false;
-        this.$message("주문 정보 추가 환료");
+        this.$message("주문 정보 추가 완료");
         this.data = DEFAULT_DATA;
+        this.$v.$reset();
       }
     }
   }
@@ -263,6 +308,13 @@ export default {
   /deep/ .el-input__inner {
     width: 220px;
     text-align: left;
+  }
+}
+.error {
+  border: 1px solid red;
+  border-radius: 4px;
+  /deep/ .el-input__inner {
+    border: none;
   }
 }
 </style>

@@ -1,19 +1,17 @@
 <template>
-  <div>
-    <el-input
-      v-bind="$attrs"
-      type="text"
-      @keypress.native="validateKey"
-      :value="formattedValue"
-      @input="
-        value => {
-          handleInput(value);
-        }
-      "
-    >
-      <span slot="suffix">{{ unit }}</span>
-    </el-input>
-  </div>
+  <el-input
+    v-bind="$attrs"
+    type="text"
+    @keypress.native="validateKey"
+    :value="formattedValue"
+    @input="
+      value => {
+        handleInput(value);
+      }
+    "
+  >
+    <span slot="suffix">{{ unit }}</span>
+  </el-input>
 </template>
 
 <script>

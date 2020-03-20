@@ -112,6 +112,7 @@ export default {
       }
     }
   },
+
   created() {
     this.check();
   },
@@ -124,6 +125,7 @@ export default {
         }
       });
     },
+
     async login() {
       ["loginId", "loginPassword"].forEach(key => {
         if (!this.$v.data[key].required || !this.$v.data[key].email) {
