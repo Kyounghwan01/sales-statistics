@@ -187,27 +187,29 @@ export default {
     },
 
     valid() {
-      const title = "회원 추가 실패";
-      let message = "회원 추가 실패하였습니다. 다시 시도해주세요";
-      if (!this.data.name) {
-        message = "회사명을 입력해 주세요";
-        this.$alert(message, title, { showClose: false });
-        return false;
-      } else if (!this.data.phone) {
-        message = "휴대폰 번호를 입력해 주세요";
-        this.$alert(message, title, { showClose: false });
-        return false;
-      } else if (!this.data.address) {
-        message = "주소를 입력해 주세요";
-        this.$alert(message, title, { showClose: false });
-        return false;
-      } else if (!this.data.registreDate) {
-        message = "등록일을 선택해주세요";
-        this.$alert(message, title, { showClose: false });
+      const checkType = [
+        { value: "name", text: "회사명을" },
+        { value: "phone", text: "휴대폰 번호를" },
+        { value: "address", text: "주소를" },
+        { value: "registreDate", text: "등록일을" }
+      ];
+
+      const message = this.$utils.validate.checkAlertMessage(
+        this.data,
+        checkType
+      );
+
+      if (message) {
+        this.alertMessage(message, "회원 추가 실패");
         return false;
       }
 
       return true;
+    },
+
+    alertMessage(message, title) {
+      this.isSaving = false;
+      this.$alert(message, title, { showClose: false });
     },
 
     async registredUser() {
@@ -217,21 +219,16 @@ export default {
         ...this.data,
         password: this.data.phone
       });
-      let title = "회원 추가 성공";
-      let message = "회원 추가 성공하였습니다.";
 
       if (res.status === 200) {
-        this.isSaving = false;
-        this.$alert(message, title, { showClose: false }).then(() =>
-          this.$router.push("/users")
-        );
+        this.alertMessage("회원 추가 성공하였습니다.", "회원 추가 성공");
+        this.$router.push("/users");
       } else {
-        title = "회원 추가 실패";
-        message = "회원 추가 실패하였습니다. 다시 시도해주세요";
-        this.isSaving = false;
-        this.$alert(message, title, { showClose: false }).then(() =>
-          this.$router.push("/users")
+        this.alertMessage(
+          "회원 추가 실패하였습니다. 다시 시도해주세요",
+          "회원 추가 실패"
         );
+        this.$router.push("/users");
       }
     },
 
@@ -251,32 +248,21 @@ export default {
         this.$route.params.id
       );
       if (res.status === 200) {
-        this.isSaving = false;
-        this.$message("회원 수정 성공");
+        this.alertMessage("회원 수정을 성공하였습니다.", "회원 수정 성공");
         this.$router.push("/users");
       } else {
-        this.isSaving = false;
-        this.$alert("관리자에게 문의해주세요", "회원 수정 실패", {
-          showClose: false
-        });
+        this.alertMessage("관리자에게 문의해주세요", "회원 수정 실패");
       }
     },
 
     async deleteUser() {
       this.isSaving = true;
       const res = await this.$api.user.deleteUser(this.$route.params.id);
-      let title = "회원 삭제 성공";
-      let message = "회원 삭제 성공하였습니다.";
       if (res.status === 200) {
-        this.isSaving = false;
-        this.$alert(message, title, { showClose: false }).then(() =>
-          this.$router.push("/users")
-        );
+        this.alertMessage("회원 삭제 성공하였습니다.", "회원 삭제 성공");
+        this.$router.push("/users");
       } else {
-        title = "회원 삭제 실패";
-        message = "관리자에게 문의해주세요";
-        this.isSaving = false;
-        this.$alert(message, title, { showClose: false });
+        this.alertMessage("관리자에게 문의해주세요", "회원 삭제 실패");
       }
     }
   }

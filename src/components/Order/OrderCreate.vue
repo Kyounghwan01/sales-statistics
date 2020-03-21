@@ -196,31 +196,29 @@ export default {
     },
 
     valid() {
-      ["date", "goods", "unitPrice", "count"].forEach(key => {
-        if (!this.$v.data[key].required) {
-          this.$v.data[key].$touch();
+      const checkType = [
+        { value: "date", text: "거래일을" },
+        { value: "goods", text: "상품명을" },
+        { value: "unitPrice", text: "단가를" },
+        { value: "count", text: "갯수를" }
+      ];
+
+      checkType.forEach(key => {
+        if (!this.$v.data[key.value].required) {
+          this.$v.data[key.value].$touch();
         }
       });
 
-      const title = "주문 추가 실패";
-      let message = "주문 추가 실패하였습니다. 다시 시도해주세요";
-      if (!this.data.date) {
-        message = "주문일을 입력해 주세요";
-        this.$alert(message, title, { showClose: false });
-        return false;
-      } else if (!this.data.goods) {
-        message = "상품명 입력해 주세요";
-        this.$alert(message, title, { showClose: false });
-        return false;
-      } else if (!this.data.unitPrice) {
-        message = "단가를 입력해 주세요";
-        this.$alert(message, title, { showClose: false });
-        return false;
-      } else if (!this.data.count) {
-        message = "갯수를 입력해 주세요";
-        this.$alert(message, title, { showClose: false });
+      const message = this.$utils.validate.checkAlertMessage(
+        this.data,
+        checkType
+      );
+
+      if (message) {
+        this.$alert(message, "주문 추가 실패", { showClose: false });
         return false;
       }
+
       return true;
     },
 

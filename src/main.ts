@@ -6,6 +6,7 @@ import Element from "element-ui";
 import Vuelidate from "vuelidate";
 import moment from "moment";
 import api from "./api";
+import utils from "./utils";
 import "element-ui/lib/theme-chalk/index.css";
 import locale from "element-ui/lib/locale/lang/ko";
 import firebase from "firebase/app";
@@ -29,6 +30,7 @@ firebase.initializeApp(firebaseConfig);
 
 Vue.config.productionTip = false;
 Vue.prototype.$api = api;
+Vue.prototype.$utils = utils;
 Vue.prototype.moment = moment;
 Vue.prototype.$filters = filters; // to use in script tag
 

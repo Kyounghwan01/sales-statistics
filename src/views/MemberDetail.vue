@@ -105,11 +105,11 @@ export default {
     goToUserEdit() {
       const id = this.$route.params.id;
       const data = {
-        name: this.user.name,
-        content: this.user.content,
-        address: this.user.address,
-        registreDate: this.user.registreDate,
-        phone: this.user.phone
+        name: this.currentUserData.name,
+        content: this.currentUserData.content,
+        address: this.currentUserData.address,
+        registreDate: this.currentUserData.registreDate,
+        phone: this.currentUserData.phone
       };
       this.$router.push({ path: `/users/edit/${id}`, query: { data: data } });
     },
