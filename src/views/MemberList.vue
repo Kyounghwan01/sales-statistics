@@ -30,9 +30,7 @@ export default {
     MembersList,
     AddButton
   },
-  props: {
-    msg: String
-  },
+
   data() {
     return {
       userData: [

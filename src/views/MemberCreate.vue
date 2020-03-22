@@ -166,7 +166,7 @@ export default {
   created() {
     if (this.$route.params.id) {
       this.edit = true;
-      this.data = { ...this.$route.query.data };
+      this.data = this.$route.query;
     }
   },
 
@@ -180,6 +180,7 @@ export default {
         );
       }
     },
+
     validateKey(e) {
       const isNumber = !!e.key.replace(/\D/g, "");
       const isMaxLength = e.srcElement.value.replace(/-/g, "").length >= 11;
@@ -235,16 +236,9 @@ export default {
     async updateUser() {
       if (!this.valid()) return;
       this.isSaving = true;
-      const sendData = {
-        name: this.data.name,
-        content: this.data.content,
-        password: this.data.phone,
-        phone: this.data.phone,
-        address: this.data.address,
-        registreDate: this.data.registreDate
-      };
+
       const res = await this.$api.user.updateUser(
-        sendData,
+        this.data,
         this.$route.params.id
       );
       if (res.status === 200) {

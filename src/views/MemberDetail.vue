@@ -104,14 +104,11 @@ export default {
   methods: {
     goToUserEdit() {
       const id = this.$route.params.id;
-      const data = {
-        name: this.currentUserData.name,
-        content: this.currentUserData.content,
-        address: this.currentUserData.address,
-        registreDate: this.currentUserData.registreDate,
-        phone: this.currentUserData.phone
-      };
-      this.$router.push({ path: `/users/edit/${id}`, query: { data: data } });
+
+      this.$router.push({
+        path: `/users/edit/${id}`,
+        query: { ...this.currentUserData }
+      });
     },
     changeTabs(tabName) {
       this.currentTab = tabName;
