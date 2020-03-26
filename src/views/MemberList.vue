@@ -48,9 +48,6 @@ export default {
     await this.$store.dispatch("users/getUser");
   },
   computed: {
-    memberList() {
-      return this.$store.getters["members/member"];
-    },
     userList() {
       return this.$store.getters["users/user"];
     },

@@ -272,9 +272,12 @@ export default {
   i {
     margin: 22px 0 0 10px;
   }
+  i:hover {
+    cursor: help;
+  }
 }
 .create-user {
-  padding: 10px 160px;
+  padding: 10px 200px;
   overflow-y: auto;
   height: 85vh;
   h3 {

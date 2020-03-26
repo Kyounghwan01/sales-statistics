@@ -159,16 +159,7 @@ export default {
   data() {
     return {
       isSaving: false,
-      data: {
-        type: true,
-        date: null,
-        price: null,
-        memo: null,
-        goods: null,
-        unitPrice: null,
-        count: null,
-        outstanding: 0
-      }
+      data: { ...DEFAULT_DATA }
     };
   },
 
