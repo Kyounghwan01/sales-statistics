@@ -18,96 +18,49 @@
         </el-tooltip>
       </div>
 
-      <div class="name">
-        <div class="label-group">
-          <label>01 </label>
-          <label> 회사명</label>
-        </div>
-        <div class="input-group">
-          <el-input
-            v-model="$v.data.name.$model"
-            placeholder="회사명을 입력해주세요"
-          ></el-input>
-        </div>
-        <div class="invalid-feedback">
-          <span class="required" v-if="!$v.data.name.required"
-            >회사명은 필수값 입니다</span
-          >
-        </div>
-      </div>
+      <TextInput
+        label="회사명"
+        labelNumber="01"
+        v-model="$v.data.name.$model"
+        :require="$v.data.name.required"
+        placeholder="회사명을 입력해주세요"
+        requireMessage="회사명은 필수값 입니다"
+      />
 
-      <div class="mobile">
-        <div class="label-group">
-          <label>02 </label>
-          <label>휴대폰번호: </label>
-        </div>
-        <div class="input-group">
-          <el-input
-            placeholder="휴대폰 번호를 입력해주세요"
-            v-model="$v.data.phone.$model"
-            :value="formatContact(data.phone)"
-            @keypress.native="validateKey"
-          ></el-input>
-        </div>
-        <div class="invalid-feedback">
-          <span class="required" v-if="!$v.data.phone.$model"
-            >휴대폰 번호는 필수값 입니다</span
-          >
-        </div>
-      </div>
+      <PhoneInput
+        label="휴대폰번호"
+        labelNumber="02"
+        v-model="$v.data.phone.$model"
+        :require="$v.data.phone.required"
+        placeholder="휴대폰 번호를 입력해주세요"
+        requireMessage="휴대폰 번호는 필수값 입니다"
+      />
 
-      <div class="address">
-        <div class="label-group">
-          <label>03 </label>
-          <label> 주소 : </label>
-        </div>
-        <div class="input-group">
-          <el-input
-            v-model="$v.data.address.$model"
-            placeholder="주소를 입력해주세요"
-          ></el-input>
-        </div>
-        <div class="invalid-feedback">
-          <span class="required" v-if="!$v.data.address.required"
-            >주소는 필수값 입니다</span
-          >
-        </div>
-      </div>
+      <TextInput
+        label="주소"
+        labelNumber="03"
+        v-model="$v.data.address.$model"
+        :require="$v.data.address.required"
+        placeholder="주소를 입력해주세요"
+        requireMessage="주소는 필수값 입니다"
+      />
 
-      <div class="registered-at">
-        <div class="label-group">
-          <label>04 </label>
-          <label>등록일 : </label>
-        </div>
-        <div class="input-group">
-          <el-date-picker
-            v-model="$v.data.registreDate.$model"
-            type="date"
-            placeholder="등록일을 입력해주세요"
-            format="yyyy년 M월 d일"
-            value-format="yyyy-MM-dd"
-            :clearable="false"
-          ></el-date-picker>
-        </div>
-        <div class="invalid-feedback">
-          <span class="required" v-if="!$v.data.registreDate.required"
-            >주소는 필수값 입니다</span
-          >
-        </div>
-      </div>
+      <TextInput
+        label="등록일"
+        labelNumber="04"
+        v-model="$v.data.registreDate.$model"
+        :require="$v.data.registreDate.required"
+        placeholder="등록일을 입력해주세요"
+        requireMessage="등록일을 필수값 입니다"
+        type="date"
+      />
 
-      <div class="content">
-        <div class="label-group">
-          <label>05 </label>
-          <label> 비고 : </label>
-        </div>
-        <div class="input-group">
-          <el-input
-            v-model="data.content"
-            placeholder="비고를 입력해주세요. 필수 값은 아닙니다"
-          ></el-input>
-        </div>
-      </div>
+      <TextInput
+        label="비고"
+        labelNumber="05"
+        v-model="data.content"
+        placeholder="비고를 입력해주세요. 필수 값은 아닙니다"
+      />
 
       <BottomActionBar>
         <el-button v-if="!edit" v-loading="isSaving" @click="registredUser"
@@ -132,12 +85,17 @@
 <script>
 import MainLayout from "@/router/layouts/MainLayout";
 import BottomActionBar from "@/components/BottomActionBar";
+import TextInput from "@/components/TextInput";
+import PhoneInput from "@/components/PhoneInput";
 import { validationMixin } from "vuelidate";
 import { required } from "vuelidate/lib/validators";
+
 export default {
   components: {
     MainLayout,
-    BottomActionBar
+    BottomActionBar,
+    TextInput,
+    PhoneInput
   },
   data() {
     return {
@@ -286,24 +244,6 @@ export default {
     letter-spacing: normal;
     margin: 14px 0;
   }
-  .name,
-  .mobile,
-  .address,
-  .registered-at,
-  .content {
-    .label-group {
-      margin-bottom: 20px;
-      label {
-        font-weight: bold;
-        margin-right: 10px;
-      }
-    }
-    .input-group {
-      margin-left: 30px;
-    }
-    border-bottom: 1px solid #eee;
-    padding: 35px;
-  }
 
   /deep/ .el-input {
     width: 70%;
@@ -313,21 +253,6 @@ export default {
     line-height: 6px;
     width: 70px;
     margin-right: 20px;
-  }
-}
-.error {
-  border: 1px solid red;
-  border-radius: 4px;
-  /deep/ .el-input__inner {
-    border: none;
-  }
-}
-.invalid-feedback {
-  height: 15px;
-  .required {
-    color: red;
-    margin-left: 30px;
-    font-size: 13px;
   }
 }
 </style>
