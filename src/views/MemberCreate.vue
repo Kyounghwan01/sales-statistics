@@ -129,22 +129,6 @@ export default {
   },
 
   methods: {
-    formatContact(number) {
-      if (!number) return;
-      if (number.length > 10) {
-        this.data.phone = number.replace(
-          /(^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,
-          "$1-$2-$3"
-        );
-      }
-    },
-
-    validateKey(e) {
-      const isNumber = !!e.key.replace(/\D/g, "");
-      const isMaxLength = e.srcElement.value.replace(/-/g, "").length >= 11;
-      if (!isNumber || isMaxLength) e.preventDefault();
-    },
-
     valid() {
       const checkType = [
         { value: "name", text: "회사명을" },

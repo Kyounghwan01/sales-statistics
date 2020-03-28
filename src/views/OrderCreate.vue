@@ -9,7 +9,7 @@
             고객 삭제시 삭제 버튼을 누르세요
           </p>
           <p v-else slot="content">
-            매출/매입 추가를 위해 필수항목을 적고 등록 버튼을 누르세요
+            매출/매입 추가를 위해 필수항목을 적고 기입 버튼을 누르세요
           </p>
           <i
             class="el-icon-question"
@@ -34,14 +34,14 @@
           <label>02 </label>
           <label> 회사 선택</label>
         </div>
-        <div class="input-group select-user">
+        <div class="input-group select-user" @click="showMemberList">
           <el-input
             v-model="keyword"
             :disabled="search"
             placeholder="이름 또는 전화번호 입력하세요"
           ></el-input>
         </div>
-        <ul>
+        <ul v-if="showMeber">
           <li
             :class="['user-list', search ? 'selected' : null]"
             v-for="list in userList"
@@ -60,64 +60,87 @@
         </div> -->
       </div>
 
+      <TextInput
+        label="거래일"
+        labelNumber="03"
+        v-model="data.date"
+        placeholder="거래일을 입력해주세요"
+        requireMessage="거래일을 필수값 입니다"
+        type="date"
+      />
+
+      <TextInput
+        label="상품명"
+        labelNumber="05"
+        v-model="data.goods"
+        placeholder="상품명을 입력해주세요"
+        requireMessage="상품명은 필수값 입니다"
+      />
+
       <div class="registered-at">
         <div class="label-group">
-          <label>03 </label>
-          <label>거래일 </label>
+          <label>06 </label>
+          <label>단가</label>
         </div>
         <div class="input-group">
-          <el-date-picker
-            v-model="data.date"
-            type="date"
-            placeholder="거래일을 입력해주세요"
-            format="yyyy년 M월 d일"
-            value-format="yyyy-MM-dd"
-            :clearable="false"
-          ></el-date-picker>
+          <PriceInput v-model="data.unitPrice" unit="원" />
         </div>
       </div>
 
-      <div class="name">
+      <div class="registered-at">
         <div class="label-group">
-          <label>01 </label>
-          <label> 회사명</label>
+          <label>07 </label>
+          <label>갯수</label>
         </div>
         <div class="input-group">
-          <el-input
-            v-model="data.name"
-            placeholder="회사명을 입력해주세요"
-          ></el-input>
+          <PriceInput v-model="data.count" unit="개" />
         </div>
-        <!-- <div class="invalid-feedback">
-          <span class="required" v-if="!$v.data.name.required"
-            >회사명은 필수값 입니다</span
-          >
-        </div> -->
       </div>
 
-      <div class="name">
+      <div class="registered-at total-price">
         <div class="label-group">
-          <label>01 </label>
-          <label> 회사명</label>
+          <label>08 </label>
+          <label>총액</label>
         </div>
         <div class="input-group">
-          <el-input
-            v-model="data.name"
-            placeholder="회사명을 입력해주세요"
-          ></el-input>
+          <el-input v-model="totalPrice" disabled>
+            <span slot="suffix">원</span>
+          </el-input>
         </div>
-        <!-- <div class="invalid-feedback">
-          <span class="required" v-if="!$v.data.name.required"
-            >회사명은 필수값 입니다</span
-          >
-        </div> -->
       </div>
+
+      <div class="registered-at">
+        <div class="label-group">
+          <label>09 </label>
+          <label>위수금</label>
+        </div>
+        <div class="input-group">
+          <PriceInput v-model="data.outstanding" unit="원" />
+        </div>
+      </div>
+
+      <TextInput
+        label="메모"
+        labelNumber="10"
+        v-model="data.memo"
+        placeholder="메모를 입력해주세요"
+      />
+
+      <BottomActionBar>
+        <el-button @click="saveOrder">기입</el-button>
+        <!-- <el-button v-if="!edit" v-loading="isSaving" @click="registredUser"
+          >등록</el-button
+        > -->
+      </BottomActionBar>
     </section>
   </MainLayout>
 </template>
 
 <script>
 import MainLayout from "@/router/layouts/MainLayout";
+import TextInput from "@/components/TextInput";
+import PriceInput from "@/components/PriceInput";
+import BottomActionBar from "@/components/BottomActionBar";
 
 const DEFAULT_DATA = {
   type: true,
@@ -133,7 +156,10 @@ const DEFAULT_DATA = {
 
 export default {
   components: {
-    MainLayout
+    MainLayout,
+    TextInput,
+    PriceInput,
+    BottomActionBar
   },
   data() {
     return {
@@ -141,18 +167,24 @@ export default {
       edit: false,
       keyword: null,
       loading: false,
-      search: false
+      search: false,
+      showMeber: false
     };
   },
 
-  created() {
+  async created() {
     this.$store.dispatch("users/getUser");
   },
 
   computed: {
     userList() {
-      console.log(this.$store.getters["users/user"]);
+      if (!this.$store.getters["users/user"]) {
+        this.$store.dispatch("users/getUser");
+      }
       return this.$store.getters["users/user"];
+    },
+    totalPrice() {
+      return this.$filters.comma(this.data.unitPrice * this.data.count);
     }
   },
 
@@ -165,9 +197,24 @@ export default {
   methods: {
     choiceUser(id, name) {
       this.search = !this.search;
-      console.log(this.search);
-      console.log(id, name);
       this.keyword = name;
+      this.data.userId = id;
+    },
+    showMemberList() {
+      if (!this.search) this.showMeber = !this.showMeber;
+    },
+    async saveOrder() {
+      const newDate = Number(this.data.date.split("-").join(""));
+
+      const params = {
+        ...this.data,
+        date: newDate,
+        price: this.data.unitPrice * this.data.count
+      };
+
+      console.log(this.data, params);
+      const res = await this.$api.order.createOrder(this.data.userId, params);
+      console.log(res);
     }
   }
 };
@@ -216,4 +263,43 @@ export default {
     }
   }
 } */
+
+.registered-at,
+.name {
+  .label-group {
+    margin-bottom: 20px;
+    label {
+      font-weight: bold;
+      margin-right: 10px;
+    }
+  }
+  .input-group {
+    margin-left: 30px;
+  }
+  border-bottom: 1px solid #eee;
+  padding: 35px;
+}
+.invalid-feedback {
+  height: 15px;
+  .required {
+    color: red;
+    margin-left: 30px;
+    font-size: 13px;
+  }
+}
+.error {
+  border: 1px solid red;
+  border-radius: 4px;
+  /deep/ .el-input__inner {
+    border: none;
+  }
+}
+.total-price {
+  /deep/ .el-input__inner {
+    text-align: right;
+  }
+  /deep/ .el-input__suffix-inner {
+    line-height: 40px;
+  }
+}
 </style>
