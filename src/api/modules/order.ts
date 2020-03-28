@@ -23,7 +23,6 @@ export default {
   },
 
   createOrder: async (id: number, data: object) => {
-    console.log(id, data);
     return axios.post(`${BASE_URL}/${id}`, data);
   },
 

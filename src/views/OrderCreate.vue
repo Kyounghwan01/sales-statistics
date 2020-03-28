@@ -1,6 +1,6 @@
 <template>
   <MainLayout :padded="false">
-    <section class="create-user" v-loading="!userList">
+    <section class="create-user" v-loading="!userList && loading">
       <div class="header">
         <h3>매출/매입 추가</h3>
         <el-tooltip class="item" effect="light" placement="top">
@@ -32,7 +32,7 @@
       <div class="name">
         <div class="label-group">
           <label>02 </label>
-          <label> 회사 선택</label>
+          <label>회사 선택</label>
         </div>
         <div class="input-group select-user" @click="showMemberList">
           <el-input
@@ -40,6 +40,11 @@
             :disabled="search"
             placeholder="이름 또는 전화번호 입력하세요"
           ></el-input>
+          <div class="invalid-feedback">
+            <span class="required" v-if="!$v.data.userId.required"
+              >회사명은 필수값 입니다</span
+            >
+          </div>
         </div>
         <ul v-if="showMeber">
           <li
@@ -52,18 +57,13 @@
             <span class="selected-span" v-if="search">선택</span>
           </li>
         </ul>
-        <!-- {{ userList }} -->
-        <!-- <div class="invalid-feedback">
-          <span class="required" v-if="!$v.data.name.required"
-            >회사명은 필수값 입니다</span
-          >
-        </div> -->
       </div>
 
       <TextInput
         label="거래일"
         labelNumber="03"
-        v-model="data.date"
+        v-model="$v.data.date.$model"
+        :require="$v.data.date.required"
         placeholder="거래일을 입력해주세요"
         requireMessage="거래일을 필수값 입니다"
         type="date"
@@ -72,7 +72,8 @@
       <TextInput
         label="상품명"
         labelNumber="05"
-        v-model="data.goods"
+        v-model="$v.data.goods.$model"
+        :require="$v.data.goods.required"
         placeholder="상품명을 입력해주세요"
         requireMessage="상품명은 필수값 입니다"
       />
@@ -83,7 +84,12 @@
           <label>단가</label>
         </div>
         <div class="input-group">
-          <PriceInput v-model="data.unitPrice" unit="원" />
+          <PriceInput v-model="$v.data.unitPrice.$model" unit="원" />
+        </div>
+        <div class="invalid-feedback">
+          <span class="required" v-if="!$v.data.unitPrice.required"
+            >단가는 필수값 입니다</span
+          >
         </div>
       </div>
 
@@ -93,7 +99,12 @@
           <label>갯수</label>
         </div>
         <div class="input-group">
-          <PriceInput v-model="data.count" unit="개" />
+          <PriceInput v-model="$v.data.count.$model" unit="개" />
+        </div>
+        <div class="invalid-feedback">
+          <span class="required" v-if="!$v.data.count.required"
+            >갯수는 필수값 입니다</span
+          >
         </div>
       </div>
 
@@ -127,7 +138,7 @@
       />
 
       <BottomActionBar>
-        <el-button @click="saveOrder">기입</el-button>
+        <el-button v-loading="isSaving" @click="saveOrder">기입</el-button>
         <!-- <el-button v-if="!edit" v-loading="isSaving" @click="registredUser"
           >등록</el-button
         > -->
@@ -141,6 +152,8 @@ import MainLayout from "@/router/layouts/MainLayout";
 import TextInput from "@/components/TextInput";
 import PriceInput from "@/components/PriceInput";
 import BottomActionBar from "@/components/BottomActionBar";
+import { validationMixin } from "vuelidate";
+import { required } from "vuelidate/lib/validators";
 
 const DEFAULT_DATA = {
   type: true,
@@ -168,12 +181,26 @@ export default {
       keyword: null,
       loading: false,
       search: false,
-      showMeber: false
+      showMeber: false,
+      isSaving: false
     };
   },
 
+  mixins: [validationMixin],
+  validations: {
+    data: {
+      userId: { required },
+      date: { required },
+      goods: { required },
+      unitPrice: { required },
+      count: { required }
+    }
+  },
+
   async created() {
-    this.$store.dispatch("users/getUser");
+    this.loading = true;
+    await this.$store.dispatch("users/getUser");
+    this.loading = false;
   },
 
   computed: {
@@ -183,6 +210,7 @@ export default {
       }
       return this.$store.getters["users/user"];
     },
+
     totalPrice() {
       return this.$filters.comma(this.data.unitPrice * this.data.count);
     }
@@ -198,12 +226,47 @@ export default {
     choiceUser(id, name) {
       this.search = !this.search;
       this.keyword = name;
-      this.data.userId = id;
+      if (this.search) {
+        this.data.userId = id;
+      } else {
+        this.data.userId = null;
+      }
     },
+
     showMemberList() {
       if (!this.search) this.showMeber = !this.showMeber;
     },
+
+    valid() {
+      const checkType = [
+        { value: "userId", text: "회사를" },
+        { value: "date", text: "거래일을" },
+        { value: "goods", text: "상품명을" },
+        { value: "unitPrice", text: "단가를" },
+        { value: "count", text: "갯수를" }
+      ];
+
+      const message = this.$utils.validate.checkAlertMessage(
+        this.data,
+        checkType
+      );
+
+      if (message) {
+        this.alertMessage(message, "매출/매입 추가 실패");
+        return false;
+      }
+
+      return true;
+    },
+
+    alertMessage(message, title) {
+      this.isSaving = false;
+      this.$alert(message, title, { showClose: false });
+    },
+
     async saveOrder() {
+      if (!this.valid()) return;
+      this.isSaving = true;
       const newDate = Number(this.data.date.split("-").join(""));
 
       const params = {
@@ -212,9 +275,18 @@ export default {
         price: this.data.unitPrice * this.data.count
       };
 
-      console.log(this.data, params);
       const res = await this.$api.order.createOrder(this.data.userId, params);
-      console.log(res);
+      if (res.status === 200) {
+        this.isSaving = false;
+        this.$message("주문 정보 추가 완료");
+        this.data = DEFAULT_DATA;
+        this.keyword = null;
+        this.search = false;
+        // this.$v.$reset();
+      } else {
+        this.isSaving = false;
+        this.$message("주문 정보 추가 실패. 관리자에게 문의하세요");
+      }
     }
   }
 };
@@ -222,9 +294,17 @@ export default {
 
 <style lang="scss" scoped>
 .select-user {
+  display: flex;
+  width: 400px;
+  /deep/ .el-input {
+    width: 200px;
+  }
   /deep/ .el-input__inner {
     border-radius: 80px;
     width: 200px;
+  }
+  .required {
+    line-height: 40px;
   }
 }
 

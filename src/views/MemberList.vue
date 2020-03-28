@@ -44,17 +44,24 @@ export default {
       keyword: null
     };
   },
+
   async created() {
     await this.$store.dispatch("users/getUser");
   },
+
   computed: {
     userList() {
+      if (!this.$store.getters["users/user"]) {
+        this.$store.dispatch("users/getUser");
+      }
       return this.$store.getters["users/user"];
     },
+
     loading() {
       return this.$store.getters["users/userLoading"];
     }
   },
+
   watch: {
     keyword: function() {
       this.$store.dispatch("users/filterUser", this.keyword);
