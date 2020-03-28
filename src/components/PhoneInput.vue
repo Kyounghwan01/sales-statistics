@@ -72,19 +72,13 @@ export default {
   border-bottom: 1px solid #eee;
   padding: 35px;
 }
+
 .invalid-feedback {
   height: 15px;
   .required {
     color: red;
     margin-left: 30px;
     font-size: 13px;
-  }
-}
-.error {
-  border: 1px solid red;
-  border-radius: 4px;
-  /deep/ .el-input__inner {
-    border: none;
   }
 }
 </style>

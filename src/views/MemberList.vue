@@ -87,7 +87,7 @@ export default {
       width: 300px;
       padding-right: 30px;
       border-radius: 14px;
-      /deep/ .el-input__inner {
+      ::v-deep .el-input__inner {
         border-radius: 80px;
         width: 200px;
       }

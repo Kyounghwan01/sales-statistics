@@ -229,10 +229,10 @@ export default {
     margin: 14px 0;
   }
 
-  /deep/ .el-input {
+  ::v-deep .el-input {
     width: 70%;
   }
-  /deep/ .el-button {
+  ::v-deep .el-button {
     height: 35px;
     line-height: 6px;
     width: 70px;

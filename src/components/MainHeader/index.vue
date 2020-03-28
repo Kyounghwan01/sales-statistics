@@ -58,7 +58,7 @@ export default {
   justify-content: space-between;
   padding: 0 12px;
 
-  /deep/ .el-menu {
+  ::v-deep .el-menu {
     border-bottom: none;
   }
 }

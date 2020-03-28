@@ -77,11 +77,4 @@ export default {
     font-size: 13px;
   }
 }
-.error {
-  border: 1px solid red;
-  border-radius: 4px;
-  /deep/ .el-input__inner {
-    border: none;
-  }
-}
 </style>

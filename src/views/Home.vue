@@ -178,7 +178,7 @@ export default {
 .login-button,
 .register {
   padding: 20px;
-  /deep/ .el-button {
+  ::v-deep .el-button {
     width: 460px;
     height: 50px;
     color: white;
@@ -186,7 +186,7 @@ export default {
     font-size: 15px;
     background-color: rgba(dodgerblue, 0.8);
   }
-  /deep/ .el-button:hover {
+  ::v-deep .el-button:hover {
     background-color: rgba(dodgerblue, 1);
   }
 }
@@ -204,14 +204,14 @@ export default {
     }
   }
   padding: 20px;
-  /deep/ .el-input {
+  ::v-deep .el-input {
     width: 460px;
   }
 }
 .error {
   border: 1px solid red;
   border-radius: 4px;
-  /deep/ .el-input__inner {
+  ::v-deep .el-input__inner {
     border: none;
   }
 }

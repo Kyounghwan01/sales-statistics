@@ -2,7 +2,7 @@
   <div class="test">
     <el-table
       :data="users"
-      empty-text="회원이 없습니다"
+      empty-text="회원이 없습니다."
       row-class-name="members-list__row"
       @cell-click="handleCellClick"
       fit
@@ -246,7 +246,7 @@ export default {
 }
 
 .el-table {
-  /deep/ .members-list__row {
+  ::v-deep .members-list__row {
     cursor: pointer;
   }
 } */

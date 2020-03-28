@@ -151,5 +151,12 @@ DELETE: https://9wnw9kggv9.execute-api.ap-northeast-2.amazonaws.com/2020-03-07/o
 
 
 
-진행사항
-- orderCreate - validate 작성할것
+TODO
+- ~~기입 - orderCreate - validate 작성할것 ~~
+- 현황창 디자인 & ui 구성
+- 로그인, 회원가입 페이지 공용 컴포넌트로 재구성
+- 현황창에서 주문 선택후 - 주문 수정, 주문 삭제 - `fill/주문id`
+- 회원창에서 - 주문 현황 보는 ui
+- 회원창에서 주문 수정 - `users/고객id?orderId=주문id`에서 수정
+- 현황분석 디자인
+

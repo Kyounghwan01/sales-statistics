@@ -30,7 +30,7 @@ export default {
 
     navLinks() {
       const links = [
-        { path: "/list", name: "현황", disabled: true },
+        { path: "/orders", name: "현황", disabled: false },
         { path: "/fill", name: "기입", disabled: false },
         { path: "/users", name: "회원", disabled: false },
         { path: "/sales", name: "현황분석", disabled: true }

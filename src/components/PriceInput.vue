@@ -38,11 +38,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/deep/ .el-input__inner {
+::v-deep .el-input__inner {
   text-align: right;
 }
 
-/deep/ .el-input__suffix {
+::v-deep .el-input__suffix {
   display: flex;
   flex-direction: row;
   justify-content: center;

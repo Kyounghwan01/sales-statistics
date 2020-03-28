@@ -28,7 +28,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-/deep/ .el-tabs__item {
+::v-deep .el-tabs__item {
   color: grey;
 }
 </style>

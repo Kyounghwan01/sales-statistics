@@ -270,20 +270,20 @@ export default {
   border-bottom: 1px solid #eee;
   padding: 25px;
 }
-/deep/ .el-input {
+::v-deep .el-input {
   width: 80%;
 }
-/deep/ .el-button {
+::v-deep .el-button {
   height: 35px;
   line-height: 6px;
   width: 70px;
   margin-right: 20px;
 }
 
-/deep/ .el-input__inner {
+::v-deep .el-input__inner {
   text-align: right;
 }
-/deep/ .el-input__suffix {
+::v-deep .el-input__suffix {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -294,7 +294,7 @@ export default {
   line-height: 40px;
 }
 .goods-input {
-  /deep/ .el-input__inner {
+  ::v-deep .el-input__inner {
     width: 220px;
     text-align: left;
   }
@@ -302,7 +302,7 @@ export default {
 .error {
   border: 1px solid red;
   border-radius: 4px;
-  /deep/ .el-input__inner {
+  ::v-deep .el-input__inner {
     border: none;
   }
 }

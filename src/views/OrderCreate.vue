@@ -296,10 +296,10 @@ export default {
 .select-user {
   display: flex;
   width: 400px;
-  /deep/ .el-input {
+  ::v-deep .el-input {
     width: 200px;
   }
-  /deep/ .el-input__inner {
+  ::v-deep .el-input__inner {
     border-radius: 80px;
     width: 200px;
   }
@@ -370,15 +370,15 @@ export default {
 .error {
   border: 1px solid red;
   border-radius: 4px;
-  /deep/ .el-input__inner {
+  ::v-deep .el-input__inner {
     border: none;
   }
 }
 .total-price {
-  /deep/ .el-input__inner {
+  ::v-deep .el-input__inner {
     text-align: right;
   }
-  /deep/ .el-input__suffix-inner {
+  ::v-deep .el-input__suffix-inner {
     line-height: 40px;
   }
 }
