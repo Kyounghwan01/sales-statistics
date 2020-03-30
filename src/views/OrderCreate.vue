@@ -57,6 +57,9 @@
             <span class="selected-span" v-if="search">선택</span>
           </li>
         </ul>
+        <div class="no-have" v-if="showMeber && !userList.length">
+          <span>회사가 없습니다. 먼저 회사를 등록해주세요</span>
+        </div>
       </div>
 
       <TextInput
@@ -381,5 +384,11 @@ export default {
   ::v-deep .el-input__suffix-inner {
     line-height: 40px;
   }
+}
+.no-have {
+  color: #909399;
+  text-align: center;
+  font-size: 14px;
+  padding-top: 20px;
 }
 </style>

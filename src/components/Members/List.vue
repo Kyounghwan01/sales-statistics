@@ -1,8 +1,8 @@
 <template>
-  <div class="test">
+  <div class="container">
     <el-table
       :data="users"
-      empty-text="회원이 없습니다."
+      empty-text="회사가 없습니다."
       row-class-name="members-list__row"
       @cell-click="handleCellClick"
       fit
@@ -112,7 +112,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.test {
+.container {
   height: 600px;
   overflow-y: auto;
   text-align: center;

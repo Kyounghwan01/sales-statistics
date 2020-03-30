@@ -2,7 +2,7 @@
   <MainLayout :padded="false">
     <section class="user-list">
       <div class="user-list__header">
-        <h3>고객 관리</h3>
+        <h3>회사 관리</h3>
         <div class="search-box">
           <el-input
             v-model="keyword"
