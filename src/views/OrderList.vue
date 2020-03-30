@@ -9,13 +9,13 @@
       >
         <el-table-column
           fixed="left"
-          label="이름"
+          label="회사"
           min-width="80"
           align="center"
         >
           <template v-slot="scope">
             <div class="members-list__name">
-              {{ scope.row.userId }}
+              {{ scope.row.userName }}
             </div>
           </template>
         </el-table-column>

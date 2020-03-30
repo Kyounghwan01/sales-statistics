@@ -28,7 +28,10 @@
           v-if="currentTab === 'history'"
           :changeTabs="changeTabs"
         />
-        <OrderCreate v-if="currentTab === 'writeTrade'" />
+        <OrderCreate
+          v-if="currentTab === 'writeTrade'"
+          :userName="currentUserData.name"
+        />
       </div>
     </section>
   </MainLayout>

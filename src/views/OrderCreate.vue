@@ -167,7 +167,8 @@ const DEFAULT_DATA = {
   unitPrice: null,
   count: null,
   outstanding: 0,
-  userId: null
+  userId: null,
+  userName: null
 };
 
 export default {
@@ -231,6 +232,7 @@ export default {
       this.keyword = name;
       if (this.search) {
         this.data.userId = id;
+        this.data.userName = name;
       } else {
         this.data.userId = null;
       }

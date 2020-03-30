@@ -156,6 +156,9 @@ export default {
     PriceInput,
     BottomActionBar
   },
+  props: {
+    userName: { type: String, default: null }
+  },
   data() {
     return {
       isSaving: false,
@@ -224,6 +227,7 @@ export default {
         {
           ...this.data,
           date: newDate,
+          userName: this.userName,
           price: this.data.count * this.data.unitPrice
         }
       );
