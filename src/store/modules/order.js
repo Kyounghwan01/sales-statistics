@@ -1,9 +1,14 @@
 import api from "@/api";
+import filters from "@/filters";
+import store from "@/store";
 
 export const state = {
   orderLoading: false,
-
-  orders: []
+  orders: [],
+  orderList: [],
+  orderListCopy: [],
+  countInComeOutCome: { income: 0, outcome: 0 },
+  searchId: null
 
   // userTickets: [],
   // userTicketsLoading: false,
@@ -20,6 +25,8 @@ export const state = {
 export const getters = {
   orderLoading: state => state.orderLoading,
   orders: state => state.orders,
+  orderList: state => state.orderList,
+  countInComeOutCome: state => state.countInComeOutCome,
 
   user: state => state.user,
   copyUser: state => state.copyUser,
@@ -36,19 +43,19 @@ export const mutations = {
     state.orders = orders;
   },
 
+  SET_ORDERLISTS(state, list) {
+    state.orderList = list;
+    state.orderListCopy = list;
+  },
+
+  SET_COUNT(state, count) {
+    state.countInComeOutCome.income = `${filters.comma(count.income)}원`;
+    state.countInComeOutCome.outcome = `${filters.comma(count.outcome)}원`;
+  },
+
   SET_USER(state, user) {
     state.user = user;
     state.copyUser = user;
-  },
-
-  FILTER_USER(state, keyword) {
-    state.user = state.copyUser;
-    const newArray = state.user.filter(
-      userData =>
-        userData.name.toLowerCase().includes(keyword) ||
-        userData.phone.includes(keyword)
-    );
-    state.user = newArray;
   },
 
   SET_CURRENT_USER(state, currentUser) {
@@ -76,8 +83,58 @@ export const actions = {
     }
   },
 
-  async filterUser({ commit }, keyword) {
-    commit("FILTER_USER", keyword);
+  async getOrderList({ commit }) {
+    commit("SET_ORDER_LOADING", true);
+    try {
+      const res = await api.order.getOrderAll();
+      let income = 0;
+      let outcome = 0;
+      res.data.map(el => {
+        if (el.type) {
+          income += el.price;
+        } else {
+          outcome += el.price;
+        }
+      });
+
+      commit("SET_COUNT", { income, outcome });
+      commit("SET_ORDERS", res.data);
+
+      return "success";
+    } catch {
+      commit("SET_ORDERS", []);
+      commit("SET_ORDER_LOADING", false);
+      return "fail";
+    } finally {
+      commit("SET_ORDER_LOADING", false);
+    }
+  },
+
+  async filterOrder({ commit, dispatch }, keyword) {
+    let searchId = null;
+    let users = store.getters["users/user"];
+
+    if (!users.length) {
+      const res = await api.user.getUser();
+      users = await res.data;
+    }
+
+    users.map(el => {
+      if (el.name === keyword) {
+        searchId = el.id;
+      }
+    });
+
+    console.log(users);
+
+    state.searchId = searchId;
+
+    console.log("ZXc");
+    if (state.searchId) {
+      dispatch("getOrdersByUser", { id: state.searchId, page: 0, limit: 5 });
+    } else {
+      commit("SET_ORDERS", []);
+    }
   },
 
   async getCurrentUser({ commit }, id) {
