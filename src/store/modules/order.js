@@ -115,8 +115,8 @@ export const actions = {
     let users = store.getters["users/user"];
 
     if (!users.length) {
-      const res = await api.user.getUser();
-      users = await res.data;
+      await store.dispatch("users/getUser");
+      users = store.getters["users/user"];
     }
 
     users.map(el => {
@@ -129,7 +129,6 @@ export const actions = {
 
     state.searchId = searchId;
 
-    console.log("ZXc");
     if (state.searchId) {
       dispatch("getOrdersByUser", { id: state.searchId, page: 0, limit: 5 });
     } else {
