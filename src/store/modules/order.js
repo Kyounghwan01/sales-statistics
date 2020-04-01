@@ -5,8 +5,7 @@ import store from "@/store";
 export const state = {
   orderLoading: false,
   orders: [],
-  orderList: [],
-  orderListCopy: [],
+  orderCopy: [],
   countInComeOutCome: { income: 0, outcome: 0 },
   searchId: null
 
@@ -25,7 +24,6 @@ export const state = {
 export const getters = {
   orderLoading: state => state.orderLoading,
   orders: state => state.orders,
-  orderList: state => state.orderList,
   countInComeOutCome: state => state.countInComeOutCome,
 
   user: state => state.user,
@@ -41,11 +39,11 @@ export const mutations = {
 
   SET_ORDERS(state, orders) {
     state.orders = orders;
+    state.orderCopy = orders;
   },
 
-  SET_ORDERLISTS(state, list) {
-    state.orderList = list;
-    state.orderListCopy = list;
+  SET_FILTER_ORDERS(state, orders) {
+    state.orders = orders;
   },
 
   SET_COUNT(state, count) {
@@ -72,7 +70,7 @@ export const actions = {
         params.page,
         params.limit
       );
-      commit("SET_ORDERS", res.data.order);
+      commit("SET_FILTER_ORDERS", res.data.order);
       return "success";
     } catch (error) {
       commit("SET_ORDERS", []);
@@ -110,7 +108,13 @@ export const actions = {
     }
   },
 
-  async filterOrder({ commit, dispatch }, keyword) {
+  async filterOrder({ commit, dispatch }, params) {
+    console.log(params.keyword);
+    if (!params.keyword) {
+      /* keyword 없으면 조건 초기화 */
+      return commit("SET_ORDERS", state.orderCopy);
+    }
+
     let searchId = null;
     let users = store.getters["users/user"];
 
@@ -120,19 +124,17 @@ export const actions = {
     }
 
     users.map(el => {
-      if (el.name === keyword) {
+      if (el.name === params.keyword) {
         searchId = el.id;
       }
     });
-
-    console.log(users);
 
     state.searchId = searchId;
 
     if (state.searchId) {
       dispatch("getOrdersByUser", { id: state.searchId, page: 0, limit: 5 });
     } else {
-      commit("SET_ORDERS", []);
+      commit("SET_FILTER_ORDERS", []);
     }
   },
 

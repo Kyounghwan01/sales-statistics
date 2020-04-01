@@ -28,7 +28,7 @@ export default {
   },
   methods: {
     handleChangeKeyword() {
-      this.$store.dispatch("order/filterOrder", this.keyword);
+      this.$store.dispatch("order/filterOrder", { keyword: this.keyword });
     }
   }
 };
