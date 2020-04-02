@@ -185,9 +185,9 @@ export default {
   },
 
   methods: {
-    handleInputAmount(key) {
-      console.log(key);
-    },
+    // handleInputAmount(key) {
+    //   console.log(key);
+    // },
 
     valid() {
       const checkType = [

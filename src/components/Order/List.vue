@@ -75,7 +75,6 @@ export default {
   },
   methods: {
     orderDate(date) {
-      console.log(this.orderList);
       return this.$filters.date(date);
     },
     comma(value) {

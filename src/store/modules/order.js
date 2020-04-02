@@ -84,10 +84,11 @@ export const actions = {
   async getOrderList({ commit }) {
     commit("SET_ORDER_LOADING", true);
     try {
-      const res = await api.order.getOrderAll();
+      const res = await api.order.getOrderAll(0, 100);
+
       let income = 0;
       let outcome = 0;
-      res.data.map(el => {
+      res.data.order.map(el => {
         if (el.type) {
           income += el.price;
         } else {
@@ -96,7 +97,7 @@ export const actions = {
       });
 
       commit("SET_COUNT", { income, outcome });
-      commit("SET_ORDERS", res.data);
+      commit("SET_ORDERS", res.data.order);
 
       return "success";
     } catch {
