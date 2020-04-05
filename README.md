@@ -86,7 +86,6 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ```
 GET: https://9wnw9kggv9.execute-api.ap-northeast-2.amazonaws.com/2020-03-07/order
-ㅈ
 페이지네이션 작업 필요
 ```
 
@@ -191,6 +190,52 @@ Order.countDocuments({ userId: proxy }).exec((count_error, count) => {
     headers: corsHeader
   });
 });
+```
+
+## 로그인 유저 api
+
+### GET
+1. 전체 로그인 유저 조회
+```
+GET: https://9wnw9kggv9.execute-api.ap-northeast-2.amazonaws.com/2020-03-07/user
+
+[
+    {
+        "_id": "5e88b344eb56c200073b1e82",
+        "name": "nk",
+        "email": "noh23@gmail.com",
+        "__v": 0
+    },
+    {
+        "_id": "5e88b6888f11570007ab5f21",
+        "name": "nk",
+        "email": "noh23@gmail.com",
+        "__v": 0
+    },
+]
+
+```
+2. 특정 로그인 유저 조회
+```
+GET: https://9wnw9kggv9.execute-api.ap-northeast-2.amazonaws.com/2020-03-07/user/유저 _id
+{
+    "_id": "5e88b344eb56c200073b1e82",
+    "name": "nk",
+    "email": "noh23@gmail.com",
+    "__v": 0
+}
+
+
+```
+3. 회원가입시 유저 정보 등록
+```
+https://9wnw9kggv9.execute-api.ap-northeast-2.amazonaws.com/2020-03-07/user
+
+body:
+{
+	"name":"ksh",
+	"email": "1s23noh23@gmail.com"
+}
 ```
 
 - api - 과거순

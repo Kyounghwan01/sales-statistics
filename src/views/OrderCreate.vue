@@ -220,9 +220,6 @@ export default {
     }
   },
 
-//세이브하면 픽이 없어야함
-
-
   watch: {
     keyword: function() {
       this.$store.dispatch("users/filterUser", this.keyword);
@@ -288,6 +285,7 @@ export default {
         this.isSaving = false;
         this.$message("주문 정보 추가 완료");
         this.data = DEFAULT_DATA;
+        this.search = !this.search;
         // this.$v.$reset();
       } else {
         this.isSaving = false;

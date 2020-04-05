@@ -84,7 +84,7 @@ export const actions = {
   async getOrderList({ commit }) {
     commit("SET_ORDER_LOADING", true);
     try {
-      const res = await api.order.getOrderAll(0, 100);
+      const res = await api.order.getOrderAll(0, 50);
 
       let income = 0;
       let outcome = 0;
