@@ -14,6 +14,7 @@
     >
       {{ link.name }}
     </el-menu-item>
+    {{ loginUser }}
     <span class="logout" @click="logout">로그아웃</span>
   </el-menu>
 </template>
@@ -26,6 +27,9 @@ export default {
   computed: {
     activeLink() {
       return `/${this.$route.path.split("/")[1]}`;
+    },
+    loginUser() {
+      return this.$store.getters["loginUser/loginUser"];
     },
 
     navLinks() {

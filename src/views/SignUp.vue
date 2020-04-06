@@ -74,6 +74,29 @@
           </div>
         </div>
 
+        <div class="id">
+          <div class="label-group">
+            <label>03 </label>
+            <label>사용자 이름</label>
+          </div>
+          <div class="input-group">
+            <el-input
+              :class="
+                $v.data.registredName.$dirty && !$v.data.registredName.required
+                  ? 'error'
+                  : null
+              "
+              v-model.trim="$v.data.registredName.$model"
+              placeholder="company"
+            ></el-input>
+            <div class="invalid-feedback">
+              <span class="required" v-if="!$v.data.registredName.required"
+                >사용자 이름은 필수값 입니다</span
+              >
+            </div>
+          </div>
+        </div>
+
         <div class="login-button">
           <el-button @click="signUp">회원가입</el-button>
         </div>
@@ -105,7 +128,8 @@ export default {
     return {
       data: {
         registredId: null,
-        registredPassword: null
+        registredPassword: null,
+        registredName: null
       }
     };
   },
@@ -117,14 +141,19 @@ export default {
         required,
         minLength: minLength(6),
         maxLength: maxLength(10)
-      }
+      },
+      registredName: { required }
     }
   },
   methods: {
     async signUp() {
       let isError = false;
-      ["registredId", "registredPassword"].forEach(key => {
-        if (!this.$v.data[key].required || !this.$v.data[key].email) {
+      ["registredId", "registredPassword", "registredName"].forEach(key => {
+        if (key === "registredId" && !this.$v.data[key].email) {
+          isError = true;
+          this.$v.data[key].$touch();
+        }
+        if (!this.$v.data[key].required) {
           isError = true;
           this.$v.data[key].$touch();
         }
@@ -142,10 +171,26 @@ export default {
             this.data.registredPassword
           );
         if (user) {
-          this.$alert("회원가입 성공하였습니다.", "회원가입 성공", {
-            showClose: false,
-            dangerouslyUseHTMLString: true
-          }).then(() => this.$router.push("/"));
+          const res = await this.$api.loginUser.createLoginUser({
+            id: user.user.uid,
+            name: this.data.registredName,
+            email: this.data.registredId
+          });
+          console.log(user, res);
+          if (res.status === 200) {
+            const { name, email } = res.data;
+            const resStore = await this.$store.dispatch("loginUser/setUser", {
+              id: user.user.uid,
+              name: name,
+              email: email
+            });
+            if (resStore === "success") {
+              this.$alert("회원가입 성공하였습니다.", "회원가입 성공", {
+                showClose: false,
+                dangerouslyUseHTMLString: true
+              }).then(() => this.$router.push("/"));
+            }
+          }
         }
       } catch (err) {
         this.$alert(err.message, "회원가입 실패", {

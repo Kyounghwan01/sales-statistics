@@ -32,12 +32,15 @@ Vue.config.productionTip = false;
 Vue.prototype.$api = api;
 Vue.prototype.$utils = utils;
 Vue.prototype.moment = moment;
-Vue.prototype.$filters = filters; // to use in script tag
+Vue.prototype.$filters = filters;
 
 let app: object;
 
-firebase.auth().onAuthStateChanged(user => {
-  console.log(user);
+firebase.auth().onAuthStateChanged(async user => {
+  if (user) {
+    const res = await api.loginUser.getLoginUser(user.uid);
+    store.dispatch("loginUser/setUser", res.data);
+  }
   if (!app) {
     app = new Vue({
       router,
