@@ -13,7 +13,11 @@
           </div>
         </div>
       </div>
-      <MembersList :users="userList" v-loading="loading" />
+      <MembersList
+        :users="userList"
+        v-loading="loading"
+        :companyUid="loginUser.id"
+      />
       <AddButton @click="$router.push('/users/create')" />
     </section>
   </MainLayout>
@@ -45,11 +49,17 @@ export default {
     };
   },
 
-  async created() {
-    await this.$store.dispatch("users/getUser");
+  created() {
+    if (this.loginUser) {
+      this.$store.dispatch("users/getUser", this.loginUser.id);
+    }
   },
 
   computed: {
+    loginUser() {
+      return this.$store.getters["loginUser/loginUser"];
+    },
+
     userList() {
       if (!this.$store.getters["users/user"]) {
         this.$store.dispatch("users/getUser");
@@ -65,6 +75,9 @@ export default {
   watch: {
     keyword: function() {
       this.$store.dispatch("users/filterUser", this.keyword);
+    },
+    async loginUser() {
+      await this.$store.dispatch("users/getUser", this.loginUser.id);
     }
   }
 };

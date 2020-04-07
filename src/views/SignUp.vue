@@ -176,7 +176,6 @@ export default {
             name: this.data.registredName,
             email: this.data.registredId
           });
-          console.log(user, res);
           if (res.status === 200) {
             const { name, email } = res.data;
             const resStore = await this.$store.dispatch("loginUser/setUser", {

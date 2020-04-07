@@ -73,12 +73,13 @@ export default {
   },
 
   async created() {
+    console.log(this.$route);
     this.loading = true;
-
-    const res = await this.$store.dispatch(
-      "users/getCurrentUser",
-      this.$route.params.id
-    );
+    const params = {
+      companyUid: this.$route.query.uid,
+      id: this.$route.params.id
+    };
+    const res = await this.$store.dispatch("users/getCurrentUser", params);
 
     if (res === "fail") {
       this.$message("회원 정보 로딩 실패 다시 접속하세요");

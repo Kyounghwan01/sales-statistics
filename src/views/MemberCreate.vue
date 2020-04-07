@@ -128,6 +128,12 @@ export default {
     }
   },
 
+  computed: {
+    loginUser() {
+      return this.$store.getters["loginUser/loginUser"];
+    }
+  },
+
   methods: {
     valid() {
       const checkType = [
@@ -160,7 +166,8 @@ export default {
       this.isSaving = true;
       const res = await this.$api.user.createUser({
         ...this.data,
-        password: this.data.phone
+        password: this.data.phone,
+        companyUid: this.loginUser.id
       });
 
       if (res.status === 200) {

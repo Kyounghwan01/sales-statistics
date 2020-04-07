@@ -73,14 +73,15 @@
 <script>
 export default {
   props: {
-    users: Array
+    users: Array,
+    companyUid: String
     // showAppLink: { type: Boolean, default: true },
     // showLastAttendedOn: { type: Boolean, default: false },
   },
 
   methods: {
     handleCellClick(row) {
-      this.$router.push(`/users/${row.id}`);
+      this.$router.push(`/users/${row.id}?uid=${this.companyUid}`);
     }
     // getUserGrade({ user_grade }) {
     //   if (!user_grade) return null;

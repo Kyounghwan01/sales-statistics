@@ -24,7 +24,6 @@ export const actions = {
     try {
       commit("SET_LOADING", true);
       commit("SET_LOGIN_USER", data);
-      console.log(state.loginUser);
       return "success";
     } catch (error) {
       commit("SET_LOGIN_USER", {});

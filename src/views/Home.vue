@@ -121,7 +121,11 @@ export default {
     check() {
       firebase.auth().onAuthStateChanged(user => {
         if (user) {
-          this.$router.push("/users");
+          this.$router.push("users").catch(error => {
+            if (error.name != "NavigationDuplicated") {
+              throw error;
+            }
+          });
         }
       });
     },
@@ -143,7 +147,13 @@ export default {
           );
         if (res) {
           this.loading = false;
-          this.$router.push("/users");
+          const response = await this.$api.loginUser.getLoginUser(res.user.uid);
+          await this.$store.dispatch("loginUser/setUser", response.data);
+          this.$router.push("users").catch(error => {
+            if (error.name != "NavigationDuplicated") {
+              throw error;
+            }
+          });
         }
       } catch (error) {
         this.loading = false;

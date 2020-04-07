@@ -54,10 +54,10 @@ export const mutations = {
 };
 
 export const actions = {
-  async getUser({ commit }) {
+  async getUser({ commit }, id) {
     try {
       commit("SET_USER_LOADING", true);
-      const res = await api.user.getUser();
+      const res = await api.user.getUser(id);
       commit("SET_USER", res.data);
     } catch (error) {
       commit("SET_USER", []);
@@ -71,10 +71,11 @@ export const actions = {
     commit("FILTER_USER", keyword);
   },
 
-  async getCurrentUser({ commit }, id) {
+  async getCurrentUser({ commit }, params) {
+    console.log(params);
     try {
       commit("SET_USER_LOADING", true);
-      const res = await api.user.getCurrentUser(id);
+      const res = await api.user.getCurrentUser(params.companyUid, params.id);
       commit("SET_CURRENT_USER", res.data);
       return "success";
     } catch (error) {
