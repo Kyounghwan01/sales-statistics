@@ -181,6 +181,9 @@ export default {
   computed: {
     totalPrice() {
       return this.$filters.comma(this.data.unitPrice * this.data.count);
+    },
+    loginUser() {
+      return this.$store.getters["loginUser/loginUser"];
     }
   },
 
@@ -228,7 +231,8 @@ export default {
           ...this.data,
           date: newDate,
           userName: this.userName,
-          price: this.data.count * this.data.unitPrice
+          price: this.data.count * this.data.unitPrice,
+          companyUid: this.loginUser.id
         }
       );
       if (res.status === 200) {

@@ -4,8 +4,8 @@ const BASE_URL =
   "https://9wnw9kggv9.execute-api.ap-northeast-2.amazonaws.com/2020-03-07/order";
 
 export default {
-  getOrderAll: (page: number, limit: number) => {
-    return axios.get(`${BASE_URL}?page=${page}&limit=${limit}`);
+  getOrderAll: (companyUid: string, page: number, limit: number) => {
+    return axios.get(`${BASE_URL}?companyUid=${companyUid}&page=${page}&limit=${limit}`);
   },
 
   getOrderByUser: (id: number, page: number, limit: number) => {

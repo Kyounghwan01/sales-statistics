@@ -35,7 +35,10 @@ export default {
     // console.log(this.keyword);
   },
   async created() {
-    const res = await this.$store.dispatch("order/getOrderList");
+    const res = await this.$store.dispatch(
+      "order/getOrderList",
+      this.loginUser.id
+    );
 
     if (res === "fail") {
       this.$store.dispatch("order/getOrderList");
@@ -43,6 +46,9 @@ export default {
   },
 
   computed: {
+    loginUser() {
+      return this.$store.getters["loginUser/loginUser"];
+    },
     loading() {
       return this.$store.getters["order/orderLoading"];
     },
