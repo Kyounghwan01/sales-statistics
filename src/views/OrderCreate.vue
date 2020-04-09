@@ -203,14 +203,20 @@ export default {
 
   async created() {
     this.loading = true;
-    await this.$store.dispatch("users/getUser");
+    if (this.loginUser) {
+      this.$store.dispatch("users/getUser", this.loginUser.id);
+    }
     this.loading = false;
   },
 
   computed: {
+    loginUser() {
+      return this.$store.getters["loginUser/loginUser"];
+    },
+
     userList() {
       if (!this.$store.getters["users/user"]) {
-        this.$store.dispatch("users/getUser");
+        this.$store.dispatch("users/getUser", this.loginUser.id);
       }
       return this.$store.getters["users/user"];
     },

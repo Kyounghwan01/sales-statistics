@@ -8,7 +8,8 @@ export default {
 
   getUser: (companyUid: string) => axios.get(`${BASE_URL}/${companyUid}`),
 
-  getCurrentUser: (companyUid: string, id: number) => axios.get(`${BASE_URL}/${companyUid}?id=${id}`),
+  getCurrentUser: (companyUid: string, id: number) =>
+    axios.get(`${BASE_URL}/${companyUid}?id=${id}`),
 
   createUser: async (data: object) => {
     return axios.post(BASE_URL, data);

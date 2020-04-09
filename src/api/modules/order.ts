@@ -5,7 +5,9 @@ const BASE_URL =
 
 export default {
   getOrderAll: (companyUid: string, page: number, limit: number) => {
-    return axios.get(`${BASE_URL}?companyUid=${companyUid}&page=${page}&limit=${limit}`);
+    return axios.get(
+      `${BASE_URL}?companyUid=${companyUid}&page=${page}&limit=${limit}`
+    );
   },
 
   getOrderByUser: (id: number, page: number, limit: number) => {

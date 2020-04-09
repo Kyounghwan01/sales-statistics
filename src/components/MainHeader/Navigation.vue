@@ -14,8 +14,32 @@
     >
       {{ link.name }}
     </el-menu-item>
-    {{ loginUser }}
-    <span class="logout" @click="logout">로그아웃</span>
+    <!-- {{ loginUser }} -->
+
+    <el-dropdown
+      class="logout"
+      trigger="click"
+      placement="top-end"
+      @command="command => command()"
+    >
+      <span class="user-menu__user">
+        <span>
+          <b>{{ loginUser.name }}님</b>
+          <i class="el-icon-arrow-down"></i>
+        </span>
+      </span>
+      <el-dropdown-menu slot="dropdown">
+        <el-dropdown-item
+          v-for="item in menuItems"
+          :key="item.label"
+          :command="item.onClick"
+        >
+          {{ item.label }}
+        </el-dropdown-item>
+      </el-dropdown-menu>
+    </el-dropdown>
+
+    <!-- <span class="logout" @click="logout">로그아웃</span> -->
   </el-menu>
 </template>
 
@@ -25,6 +49,19 @@ import "firebase/auth";
 
 export default {
   computed: {
+    menuItems() {
+      return [
+        {
+          label: "마이페이지",
+          divided: true,
+          onClick: this.handleClickMyPage
+        },
+        {
+          label: "로그아웃",
+          onClick: this.logout
+        }
+      ];
+    },
     activeLink() {
       return `/${this.$route.path.split("/")[1]}`;
     },
@@ -58,6 +95,9 @@ export default {
           }
         })
         .catch(() => false);
+    },
+    handleClickMyPage() {
+      this.$router.push("/staffs/me");
     }
   }
 };

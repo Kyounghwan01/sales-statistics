@@ -62,7 +62,7 @@ export default {
 
     userList() {
       if (!this.$store.getters["users/user"]) {
-        this.$store.dispatch("users/getUser");
+        this.$store.dispatch("users/getUser", this.loginUser.id);
       }
       return this.$store.getters["users/user"];
     },
