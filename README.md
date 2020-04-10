@@ -251,8 +251,10 @@ TODO
 - api - board - user 이름 또는 폰번으로 id 찾기 - (정확한 이름으로 검색시 id 리턴 후, id로 order찾기) - **완**
 - api : 기간별, 고객별, 전채, 과거, 최신순 정렬 **완**
 - api: 매출/매입별 소팅
-- 회원가입시 회사명 적고, 로그인시 회원가입한 회사명으로 가진 회사, 매출,매입만 뜨도록 (유저별 커스텀) - user api 변경 필요
-  - 회원가입시 사용 회사명 INPUT필요, 새로운 데이터 컬럼 필요(company)
+- 회원가입시 회사명 적고, 로그인시 회원가입한 회사명으로 가진 회사, 매출,매입만 뜨도록 (유저별 커스텀) **완**
+- user api 변경 필요 **완**
+- 회원가입시 사용 회사명 INPUT필요, 새로운 데이터 컬럼 필요(company) **완**
+- 불필요 api 제거 - queryString으로 api 2개 (전체 주문, 회사별 주문)로 축소
 
 **FRONT**
 - 로그인, 회원가입 페이지 공용 컴포넌트로 재구성
@@ -264,6 +266,25 @@ TODO
 
 - 엑셀다운로드 : 현황리스트 (필터대로 엑셀다운로드), 고객리스트, 매출 매입 전체 엑셀다운로드
 
+0410
+### 주문 api 
+- 전체 주문 get
+```
+BASEURL/order?page=0&limit=100&past=1&companyUid=gVkEsl6w21TgXgIRD10XwPoUy9o1&start_date=20200407&end_date=20200409&type=true
 
+companyUid : 회사 uid
+page, limit: 페이지 네이션 파람
+past: 값있으면 과거순 없으면 최신순
+start_date, end_date: 기간 파람
+type: 값 있으면 매입, 없으면 매출
+```
+- 특정 회사 주문 get
+```
+BASEURL/order/3?page=0&limit=100&start_date=20200407&end_date=20200409&type=true&past=1
 
-<!-- TODO: api 수정 - 로그인한 유저에 할당된 회사로 post, get -->
+pathParameters = 주문 id
+page, limit: 페이지 네이션 파람
+past: 값있으면 과거순 없으면 최신순
+start_date, end_date: 기간 파람
+type: 값 있으면 매입, 없으면 매출
+```
