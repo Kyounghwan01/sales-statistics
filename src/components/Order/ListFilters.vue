@@ -1,22 +1,28 @@
 <template>
   <div>
-    {{ filterOptions }}
     <el-input
       v-model="keyword"
       placeholder="이름 또는 전화번호 입력하세요"
       @keyup.enter.native="handleChangeKeyword"
     ></el-input>
-    <!-- <div class="lecture-list-filter__query-type">
-      <el-select v-model="queryType">
+
+    <div class="div" :key="key.id" v-for="key in filterOptions">
+      <el-select
+        :multiple="filterOptions[key].multiple"
+        :placeholder="filterOptions[key].placeholder"
+        collapse-tags
+        clearable
+      >
         <el-option
-          v-for="item in rangeTypeOptions"
+          v-for="item in filterOptions[key].options"
           :key="item.value"
           :label="item.label"
           :value="item.value"
         >
         </el-option>
       </el-select>
-    </div> -->
+      {{ key }}
+    </div>
   </div>
 </template>
 

@@ -34,6 +34,13 @@ export const actions = {
     }
   },
 
+  logOutUser({ commit }) {
+    commit("SET_LOADING", true);
+    commit("SET_LOGIN_USER", {});
+    commit("SET_LOADING", false);
+    return "success";
+  },
+
   async filterUser({ commit }, keyword) {
     commit("FILTER_USER", keyword);
   },

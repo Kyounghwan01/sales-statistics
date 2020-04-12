@@ -4,8 +4,12 @@
       <div class="order-list__header">
         <h3>거래 현황</h3>
         <div class="order-list__header__total-comes">
-          <span class="income">총 매입: {{ inComeOutCome.income }}</span>
-          <span class="outcome">총 매출: {{ inComeOutCome.outcome }}</span>
+          <span class="order-list__header__total-comes__outcome"
+            >총 매출: <b>{{ inComeOutCome.outcome }}</b> 원</span
+          >
+          <span class="order-list__header__total-comes__income"
+            >총 매입: <b>{{ inComeOutCome.income }}</b> 원</span
+          >
         </div>
       </div>
 
@@ -69,12 +73,19 @@ export default {
     },
 
     filterOptions() {
-      //회사 리스트만 필요한데,
-      const companiesOptions = this.companies;
+      const companiesOptions = this.companies.map(({ id, name }) => ({
+        value: id,
+        label: name
+      }));
       return {
         companies: {
-          multuple: false,
+          multiple: true,
           placeholder: "모든 회사",
+          options: companiesOptions
+        },
+        others: {
+          multiple: true,
+          placeholder: "다른거",
           options: companiesOptions
         }
       };
@@ -109,6 +120,16 @@ export default {
       display: flex;
       flex-direction: column;
       margin: 10px 0;
+      &__income {
+        b {
+          color: red;
+        }
+      }
+      &__outcome {
+        b {
+          color: dodgerblue;
+        }
+      }
     }
   }
 }

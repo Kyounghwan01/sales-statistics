@@ -47,8 +47,8 @@ export const mutations = {
   },
 
   SET_COUNT(state, count) {
-    state.countInComeOutCome.income = `${filters.comma(count.income)}원`;
-    state.countInComeOutCome.outcome = `${filters.comma(count.outcome)}원`;
+    state.countInComeOutCome.income = filters.comma(count.income);
+    state.countInComeOutCome.outcome = filters.comma(count.outcome);
   },
 
   SET_USER(state, user) {

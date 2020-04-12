@@ -14,12 +14,12 @@
     >
       {{ link.name }}
     </el-menu-item>
-    <!-- {{ loginUser }} -->
 
     <el-dropdown
       class="logout"
       trigger="click"
       placement="top-end"
+      v-if="loginUser.name"
       @command="command => command()"
     >
       <span class="user-menu__user">
@@ -89,6 +89,7 @@ export default {
         .then(async () => {
           try {
             await firebase.auth().signOut();
+            await this.$store.dispatch("loginUser/logOutUser");
           } catch (error) {
             this.$alert("로그아웃 에러", "로그아웃 실패");
           } finally {
@@ -97,6 +98,7 @@ export default {
         })
         .catch(() => false);
     },
+
     handleClickMyPage() {
       this.$router.push("/staffs/me");
     }

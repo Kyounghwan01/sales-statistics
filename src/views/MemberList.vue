@@ -37,14 +37,6 @@ export default {
 
   data() {
     return {
-      userData: [
-        {
-          name: "nkh",
-          phone: "01022349891",
-          address: "신장동",
-          registeredAt: "1993-01-23"
-        }
-      ],
       keyword: null
     };
   },
