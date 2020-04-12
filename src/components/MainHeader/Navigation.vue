@@ -33,13 +33,12 @@
           v-for="item in menuItems"
           :key="item.label"
           :command="item.onClick"
+          :disabled="item.disabled"
         >
           {{ item.label }}
         </el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
-
-    <!-- <span class="logout" @click="logout">로그아웃</span> -->
   </el-menu>
 </template>
 
@@ -54,11 +53,13 @@ export default {
         {
           label: "마이페이지",
           divided: true,
-          onClick: this.handleClickMyPage
+          onClick: this.handleClickMyPage,
+          disabled: true
         },
         {
           label: "로그아웃",
-          onClick: this.logout
+          onClick: this.logout,
+          disabled: false
         }
       ];
     },

@@ -1,13 +1,18 @@
 <template>
   <MainLayout :padded="false">
-    <section v-loading="loading">
-      <h3>거래 현황</h3>
-      <div class="total-comes">
-        <span class="income">총 매입: {{ inComeOutCome.income }}</span>
-        <span class="outcome">총 매출: {{ inComeOutCome.outcome }}</span>
+    <section class="order-list" v-loading="loading">
+      <div class="order-list__header">
+        <h3>거래 현황</h3>
+        <div class="order-list__header__total-comes">
+          <span class="income">총 매입: {{ inComeOutCome.income }}</span>
+          <span class="outcome">총 매출: {{ inComeOutCome.outcome }}</span>
+        </div>
       </div>
 
-      <ListFilters @filter-change="values => setFilterValues(values)" />
+      <ListFilters
+        :filterOptions="filterOptions"
+        @filter-change="values => setFilterValues(values)"
+      />
 
       <List :orderList="orderList" />
     </section>
@@ -27,13 +32,12 @@ export default {
   },
   data() {
     return {
+      companies: []
       // keyword: null
       // orderList: []
     };
   },
-  updated() {
-    // console.log(this.keyword);
-  },
+
   async created() {
     const res = await this.$store.dispatch(
       "order/getOrderList",
@@ -43,30 +47,71 @@ export default {
     if (res === "fail") {
       this.$store.dispatch("order/getOrderList");
     }
+
+    this.getCompanies();
   },
 
   computed: {
     loginUser() {
       return this.$store.getters["loginUser/loginUser"];
     },
+
     loading() {
       return this.$store.getters["order/orderLoading"];
     },
+
     orderList() {
       return this.$store.getters["order/orders"];
     },
+
     inComeOutCome() {
       return this.$store.getters["order/countInComeOutCome"];
+    },
+
+    filterOptions() {
+      //회사 리스트만 필요한데,
+      const companiesOptions = this.companies;
+      return {
+        companies: {
+          multuple: false,
+          placeholder: "모든 회사",
+          options: companiesOptions
+        }
+      };
     }
   },
+
   methods: {
     setFilterValues(value) {
       console.log(value);
+    },
+
+    async getCompanies() {
+      if (!this.$store.getters["users/user"].length) {
+        await this.$store.dispatch("users/getUser", this.loginUser.id);
+      }
+
+      this.companies = this.$store.getters["users/user"];
     }
   }
 };
 </script>
 <style lang="scss" scoped>
+.order-list {
+  padding: 10px 200px;
+  overflow-y: auto;
+  height: 85vh;
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    height: 65px;
+    &__total-comes {
+      display: flex;
+      flex-direction: column;
+      margin: 10px 0;
+    }
+  }
+}
 .outter {
   width: 100%;
   height: 86vh;

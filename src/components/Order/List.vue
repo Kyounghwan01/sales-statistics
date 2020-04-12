@@ -5,23 +5,24 @@
     row-class-name="members-list__row"
     fit
   >
-    <el-table-column fixed="left" label="회사" min-width="80" align="center">
-      <template v-slot="scope">
-        <div class="members-list__name">
-          {{ scope.row.userName }}
-        </div>
-      </template>
-    </el-table-column>
-
     <el-table-column
       label="매입/매출"
-      min-width="140"
+      min-width="80"
+      fixed="left"
       header-align="center"
       align="center"
     >
       <template v-slot="scope">
         <div class="members-list__phone">
           {{ scope.row.type ? "매입" : "매출" }}
+        </div>
+      </template>
+    </el-table-column>
+
+    <el-table-column label="회사" min-width="100" align="center">
+      <template v-slot="scope">
+        <div class="members-list__name">
+          {{ scope.row.userName }}
         </div>
       </template>
     </el-table-column>

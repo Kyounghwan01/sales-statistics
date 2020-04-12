@@ -133,7 +133,7 @@ export const actions = {
     state.searchId = searchId;
 
     if (state.searchId) {
-      dispatch("getOrdersByUser", { id: state.searchId, page: 0, limit: 5 });
+      dispatch("getOrdersByUser", { id: state.searchId, page: 0, limit: 100 });
     } else {
       commit("SET_FILTER_ORDERS", []);
     }

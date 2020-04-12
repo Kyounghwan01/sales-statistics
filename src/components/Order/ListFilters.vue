@@ -1,5 +1,6 @@
 <template>
   <div>
+    {{ filterOptions }}
     <el-input
       v-model="keyword"
       placeholder="이름 또는 전화번호 입력하세요"
@@ -21,11 +22,16 @@
 
 <script>
 export default {
+  props: {
+    filterOptions: { type: Object }
+  },
+
   data() {
     return {
       keyword: null
     };
   },
+
   methods: {
     handleChangeKeyword() {
       this.$store.dispatch("order/filterOrder", { keyword: this.keyword });
