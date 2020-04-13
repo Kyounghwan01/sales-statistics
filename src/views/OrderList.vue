@@ -15,6 +15,7 @@
 
       <ListFilters
         :filterOptions="filterOptions"
+        :filterValues="filters"
         @filter-change="values => setFilterValues(values)"
       />
 
@@ -36,7 +37,8 @@ export default {
   },
   data() {
     return {
-      companies: []
+      companies: [],
+      filterValues: {}
       // keyword: null
       // orderList: []
     };
@@ -89,6 +91,9 @@ export default {
           options: companiesOptions
         }
       };
+    },
+    filters() {
+      return this.$store.getters["order/filter"];
     }
   },
 

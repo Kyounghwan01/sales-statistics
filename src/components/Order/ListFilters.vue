@@ -6,8 +6,10 @@
       @keyup.enter.native="handleChangeKeyword"
     ></el-input>
 
-    <div class="div" :key="key.id" v-for="key in filterOptions">
+    <div class="div" :key="key" v-for="key in filterKeys">
       <el-select
+        :value="filterValues[key]"
+        @change="value => handleChangeFilter({ [key]: value })"
         :multiple="filterOptions[key].multiple"
         :placeholder="filterOptions[key].placeholder"
         collapse-tags
@@ -21,7 +23,7 @@
         >
         </el-option>
       </el-select>
-      {{ key }}
+      <!-- {{ key }} -->
     </div>
   </div>
 </template>
@@ -29,6 +31,7 @@
 <script>
 export default {
   props: {
+    filterValues: Object,
     filterOptions: { type: Object }
   },
 
@@ -38,9 +41,29 @@ export default {
     };
   },
 
+  // updated() {
+  //   console.log("asd", this.filterValues);
+  // },
+
+  computed: {
+    filterKeys() {
+      return [
+        "companies",
+        "others"
+        // "timeRange",
+        // "instructors",
+        // "courseType",
+        // "divisions"
+      ];
+    }
+  },
+
   methods: {
     handleChangeKeyword() {
       this.$store.dispatch("order/filterOrder", { keyword: this.keyword });
+    },
+    handleChangeFilter(values) {
+      this.$store.commit("order/SET_FILTER", values);
     }
   }
 };

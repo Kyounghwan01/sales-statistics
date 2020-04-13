@@ -1,13 +1,39 @@
 import api from "@/api";
 import filters from "@/filters";
 import store from "@/store";
+// import moment from "moment";
+
+// const DEFAULT_LECTURES_FILTER = {
+//   limit: 10,
+//   page: 1,
+
+//   sortByName: "start_on",
+//   sortByType: "asc",
+
+//   rangeType: "date",
+//   dateRange: [moment().format("YYYY-MM-DD"), moment().format("YYYY-MM-DD")],
+
+//   weekdays: [],
+//   timeRange: {
+//     start: null,
+//     end: null
+//   },
+//   exactTimeRange: true,
+//   instructors: [],
+//   courseType: null,
+//   divisions: [],
+//   rooms: [],
+
+//   companies: []
+// };
 
 export const state = {
   orderLoading: false,
   orders: [],
   orderCopy: [],
   countInComeOutCome: { income: 0, outcome: 0 },
-  searchId: null
+  searchId: null,
+  filter: { companies: [], others: [] }
 
   // userTickets: [],
   // userTicketsLoading: false,
@@ -25,6 +51,7 @@ export const getters = {
   orderLoading: state => state.orderLoading,
   orders: state => state.orders,
   countInComeOutCome: state => state.countInComeOutCome,
+  filter: state => state.filter,
 
   user: state => state.user,
   copyUser: state => state.copyUser,
@@ -49,6 +76,10 @@ export const mutations = {
   SET_COUNT(state, count) {
     state.countInComeOutCome.income = filters.comma(count.income);
     state.countInComeOutCome.outcome = filters.comma(count.outcome);
+  },
+
+  SET_FILTER(state, data) {
+    state.filter[Object.keys(data)[0]] = Object.values(data)[0];
   },
 
   SET_USER(state, user) {
@@ -108,6 +139,8 @@ export const actions = {
       commit("SET_ORDER_LOADING", false);
     }
   },
+
+  //필터 액션
 
   async filterOrder({ commit, dispatch }, params) {
     console.log(params.keyword);
