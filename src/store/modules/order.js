@@ -33,7 +33,7 @@ export const state = {
   orderCopy: [],
   countInComeOutCome: { income: 0, outcome: 0 },
   searchId: null,
-  filter: { companies: [], others: [] }
+  filter: { companies: [], others: [], dateSort: "" }
 
   // userTickets: [],
   // userTicketsLoading: false,
@@ -79,7 +79,9 @@ export const mutations = {
   },
 
   SET_FILTER(state, data) {
+    console.log(data);
     state.filter[Object.keys(data)[0]] = Object.values(data)[0];
+    console.log(state.filter);
   },
 
   SET_USER(state, user) {

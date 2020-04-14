@@ -49,7 +49,8 @@ export default {
     filterKeys() {
       return [
         "companies",
-        "others"
+        "others",
+        "dateSort"
         // "timeRange",
         // "instructors",
         // "courseType",

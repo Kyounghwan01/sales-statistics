@@ -89,6 +89,20 @@ export default {
           multiple: true,
           placeholder: "다른거",
           options: companiesOptions
+        },
+        dateSort: {
+          multiple: false,
+          placeholder: "전체",
+          options: [
+            {
+              value: 1,
+              label: "매출"
+            },
+            {
+              value: 0,
+              label: "매입"
+            }
+          ]
         }
       };
     },
