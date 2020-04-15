@@ -85,12 +85,7 @@ export default {
           placeholder: "모든 회사",
           options: companiesOptions
         },
-        others: {
-          multiple: true,
-          placeholder: "다른거",
-          options: companiesOptions
-        },
-        dateSort: {
+        soldType: {
           multiple: false,
           placeholder: "전체",
           options: [
@@ -101,6 +96,20 @@ export default {
             {
               value: 0,
               label: "매입"
+            }
+          ]
+        },
+        dateSort: {
+          multiple: false,
+          placeholder: "최신순",
+          options: [
+            {
+              value: 1,
+              label: "최신순"
+            },
+            {
+              value: 0,
+              label: "과거순"
             }
           ]
         }

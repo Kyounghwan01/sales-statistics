@@ -1,8 +1,9 @@
 <template>
   <el-table
     :data="orderList"
-    empty-text="기록이 없습니다."
+    empty-text="주문 기록이 없습니다."
     row-class-name="members-list__row"
+    @cell-click="handleCellClick"
     fit
   >
     <el-table-column
@@ -74,15 +75,27 @@ export default {
       default: () => []
     }
   },
+
   methods: {
     orderDate(date) {
       return this.$filters.date(date);
     },
+
     comma(value) {
       return this.$filters.comma(value);
+    },
+
+    handleCellClick(row) {
+      this.$router.push(`/users/${row.userId}?uid=${row.companyUid}`);
     }
   }
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.el-table {
+  /deep/ .members-list__row {
+    cursor: pointer;
+  }
+}
+</style>

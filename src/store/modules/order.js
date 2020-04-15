@@ -3,48 +3,13 @@ import filters from "@/filters";
 import store from "@/store";
 // import moment from "moment";
 
-// const DEFAULT_LECTURES_FILTER = {
-//   limit: 10,
-//   page: 1,
-
-//   sortByName: "start_on",
-//   sortByType: "asc",
-
-//   rangeType: "date",
-//   dateRange: [moment().format("YYYY-MM-DD"), moment().format("YYYY-MM-DD")],
-
-//   weekdays: [],
-//   timeRange: {
-//     start: null,
-//     end: null
-//   },
-//   exactTimeRange: true,
-//   instructors: [],
-//   courseType: null,
-//   divisions: [],
-//   rooms: [],
-
-//   companies: []
-// };
-
 export const state = {
   orderLoading: false,
   orders: [],
   orderCopy: [],
   countInComeOutCome: { income: 0, outcome: 0 },
   searchId: null,
-  filter: { companies: [], others: [], dateSort: "" }
-
-  // userTickets: [],
-  // userTicketsLoading: false,
-  // bookedLectures: [],
-  // bookedLecturesLoading: false,
-  // memos: [],
-  // memosLoading: false,
-  // bookingHistory: [],
-  // bookingHistoryLoading: false,
-  // bookingHistoryCount: {},
-  // bookingHistoryTotal: 0,
+  filter: { companies: [], soldType: "", dateSort: "", dateRange: [] }
 };
 
 export const getters = {
@@ -64,6 +29,7 @@ export const mutations = {
     state.orderLoading = loading;
   },
 
+  /** 보여주는 배열, 원본배열 유지 */
   SET_ORDERS(state, orders) {
     state.orders = orders;
     state.orderCopy = orders;
