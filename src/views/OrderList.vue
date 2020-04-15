@@ -1,6 +1,6 @@
 <template>
   <MainLayout :padded="false">
-    <section class="order-list" v-loading="loading">
+    <section class="order-list">
       <div class="order-list__header">
         <h3>거래 현황</h3>
         <div class="order-list__header__total-comes">
@@ -13,13 +13,9 @@
         </div>
       </div>
 
-      <ListFilters
-        :filterOptions="filterOptions"
-        :filterValues="filters"
-        @filter-change="values => setFilterValues(values)"
-      />
+      <ListFilters :filterOptions="filterOptions" :filterValues="filters" />
 
-      <List :orderList="orderList" />
+      <List v-loading="loading" :orderList="orderList" />
     </section>
   </MainLayout>
 </template>
@@ -39,16 +35,11 @@ export default {
     return {
       companies: [],
       filterValues: {}
-      // keyword: null
-      // orderList: []
     };
   },
 
   async created() {
-    const res = await this.$store.dispatch(
-      "order/getOrderList",
-      this.loginUser.id
-    );
+    const res = await this.$store.dispatch("order/getOrderList");
 
     if (res === "fail") {
       this.$store.dispatch("order/getOrderList");
@@ -87,14 +78,14 @@ export default {
         },
         soldType: {
           multiple: false,
-          placeholder: "전체",
+          placeholder: "매출/매입",
           options: [
             {
-              value: 1,
+              value: false,
               label: "매출"
             },
             {
-              value: 0,
+              value: true,
               label: "매입"
             }
           ]
@@ -105,11 +96,11 @@ export default {
           options: [
             {
               value: 1,
-              label: "최신순"
+              label: "과거순"
             },
             {
               value: 0,
-              label: "과거순"
+              label: "최신순"
             }
           ]
         }
@@ -121,10 +112,6 @@ export default {
   },
 
   methods: {
-    setFilterValues(value) {
-      console.log(value);
-    },
-
     async getCompanies() {
       if (!this.$store.getters["users/user"].length) {
         await this.$store.dispatch("users/getUser", this.loginUser.id);

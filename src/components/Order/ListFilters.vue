@@ -30,23 +30,22 @@
         style="margin-right: 10px"
         format="yyyy. M. d."
         value-format="yyyyMMdd"
+        :clearable="false"
       >
       </el-date-picker>
     </div>
 
-    <div class="name-filter">
+    <!-- <div class="name-filter">
       <el-input
         v-model="keyword"
         placeholder="이름 또는 전화번호"
         @keyup.enter.native="handleChangeKeyword"
       ></el-input>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script>
-import moment from "moment";
-
 export default {
   props: {
     filterValues: Object,
@@ -55,23 +54,26 @@ export default {
 
   data() {
     return {
-      keyword: null,
-      searchDateRange: [
-        moment(new Date()).format("YYYYMMDD"),
-        moment(new Date()).format("YYYYMMDD")
-      ]
+      keyword: null
     };
   },
 
   computed: {
+    loginUser() {
+      return this.$store.getters["loginUser/loginUser"];
+    },
+
     filterKeys() {
       return ["dateRange", "companies", "soldType", "dateSort"];
-    }
-  },
+    },
 
-  watch: {
-    searchDateRange(value) {
-      this.$store.commit("order/SET_FILTER", { dateRange: value });
+    searchDateRange: {
+      get() {
+        return this.$store.getters["order/filter"].dateRange;
+      },
+      set(range) {
+        this.$store.dispatch("order/getOrderFilterList", { dateRange: range });
+      }
     }
   },
 
@@ -81,13 +83,7 @@ export default {
       this.$store.commit("order/SET_FILTER", { keyword: this.keyword });
     },
     handleChangeFilter(values) {
-      console.log(values);
-      this.$store.commit("order/SET_FILTER", values);
-      /**
-       * 1. 필터 넣고
-       * 2. 넣은 필터 기준 api 주소 만들고 데이터 받아서 commit("SET_FILTER_ORDERS", res.data.order);
-       * 3. keyword 체크해서 없으면 그대로, 있으면 filterOrder 실행
-       */
+      this.$store.dispatch("order/getOrderFilterList", values);
     }
   }
 };

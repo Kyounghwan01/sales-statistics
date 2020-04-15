@@ -1,7 +1,7 @@
 import api from "@/api";
 import filters from "@/filters";
 import store from "@/store";
-// import moment from "moment";
+import moment from "moment";
 
 export const state = {
   orderLoading: false,
@@ -9,7 +9,15 @@ export const state = {
   orderCopy: [],
   countInComeOutCome: { income: 0, outcome: 0 },
   searchId: null,
-  filter: { companies: [], soldType: "", dateSort: "", dateRange: [] }
+  filter: {
+    companies: [],
+    soldType: "",
+    dateSort: "",
+    dateRange: [
+      moment(new Date()).format("YYYYMMDD"),
+      moment(new Date()).format("YYYYMMDD")
+    ]
+  }
 };
 
 export const getters = {
@@ -45,9 +53,7 @@ export const mutations = {
   },
 
   SET_FILTER(state, data) {
-    console.log(data);
     state.filter[Object.keys(data)[0]] = Object.values(data)[0];
-    console.log(state.filter);
   },
 
   SET_USER(state, user) {
@@ -80,10 +86,22 @@ export const actions = {
     }
   },
 
-  async getOrderList({ commit }, companyUid) {
+  async getOrderFilterList({ commit, dispatch }, values) {
+    await commit("SET_FILTER", values);
+    dispatch("getOrderList");
+  },
+
+  async getOrderList({ commit }) {
     commit("SET_ORDER_LOADING", true);
     try {
-      const res = await api.order.getOrderAll(companyUid, 0, 50);
+      const companyUid = store.getters["loginUser/loginUser"];
+      //3번째 param에 회사 id 배열로
+      const res = await api.order.getOrderAll(
+        companyUid.id,
+        0,
+        50,
+        state.filter
+      );
 
       let income = 0;
       let outcome = 0;
@@ -108,7 +126,7 @@ export const actions = {
     }
   },
 
-  //필터 액션
+  //회원 이름으로 주문 찾는 필터 액션
 
   async filterOrder({ commit, dispatch }, params) {
     console.log(params.keyword);
