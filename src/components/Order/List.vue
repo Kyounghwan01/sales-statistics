@@ -64,6 +64,19 @@
         <div class="members-list__address">{{ comma(scope.row.price) }}원</div>
       </template>
     </el-table-column>
+
+    <el-table-column
+      label="메모"
+      min-width="140"
+      header-align="center"
+      align="center"
+    >
+      <template v-slot="scope">
+        <div class="members-list__address">
+          {{ scope.row.memo }}
+        </div>
+      </template>
+    </el-table-column>
   </el-table>
 </template>
 
@@ -74,6 +87,10 @@ export default {
       type: Array,
       default: () => []
     }
+  },
+
+  created() {
+    console.log(this.orderList);
   },
 
   methods: {

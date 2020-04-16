@@ -1,7 +1,8 @@
 <template>
   <section v-loading="orderLoading">
-    <div v-if="orders.length">
-      {{ orders }}
+    <ListFilters :filterOptions="filterOptions" :filterValues="filters" />
+    <div v-if="orders.length" class="have-data">
+      <List :orderList="orders" />
     </div>
     <div v-else class="no-data">
       <span>거래 내역이 없습니다</span>
@@ -10,7 +11,15 @@
 </template>
 
 <script>
+import ListFilters from "@/components/Order/ListFilters";
+import List from "@/components/Order/List";
+
 export default {
+  components: {
+    ListFilters,
+    List
+  },
+
   data() {
     return {
       orderLoading: false,
@@ -20,6 +29,9 @@ export default {
   },
   async created() {
     this.orderLoading = true;
+    this.$store.commit("order/SET_FILTER", {
+      companies: [Number(this.$route.params.id)]
+    });
     const res = await this.$store.dispatch("order/getOrdersByUser", {
       id: Number(this.$route.params.id),
       page: this.page,
@@ -37,6 +49,41 @@ export default {
   computed: {
     orders() {
       return this.$store.getters["order/orders"];
+    },
+    filters() {
+      return this.$store.getters["order/filter"];
+    },
+    filterOptions() {
+      return {
+        soldType: {
+          multiple: false,
+          placeholder: "매출/매입",
+          options: [
+            {
+              value: false,
+              label: "매출"
+            },
+            {
+              value: true,
+              label: "매입"
+            }
+          ]
+        },
+        dateSort: {
+          multiple: false,
+          placeholder: "최신순",
+          options: [
+            {
+              value: 1,
+              label: "과거순"
+            },
+            {
+              value: 0,
+              label: "최신순"
+            }
+          ]
+        }
+      };
     }
   }
 };
@@ -45,11 +92,15 @@ export default {
 <style lang="scss" scoped>
 section {
   height: 61vh;
+  .have-data {
+    margin-top: 10px;
+  }
   .no-data {
     height: inherit;
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-top: 10px;
     span {
       font-family: NotoSansKR;
       font-size: 24px;

@@ -64,7 +64,10 @@ export default {
     },
 
     filterKeys() {
-      return ["dateRange", "companies", "soldType", "dateSort"];
+      if (this.$route.name === "orders_list") {
+        return ["dateRange", "companies", "soldType", "dateSort"];
+      }
+      return ["dateRange", "soldType", "dateSort"];
     },
 
     searchDateRange: {
