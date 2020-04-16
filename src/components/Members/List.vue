@@ -245,10 +245,11 @@ export default {
     }
   }
 }
+*/
 
 .el-table {
   ::v-deep .members-list__row {
     cursor: pointer;
   }
-} */
+}
 </style>

@@ -34,6 +34,20 @@
       >
       </el-date-picker>
     </div>
+    <el-tooltip
+      v-if="$route.name === 'detail_user'"
+      class="item"
+      effect="light"
+      placement="right-start"
+    >
+      <p slot="content">
+        리스트를 누르면 해당 리스트 정보를 수정 / 삭제 할 수 있습니다.
+      </p>
+      <i
+        class="el-icon-question"
+        :style="{ color: '#64AEFF', fontSize: '18px' }"
+      ></i>
+    </el-tooltip>
 
     <!-- <div class="name-filter">
       <el-input
@@ -95,5 +109,8 @@ export default {
 <style lang="scss" scoped>
 .filter-group {
   display: flex;
+}
+.item {
+  line-height: 2;
 }
 </style>

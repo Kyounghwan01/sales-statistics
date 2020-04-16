@@ -3,7 +3,7 @@
     :data="orderList"
     empty-text="주문 기록이 없습니다."
     row-class-name="members-list__row"
-    @cell-click="handleCellClick"
+    @cell-click="$route.name === 'detail_user' ? goTochangeOrder : handleCellClick"
     fit
   >
     <el-table-column
@@ -89,10 +89,6 @@ export default {
     }
   },
 
-  created() {
-    console.log(this.orderList);
-  },
-
   methods: {
     orderDate(date) {
       return this.$filters.date(date);
@@ -104,6 +100,10 @@ export default {
 
     handleCellClick(row) {
       this.$router.push(`/users/${row.userId}?uid=${row.companyUid}`);
+    },
+    goTochangeOrder(row) {
+      console.log(row);
+      //주문 바꾸기
     }
   }
 };

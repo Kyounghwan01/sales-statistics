@@ -10,7 +10,7 @@
         </div>
         <div class="header__content-group">
           <div class="reg-date">등록일 : {{ formRegistreDate }}</div>
-          <div class="phone">핸드폰번호 : {{ currentUserData.phone }}</div>
+          <div class="phone">핸드폰번호 : {{ formatMobile }}</div>
           <div class="address">주소 : {{ currentUserData.address }}</div>
           <div class="content">
             메모 :
@@ -26,7 +26,7 @@
         <Tabs :tabs="tabs" :activeName="currentTab" :changeTabs="changeTabs" />
         <OrderHistory
           v-if="currentTab === 'history'"
-          :changeTabs="changeTabs"
+          @changeTabs="changeTabs"
         />
         <OrderCreate
           v-if="currentTab === 'writeTrade'"
@@ -73,7 +73,6 @@ export default {
   },
 
   async created() {
-    console.log(this.$route);
     this.loading = true;
     const params = {
       companyUid: this.$route.query.uid,
@@ -97,6 +96,9 @@ export default {
     },
     currentUserData() {
       return this.$store.getters["users/currentUser"];
+    },
+    formatMobile() {
+      return this.$filters.mobile(this.currentUserData.phone);
     }
   },
   // watch: {

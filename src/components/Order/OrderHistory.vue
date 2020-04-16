@@ -20,6 +20,11 @@ export default {
     List
   },
 
+  props: {
+    //TODO: changeTab함수 props로 받아오기 MemberDetail
+    changeTabs: Function
+  },
+
   data() {
     return {
       orderLoading: false,
@@ -28,6 +33,7 @@ export default {
     };
   },
   async created() {
+    console.log(this.changeTabs)
     this.orderLoading = true;
     this.$store.commit("order/SET_FILTER", {
       companies: [Number(this.$route.params.id)]
