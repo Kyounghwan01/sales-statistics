@@ -1,8 +1,16 @@
 <template>
   <section v-loading="orderLoading">
+    <div class="total-comes">
+      <span class="total-comes__outcome"
+        >매출: <b>{{ inComeOutCome.outcome }}</b> 원</span
+      >
+      <span class="total-comes__income"
+        >매입: <b>{{ inComeOutCome.income }}</b> 원</span
+      >
+    </div>
     <ListFilters :filterOptions="filterOptions" :filterValues="filters" />
     <div v-if="orders.length" class="have-data">
-      <List :orderList="orders" />
+      <List :orderList="orders" :changeTabs="changeTabs" />
     </div>
     <div v-else class="no-data">
       <span>거래 내역이 없습니다</span>
@@ -32,17 +40,14 @@ export default {
       limit: 10
     };
   },
+
   async created() {
-    console.log(this.changeTabs)
     this.orderLoading = true;
     this.$store.commit("order/SET_FILTER", {
       companies: [Number(this.$route.params.id)]
     });
-    const res = await this.$store.dispatch("order/getOrdersByUser", {
-      id: Number(this.$route.params.id),
-      page: this.page,
-      limit: this.limit
-    });
+
+    const res = await this.$store.dispatch("order/getOrderList");
     if (res === "success") {
       this.orderLoading = false;
     } else {
@@ -90,6 +95,9 @@ export default {
           ]
         }
       };
+    },
+    inComeOutCome() {
+      return this.$store.getters["order/countInComeOutCome"];
     }
   }
 };
@@ -98,6 +106,20 @@ export default {
 <style lang="scss" scoped>
 section {
   height: 61vh;
+  .total-comes {
+    text-align: right;
+    &__income {
+      margin-left: 10px;
+      b {
+        color: red;
+      }
+    }
+    &__outcome {
+      b {
+        color: dodgerblue;
+      }
+    }
+  }
   .have-data {
     margin-top: 10px;
   }

@@ -41,7 +41,7 @@
       placement="right-start"
     >
       <p slot="content">
-        리스트를 누르면 해당 리스트 정보를 수정 / 삭제 할 수 있습니다.
+        리스트를 누르면 해당 주문 정보를 수정 / 삭제 할 수 있습니다.
       </p>
       <i
         class="el-icon-question"

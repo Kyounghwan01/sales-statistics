@@ -3,7 +3,7 @@
     :data="orderList"
     empty-text="주문 기록이 없습니다."
     row-class-name="members-list__row"
-    @cell-click="$route.name === 'detail_user' ? goTochangeOrder : handleCellClick"
+    @cell-click="handleCellClick"
     fit
   >
     <el-table-column
@@ -86,7 +86,8 @@ export default {
     orderList: {
       type: Array,
       default: () => []
-    }
+    },
+    changeTabs: Function
   },
 
   methods: {
@@ -99,11 +100,12 @@ export default {
     },
 
     handleCellClick(row) {
+      if (this.$route.name === "detail_user") {
+        this.$store.commit("editOrder/SET_CREATE_ORDER_DATA", row);
+        return this.changeTabs("writeTrade");
+      }
+
       this.$router.push(`/users/${row.userId}?uid=${row.companyUid}`);
-    },
-    goTochangeOrder(row) {
-      console.log(row);
-      //주문 바꾸기
     }
   }
 };

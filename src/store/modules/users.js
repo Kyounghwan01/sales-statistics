@@ -2,21 +2,9 @@ import api from "@/api";
 
 export const state = {
   userLoading: false,
-
   user: [],
   copyUser: [],
   currentUser: {}
-
-  // userTickets: [],
-  // userTicketsLoading: false,
-  // bookedLectures: [],
-  // bookedLecturesLoading: false,
-  // memos: [],
-  // memosLoading: false,
-  // bookingHistory: [],
-  // bookingHistoryLoading: false,
-  // bookingHistoryCount: {},
-  // bookingHistoryTotal: 0,
 };
 
 export const getters = {
@@ -72,7 +60,6 @@ export const actions = {
   },
 
   async getCurrentUser({ commit }, params) {
-    console.log(params);
     try {
       commit("SET_USER_LOADING", true);
       const res = await api.user.getCurrentUser(params.companyUid, params.id);

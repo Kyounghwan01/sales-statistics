@@ -26,7 +26,7 @@
         <Tabs :tabs="tabs" :activeName="currentTab" :changeTabs="changeTabs" />
         <OrderHistory
           v-if="currentTab === 'history'"
-          @changeTabs="changeTabs"
+          :changeTabs="changeTabs"
         />
         <OrderCreate
           v-if="currentTab === 'writeTrade'"

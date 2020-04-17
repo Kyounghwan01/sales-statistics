@@ -1,5 +1,8 @@
 <template>
-  <el-tabs v-model="currentTab" @tab-click="changeTabs(currentTab)">
+  <el-tabs
+    :value="activeName"
+    @tab-click="changeTabs(activeName === 'history' ? 'writeTrade' : 'history')"
+  >
     <el-tab-pane
       v-for="tab in tabs"
       :key="tab.value"
@@ -14,16 +17,6 @@ export default {
     tabs: Array,
     activeName: String,
     changeTabs: Function
-  },
-  data() {
-    return {
-      currentTab: null
-    };
-  },
-  created() {
-    if (this.activeName) {
-      this.currentTab = this.activeName.slice();
-    }
   }
 };
 </script>

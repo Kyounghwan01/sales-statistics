@@ -3,18 +3,6 @@ import filters from "@/filters";
 import store from "@/store";
 import moment from "moment";
 
-const DEFAULT_FILTER_OPTION = {
-  companies: [],
-  soldType: "",
-  dateSort: "",
-  dateRange: [
-    moment(new Date())
-      .subtract(3, "months")
-      .format("YYYYMMDD"),
-    moment(new Date()).format("YYYYMMDD")
-  ]
-};
-
 export const state = {
   orderLoading: false,
   orders: [],
@@ -68,11 +56,6 @@ export const mutations = {
 
   SET_FILTER(state, data) {
     state.filter[Object.keys(data)[0]] = Object.values(data)[0];
-  },
-
-  test(state) {
-    state.filter = DEFAULT_FILTER_OPTION;
-    console.log(state.filter);
   },
 
   SET_USER(state, user) {

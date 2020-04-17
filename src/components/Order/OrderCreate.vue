@@ -1,4 +1,5 @@
 <template>
+  <!-- TODO: order edit, delete api 작업 -->
   <div class="order-history">
     <div class="sales">
       <div class="registered-at">
@@ -7,8 +8,12 @@
           <label>매입 / 매출 : </label>
         </div>
         <div class="input-group radio-group">
-          <el-radio v-model="data.type" :label="true">매입</el-radio>
-          <el-radio v-model="data.type" :label="false">매출</el-radio>
+          <el-radio :disabled="editMode" v-model="data.type" :label="true"
+            >매입</el-radio
+          >
+          <el-radio :disabled="editMode" v-model="data.type" :label="false"
+            >매출</el-radio
+          >
         </div>
       </div>
 
@@ -126,10 +131,13 @@
       </div>
     </div>
     <BottomActionBar>
-      <el-button v-loading="isSaving" @click="saveOrder">저장</el-button>
-      <!-- <el-button v-if="!edit" v-loading="isSaving" @click="registredUser"
-          >등록</el-button
-        > -->
+      <el-button v-if="editMode" @click="cancelEdit">취소</el-button>
+      <el-button v-if="editMode" v-loading="isSaving" @click="saveOrder"
+        >삭제</el-button
+      >
+      <el-button v-loading="isSaving" @click="saveOrder">{{
+        editMode ? "수정" : "저장"
+      }}</el-button>
     </BottomActionBar>
   </div>
 </template>
@@ -156,13 +164,16 @@ export default {
     PriceInput,
     BottomActionBar
   },
+
   props: {
     userName: { type: String, default: null }
   },
+
   data() {
     return {
       isSaving: false,
-      data: { ...DEFAULT_DATA }
+      data: { ...DEFAULT_DATA },
+      editMode: false
     };
   },
 
@@ -178,6 +189,27 @@ export default {
     }
   },
 
+  created() {
+    const editData = this.$store.getters["editOrder/orderData"];
+
+    if (editData._id) {
+      const { type, date, goods, unitPrice, count, outstanding } = editData;
+      this.editMode = true;
+      const editDate = date
+        .toString()
+        .replace(/(\d{4})(\d{2})(\d+)/g, "$1-$2-$3");
+
+      this.data = {
+        type,
+        goods,
+        unitPrice,
+        count,
+        outstanding,
+        date: editDate
+      };
+    }
+  },
+
   computed: {
     totalPrice() {
       return this.$filters.comma(this.data.unitPrice * this.data.count);
@@ -188,10 +220,6 @@ export default {
   },
 
   methods: {
-    // handleInputAmount(key) {
-    //   console.log(key);
-    // },
-
     valid() {
       const checkType = [
         { value: "date", text: "거래일을" },
@@ -241,6 +269,12 @@ export default {
         this.data = DEFAULT_DATA;
         this.$v.$reset();
       }
+    },
+
+    cancelEdit() {
+      this.editMode = false;
+      this.data = DEFAULT_DATA;
+      this.$v.$reset();
     }
   }
 };
