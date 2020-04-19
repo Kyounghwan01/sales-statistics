@@ -17,7 +17,7 @@
 
       <el-table-column
         label="전화번호"
-        min-width="140"
+        min-width="100"
         header-align="center"
         align="center"
       >
@@ -30,13 +30,13 @@
 
       <el-table-column
         label="등록일"
-        min-width="140"
+        min-width="100"
         header-align="center"
         align="center"
       >
         <template v-slot="scope">
           <div class="members-list__registered-at">
-            {{ scope.row.registreDate }}
+            {{ formatDate(scope.row.registreDate) }}
           </div>
         </template>
       </el-table-column>
@@ -55,14 +55,14 @@
       </el-table-column>
 
       <el-table-column
-        label="최근 변경일"
+        label="메모"
         min-width="140"
         header-align="center"
         align="center"
       >
         <template v-slot="scope">
           <div class="members-list__address">
-            {{ scope.row.lastDate.slice(0, -14) }}
+            {{ scope.row.content }}
           </div>
         </template>
       </el-table-column>
@@ -80,6 +80,10 @@ export default {
   methods: {
     formatMobile(phone) {
       return this.$filters.mobile(phone);
+    },
+
+    formatDate(date) {
+      return this.$filters.date(date);
     },
 
     handleCellClick(row) {
