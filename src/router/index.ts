@@ -54,7 +54,6 @@ const routes = [
     component: OrderCreate,
     meta: { requiresAuth: true }
   },
-  // fill/edut/:id
   {
     path: "/orders",
     name: "orders_list",

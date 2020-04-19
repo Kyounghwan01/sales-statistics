@@ -53,7 +53,7 @@
             :key="list.id"
             @click="choiceUser(list.id, list.name)"
           >
-            {{ list.name }} · {{ list.phone }}
+            {{ list.name }} · {{ formatMobile(list.phone) }}
             <span class="selected-span" v-if="search">선택</span>
           </li>
         </ul>
@@ -142,9 +142,6 @@
 
       <BottomActionBar>
         <el-button v-loading="isSaving" @click="saveOrder">기입</el-button>
-        <!-- <el-button v-if="!edit" v-loading="isSaving" @click="registredUser"
-          >등록</el-button
-        > -->
       </BottomActionBar>
     </section>
   </MainLayout>
@@ -244,6 +241,10 @@ export default {
       }
     },
 
+    formatMobile(phone) {
+      return this.$filters.mobile(phone);
+    },
+
     showMemberList() {
       if (!this.search) this.showMeber = !this.showMeber;
     },
@@ -278,12 +279,12 @@ export default {
     async saveOrder() {
       if (!this.valid()) return;
       this.isSaving = true;
-      const newDate = Number(this.data.date.split("-").join(""));
 
       const params = {
         ...this.data,
-        date: newDate,
-        price: this.data.unitPrice * this.data.count
+        date: Number(this.data.date.split("-").join("")),
+        price: this.data.unitPrice * this.data.count,
+        companyUid: this.loginUser.id
       };
 
       const res = await this.$api.order.createOrder(this.data.userId, params);
@@ -292,7 +293,7 @@ export default {
         this.$message("주문 정보 추가 완료");
         this.data = DEFAULT_DATA;
         this.search = !this.search;
-        // this.$v.$reset();
+        this.$v.$reset();
       } else {
         this.isSaving = false;
         this.$message("주문 정보 추가 실패. 관리자에게 문의하세요");

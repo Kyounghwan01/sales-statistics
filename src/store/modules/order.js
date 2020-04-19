@@ -131,7 +131,6 @@ export const actions = {
   //회원 이름으로 주문 찾는 필터 액션
 
   async filterOrder({ commit, dispatch }, params) {
-    console.log(params.keyword);
     if (!params.keyword) {
       /* keyword 없으면 조건 초기화 */
       return commit("SET_ORDERS", state.orderCopy);
