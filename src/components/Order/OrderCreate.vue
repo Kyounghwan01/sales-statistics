@@ -1,5 +1,4 @@
 <template>
-  <!-- TODO: order edit, delete api 작업 -->
   <div class="order-history">
     <div class="sales">
       <div class="registered-at">
@@ -8,10 +7,16 @@
           <label>매입 / 매출 : </label>
         </div>
         <div class="input-group radio-group">
-          <el-radio :disabled="editMode" v-model="data.type" :label="true"
+          <el-radio
+            :disabled="editId ? true : null"
+            v-model="data.type"
+            :label="true"
             >매입</el-radio
           >
-          <el-radio :disabled="editMode" v-model="data.type" :label="false"
+          <el-radio
+            :disabled="editId ? true : null"
+            v-model="data.type"
+            :label="false"
             >매출</el-radio
           >
         </div>
@@ -131,12 +136,18 @@
       </div>
     </div>
     <BottomActionBar>
-      <el-button v-if="editMode" @click="cancelEdit">취소</el-button>
-      <el-button v-if="editMode" v-loading="isSaving" @click="saveOrder"
+      <el-button
+        slot="left"
+        v-if="editId"
+        class="cancel-edit"
+        @click="cancelEdit"
+        >취소</el-button
+      >
+      <el-button v-if="editId" v-loading="isSaving" @click="deleteOrder"
         >삭제</el-button
       >
       <el-button v-loading="isSaving" @click="saveOrder">{{
-        editMode ? "수정" : "저장"
+        editId ? "수정" : "저장"
       }}</el-button>
     </BottomActionBar>
   </div>
@@ -147,6 +158,7 @@ import PriceInput from "@/components/PriceInput";
 import BottomActionBar from "@/components/BottomActionBar";
 import { validationMixin } from "vuelidate";
 import { required } from "vuelidate/lib/validators";
+import _ from "lodash";
 
 const DEFAULT_DATA = {
   type: true,
@@ -166,14 +178,15 @@ export default {
   },
 
   props: {
-    userName: { type: String, default: null }
+    userName: { type: String, default: null },
+    changeTabs: Function
   },
 
   data() {
     return {
       isSaving: false,
-      data: { ...DEFAULT_DATA },
-      editMode: false
+      data: _.cloneDeep(DEFAULT_DATA),
+      editId: null
     };
   },
 
@@ -193,19 +206,28 @@ export default {
     const editData = this.$store.getters["editOrder/orderData"];
 
     if (editData._id) {
-      const { type, date, goods, unitPrice, count, outstanding } = editData;
-      this.editMode = true;
+      const {
+        type,
+        date,
+        goods,
+        unitPrice,
+        count,
+        outstanding,
+        memo
+      } = editData;
       const editDate = date
         .toString()
         .replace(/(\d{4})(\d{2})(\d+)/g, "$1-$2-$3");
 
+      this.editId = editData._id;
       this.data = {
         type,
         goods,
         unitPrice,
         count,
         outstanding,
-        date: editDate
+        date: editDate,
+        memo
       };
     }
   },
@@ -251,30 +273,59 @@ export default {
       if (!this.valid()) return;
 
       this.isSaving = true;
-      const newDate = Number(this.data.date.split("-").join(""));
+      const params = {
+        ...this.data,
+        date: Number(this.data.date.split("-").join("")),
+        userName: this.userName,
+        price: this.data.count * this.data.unitPrice,
+        companyUid: this.loginUser.id
+      };
+      const res = !this.editId
+        ? await this.$api.order.createOrder(
+            Number(this.$route.params.id),
+            params
+          )
+        : await this.$api.order.updateOrder(this.editId, params);
 
-      const res = await this.$api.order.createOrder(
-        Number(this.$route.params.id),
-        {
-          ...this.data,
-          date: newDate,
-          userName: this.userName,
-          price: this.data.count * this.data.unitPrice,
-          companyUid: this.loginUser.id
-        }
-      );
       if (res.status === 200) {
-        this.isSaving = false;
-        this.$message("주문 정보 추가 완료");
-        this.data = DEFAULT_DATA;
         this.$v.$reset();
+        this.$store.commit("editOrder/SET_RESET_ORDER_DATA");
+        this.$message(!this.editId ? "주문 추가 완료" : "주문 수정 완료");
+        this.isSaving = false;
+        this.changeTabs("history");
       }
     },
 
     cancelEdit() {
-      this.editMode = false;
+      this.editId = null;
       this.data = DEFAULT_DATA;
       this.$v.$reset();
+    },
+
+    //TODO confirm 후 함수 로직 분리 -> true하면 다음 함수 진행
+    async deleteOrder() {
+      this.$confirm("주문을 삭제하시겠습니까?", "주문삭제", {
+        showClose: true
+      })
+        .then(async () => {
+          try {
+            this.isSaving = true;
+            const res = await this.$api.order.deleteOrder(this.editId);
+            if (res.data === "success") {
+              this.$store.commit("editOrder/SET_RESET_ORDER_DATA");
+              this.$message("주문 삭제 완료");
+              this.$v.$reset();
+              this.changeTabs("history");
+            } else {
+              this.$message("주문 삭제 실패. 관리자에게 문의하세요");
+            }
+          } catch (error) {
+            this.$message("주문 삭제 실패. 관리자에게 문의하세요");
+          } finally {
+            this.isSaving = false;
+          }
+        })
+        .catch(() => false);
     }
   }
 };

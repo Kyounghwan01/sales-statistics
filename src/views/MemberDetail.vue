@@ -31,6 +31,7 @@
         <OrderCreate
           v-if="currentTab === 'writeTrade'"
           :userName="currentUserData.name"
+          :changeTabs="changeTabs"
         />
       </div>
     </section>
@@ -53,16 +54,7 @@ export default {
   },
   data() {
     return {
-      user: {
-        _id: "5e68b9c3c386940008869c2a",
-        name: "awdawdawdawdawd",
-        content: null,
-        address: "경기하남",
-        registreDate: '2020-03-25"',
-        phone: "010-2234-9891",
-        id: 38,
-        lastDate: "2020-03-11T10:13:23.430Z"
-      },
+      user: {},
       loading: false,
       currentTab: "history",
       tabs: [
@@ -101,11 +93,14 @@ export default {
       return this.$filters.mobile(this.currentUserData.phone);
     }
   },
-  // watch: {
-  //   currentTab: function(value) {
-  //     console.log(value);
-  //   }
-  // },
+
+  watch: {
+    currentTab: function(value) {
+      if (value === "history") {
+        this.$store.commit("editOrder/SET_RESET_ORDER_DATA");
+      }
+    }
+  },
 
   methods: {
     goToUserEdit() {

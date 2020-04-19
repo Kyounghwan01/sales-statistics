@@ -49,11 +49,11 @@ export default {
     return axios.post(`${BASE_URL}/${id}`, data);
   },
 
-  updateOrder: (id: string, data: object) => {
-    return axios.put(`${BASE_URL}/${id}`, data);
+  updateOrder: (orderId: string, data: object) => {
+    return axios.put(`${BASE_URL}/${orderId}`, data);
   },
 
-  deleteOrder: (id: string) => {
-    return axios.delete(`${BASE_URL}/${id}`);
+  deleteOrder: (orderId: string) => {
+    return axios.delete(`${BASE_URL}/${orderId}`);
   }
 };
