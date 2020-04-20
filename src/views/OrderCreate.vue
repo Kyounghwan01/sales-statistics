@@ -48,13 +48,18 @@
         </div>
         <ul v-if="showMeber">
           <li
-            :class="['user-list', search ? 'selected' : null]"
+            :class="[
+              'user-list',
+              search && keyword === list.name ? 'selected' : null
+            ]"
             v-for="list in userList"
             :key="list.id"
             @click="choiceUser(list.id, list.name)"
           >
             {{ list.name }} · {{ formatMobile(list.phone) }}
-            <span class="selected-span" v-if="search">선택</span>
+            <span class="selected-span" v-if="search && keyword === list.name"
+              >선택</span
+            >
           </li>
         </ul>
         <div class="no-have" v-if="showMeber && !userList.length">

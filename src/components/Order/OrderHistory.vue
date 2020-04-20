@@ -29,7 +29,6 @@ export default {
   },
 
   props: {
-    //TODO: changeTab함수 props로 받아오기 MemberDetail
     changeTabs: Function
   },
 
