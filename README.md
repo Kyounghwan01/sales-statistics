@@ -30,7 +30,6 @@ yarn lint
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ### aws lambda + api gateway 백엔드 api docs
-
 - 고객 생성 POST - (/board) -
   body: {
   "name" : "hihi",
@@ -264,6 +263,8 @@ TODO
 - 회원창에서 - 주문 현황 보는 ui - 필터: 최신/과거, 기간, 매출/매입 별 **완**
 - 회원창에서 주문 수정 - `users/고객id?orderId=주문id`에서 수정 **완**
 - 현황분석 디자인 - 기간별 매출, 매입
+  - 매입, 매출 바그래프
+  - 기간 필터, 원형 그래프 - 매출 % 출력
 - 엑셀다운로드 : 현황리스트 (필터대로 엑셀다운로드), 고객리스트, 매출 매입 전체 엑셀다운로드
 
 0410
