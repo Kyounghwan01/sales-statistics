@@ -35,3 +35,6 @@ declare module 'vue/types/vue' {
     $api: apis
   }
 }
+
+declare module 'chart.js';
+declare module 'vue-chartjs';

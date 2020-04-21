@@ -8,6 +8,7 @@
     "start": "yarn serve"
   },
   "dependencies": {
+    "@types/chart.js": "^2.9.19",
     "@types/vuelidate": "^0.7.11",
     "axios": "^0.19.2",
     "chart.js": "^2.9.3",

@@ -372,6 +372,13 @@
     "@types/long" "*"
     "@types/node" "*"
 
+"@types/chart.js@^2.9.19":
+  version "2.9.19"
+  resolved "https://registry.yarnpkg.com/@types/chart.js/-/chart.js-2.9.19.tgz#b112e2c2daad9f76afc32b4c099c56ccdf34040c"
+  integrity sha512-sFxlMb+ElfJelXh0Z8spmiLRrnXCd7CaT6WGQtckhjETK1H5i1nYKN4TOExhqPeDZ6u+w4bJ20UYqELWOEfAKQ==
+  dependencies:
+    moment "^2.10.2"
+
 "@types/color-name@^1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@types/color-name/-/color-name-1.1.1.tgz#1c1261bbeaa10a8055bbc5d8ab84b7b2afc846a0"
