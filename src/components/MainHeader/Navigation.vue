@@ -75,7 +75,7 @@ export default {
         { path: "/orders", name: "현황", disabled: false },
         { path: "/fill", name: "기입", disabled: false },
         { path: "/users", name: "회사", disabled: false },
-        { path: "/sales", name: "현황분석", disabled: true }
+        { path: "/sales", name: "현황분석", disabled: false }
       ];
 
       return links;

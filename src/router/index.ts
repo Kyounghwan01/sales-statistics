@@ -7,6 +7,7 @@ import MemberCreate from "@/views/MemberCreate.vue";
 import MemberDetail from "@/views/MemberDetail.vue";
 import OrderCreate from "@/views/OrderCreate.vue";
 import OrderList from "@/views/OrderList.vue";
+import Sales from "@/views/Sales.vue";
 import * as firebase from "firebase/app";
 import store from "@/store";
 import "firebase/auth";
@@ -58,6 +59,12 @@ const routes = [
     path: "/orders",
     name: "orders_list",
     component: OrderList,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: "/sales",
+    name: "sales",
+    component: Sales,
     meta: { requiresAuth: true }
   }
 ];
