@@ -2,7 +2,14 @@
 //1~100까지 숫자중 7의 배수를 총 더한 값을 알려주세요
 
 function test() {
-  console.log("Asd");
+  var answer = 0;
+
+  for (var i = 0; i < 100; i++) {
+    if (i % 7 === 0) {
+      answer += i;
+    }
+  }
+  console.log(answer);
 }
 
 test();

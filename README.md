@@ -268,7 +268,7 @@ TODO
 - 엑셀다운로드 : 현황리스트 (필터대로 엑셀다운로드), 고객리스트, 매출 매입 전체 엑셀다운로드
 
 0410
-### 주문 api 
+### 주문 api
 - 전체 주문 get
 ```
 BASEURL/order?page=0&limit=100&past=1&companyUid=gVkEsl6w21TgXgIRD10XwPoUy9o1&start_date=20200407&end_date=20200409&type=true
