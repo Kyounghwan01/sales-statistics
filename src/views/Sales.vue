@@ -3,9 +3,19 @@
     <section class="sales">
       <div class="sales__header">
         <h3>통계</h3>
+        <el-select v-model="value" placeholder="Select">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+
         <el-date-picker
           v-model="value1"
-          type="daterange"
+          :type="value === 'week' ? 'week' : 'month'"
           range-separator="-"
           start-placeholder="시작일"
           end-placeholder="종료일"
@@ -25,7 +35,7 @@
 import MainLayout from "@/router/layouts/MainLayout";
 import BarChart from "@/components/Sale/BarChart";
 import PieChart from "@/components/Sale/PieChart";
-import moment from "moment";
+// import moment from "moment";
 
 export default {
   components: {
@@ -39,12 +49,18 @@ export default {
 
   data() {
     return {
-      value1: [
-        moment(new Date())
-          .subtract(3, "months")
-          .format("YYYYMMDD"),
-        moment(new Date()).format("YYYYMMDD")
+      options: [
+        {
+          value: "week",
+          label: "주간"
+        },
+        {
+          value: "month",
+          label: "월간"
+        }
       ],
+      value: "month",
+      value1: "",
       datacollection: null,
       data: {
         labels: ["20년 1월", "20년 2월", "20년 3월", "20년 4월"],
@@ -211,5 +227,8 @@ export default {
       margin: 15px;
     }
   }
+}
+/deep/ .el-icon-date {
+  height: 0;
 }
 </style>
