@@ -3,7 +3,7 @@
     <section class="sales">
       <div class="sales__header">
         <h3>통계</h3>
-        <el-select v-model="value" placeholder="Select">
+        <el-select v-model="rangeType" placeholder="Select">
           <el-option
             v-for="item in options"
             :key="item.value"
@@ -14,12 +14,11 @@
         </el-select>
 
         <el-date-picker
-          v-model="value1"
-          :type="value === 'week' ? 'week' : 'month'"
+          v-model="rangeValue"
+          :type="rangeType === 'week' ? 'week' : 'month'"
           range-separator="-"
           start-placeholder="시작일"
           end-placeholder="종료일"
-          format="yyyy. M. d."
           value-format="yyyyMMdd"
           :clearable="false"
         >
@@ -35,16 +34,13 @@
 import MainLayout from "@/router/layouts/MainLayout";
 import BarChart from "@/components/Sale/BarChart";
 import PieChart from "@/components/Sale/PieChart";
-// import moment from "moment";
+import moment from "moment";
 
 export default {
   components: {
     MainLayout,
     BarChart,
     PieChart
-  },
-  updated() {
-    console.log(this.value1);
   },
 
   data() {
@@ -59,8 +55,10 @@ export default {
           label: "월간"
         }
       ],
-      value: "month",
-      value1: "",
+      rangeType: "month",
+      rangeValue: moment(new Date())
+        .date(1)
+        .format("YYYYMMDD"),
       datacollection: null,
       data: {
         labels: ["20년 1월", "20년 2월", "20년 3월", "20년 4월"],
@@ -187,9 +185,33 @@ export default {
       };
     }
   },
+
+  watch: {
+    rangeType: function(value) {
+      if (value === "month") {
+        this.rangeValue = moment(new Date())
+          .date(1)
+          .format("YYYYMMDD");
+
+        // this.moment(new Date())
+        // .subtract(3, "months")
+        // .format("YYYYMMDD");
+      } else if (value === "week") {
+        this.rangeValue = moment(new Date())
+          .day(1)
+          .format("YYYYMMDD");
+      }
+    }
+  },
+
   mounted() {
     this.fillData();
   },
+
+  updated() {
+    console.log(this.rangeValue);
+  },
+
   methods: {
     fillData() {
       this.datacollection = {
