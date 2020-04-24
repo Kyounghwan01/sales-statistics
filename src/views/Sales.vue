@@ -44,7 +44,7 @@ export default {
   components: {
     MainLayout,
     BarChart,
-    PieChart,
+    PieChart
   },
 
   data() {
@@ -52,17 +52,28 @@ export default {
       options: [
         {
           value: "week",
-          label: "주간",
+          label: "주간"
         },
         {
           value: "month",
-          label: "월간",
-        },
+          label: "월간"
+        }
       ],
       rangeType: "month",
-      rangeValue: moment(new Date())
+      time: moment(new Date())
         .date(1)
         .format("YYYYMMDD"),
+      timeRange: {
+        start: moment(new Date())
+          .date(1)
+          .format("YYYYMMDD"),
+        end: moment(new Date())
+          .date(1)
+          .add(1, "month")
+          .subtract(1, "day")
+          .format("YYYYMMDD")
+      },
+      salesData: null,
       datacollection: null,
       data: {
         labels: ["20년 1월", "20년 2월", "20년 3월", "20년 4월"],
@@ -73,7 +84,7 @@ export default {
             backgroundColor: "#FC8D59",
             data: [180000, 0, 300000, 0],
             yAxisID: "amount",
-            stack: 1,
+            stack: 1
           },
           {
             label: "재결제",
@@ -81,7 +92,7 @@ export default {
             backgroundColor: "#91BFDB",
             data: [1367000, 580000, 0, 100000],
             yAxisID: "amount",
-            stack: 1,
+            stack: 1
           },
           {
             label: "업그레이드",
@@ -89,7 +100,7 @@ export default {
             backgroundColor: "#D6EECC",
             data: [1600000, 0, 21700000, 6400000],
             yAxisID: "amount",
-            stack: 1,
+            stack: 1
           },
           {
             label: "환불",
@@ -97,9 +108,9 @@ export default {
             backgroundColor: "#FDD8D8",
             data: [0, 0, 0, -7200000],
             yAxisID: "amount",
-            stack: 1,
-          },
-        ],
+            stack: 1
+          }
+        ]
       },
 
       pieData: {
@@ -109,13 +120,17 @@ export default {
             type: "pie",
             data: [0, 0, 1800000, -3600000],
             countData: [0, 2, 1, 2],
-            backgroundColor: ["#FC8D59", "#91BFDB", "#D6EECC", "#FDD8D8"],
-          },
-        ],
-      },
+            backgroundColor: ["#FC8D59", "#91BFDB", "#D6EECC", "#FDD8D8"]
+          }
+        ]
+      }
     };
   },
   computed: {
+    loginUser() {
+      return this.$store.getters["loginUser/loginUser"];
+    },
+
     chartOptions() {
       const { comma } = this.$filters;
 
@@ -137,11 +152,11 @@ export default {
               if (value != 0) {
                 return datasets[datasetIndex].label;
               }
-            },
-          },
+            }
+          }
         },
         legend: {
-          display: false,
+          display: false
         },
         scales: {
           yAxes: [
@@ -149,27 +164,27 @@ export default {
               id: "amount",
               position: "left",
               gridLines: {
-                drawOnChartArea: false,
+                drawOnChartArea: false
               },
               ticks: {
                 beginAtZero: true,
                 callback: function(value) {
                   return `${comma(value)}원`;
-                },
+                }
               },
-              stacked: true,
-            },
+              stacked: true
+            }
           ],
           xAxes: [
             {
               stacked: true,
               barPercentage: 0.7,
               gridLines: {
-                display: false,
-              },
-            },
-          ],
-        },
+                display: false
+              }
+            }
+          ]
+        }
       };
     },
     pieOption() {
@@ -181,11 +196,11 @@ export default {
           bodySpacing: 7,
           xPadding: 10,
           yPadding: 10,
-          callbacks: {},
+          callbacks: {}
         },
         legend: {
-          display: false,
-        },
+          display: false
+        }
       };
     },
 
@@ -203,24 +218,73 @@ export default {
 
       return text;
     },
+
+    rangeValue: {
+      get() {
+        return this.time;
+      },
+      set(value) {
+        if (this.rangeType === "week") {
+          this.time = moment(value)
+            .subtract(1, "day")
+            .format("YYYYMMDD");
+          this.timeRange = {
+            start: this.time,
+            end: moment(value)
+              .day(6)
+              .format("YYYYMMDD")
+          };
+        } else {
+          this.time = value;
+          this.timeRange = {
+            start: this.time,
+            end: moment(value)
+              .add(1, "month")
+              .subtract(1, "day")
+              .format("YYYYMMDD")
+          };
+        }
+      }
+    }
   },
+  //TODO
+  //주별로 짤라서 각기 다른 배열에 넣고 1. 한달을 주별로 자른 날짜 4쌍의 start,end (주가 바뀌어도 이 배열은 유지)
+  //월별로 잘라서 주와는 다른 배열에 넣는다 1. 4개월을 1달로 자른 4쌍의 start,end (월이 바뀌어도 이 배열은 유지)
+  //주,월 타입 변경시 사전에 저장된 위 두개 배열 보여줌
+  //주, 월이 바뀌면 새로 만든 배열에 넣고 그 배열의 length가 있으면 이배열 값을 통계에 사용한다.
 
   watch: {
-    rangeType: function(value) {
+    rangeType: async function(value) {
       if (value === "month") {
-        this.rangeValue = moment(new Date())
+        this.time = moment(new Date())
           .date(1)
           .format("YYYYMMDD");
-
-        // this.moment(new Date())
-        // .subtract(3, "months")
-        // .format("YYYYMMDD");
+        this.timeRange = {
+          start: this.time,
+          end: moment(new Date())
+            .date(1)
+            .add(1, "month")
+            .subtract(1, "day")
+            .format("YYYYMMDD")
+        };
       } else if (value === "week") {
-        this.rangeValue = moment(new Date())
-          .day(1)
+        this.time = moment(new Date())
+          .day(0)
           .format("YYYYMMDD");
+        this.timeRange = {
+          start: this.time,
+          end: moment(new Date())
+            .day(6)
+            .format("YYYYMMDD")
+        };
       }
-    },
+
+      const res = await this.$api.order.getOrderAllForSales(
+        this.loginUser.id,
+        this.timeRange
+      );
+      console.log(res);
+    }
   },
 
   mounted() {
@@ -239,20 +303,20 @@ export default {
           {
             label: "Data One",
             backgroundColor: "#f87979",
-            data: [this.getRandomInt(), this.getRandomInt()],
+            data: [this.getRandomInt(), this.getRandomInt()]
           },
           {
             label: "Data One",
             backgroundColor: "#f87979",
-            data: [this.getRandomInt(), this.getRandomInt()],
-          },
-        ],
+            data: [this.getRandomInt(), this.getRandomInt()]
+          }
+        ]
       };
     },
     getRandomInt() {
       return Math.floor(Math.random() * (50 - 5 + 1)) + 5;
-    },
-  },
+    }
+  }
 };
 </script>
 <style lang="scss" scoped>

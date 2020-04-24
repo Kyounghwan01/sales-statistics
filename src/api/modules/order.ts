@@ -55,5 +55,17 @@ export default {
 
   deleteOrder: (orderId: string) => {
     return axios.delete(`${BASE_URL}/${orderId}`);
+  },
+
+  getOrderAllForSales: (
+    companyUid: string,
+    params: {
+      start: string;
+      end: string;
+    }
+  ) => {
+    return axios.get(
+      `${BASE_URL}?companyUid=${companyUid}&start_date=${params.start}&end_date=${params.end}`
+    );
   }
 };
