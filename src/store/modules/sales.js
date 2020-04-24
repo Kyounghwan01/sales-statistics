@@ -34,3 +34,6 @@ export const mutations = {
         };
   }
 };
+
+//api 는 나누지 않고 호출
+//api 호출한 범위, rangetype을 배열에 넣고, 사용자가 기간 클릭한 범위안에 있으면 그 기간 호출 안함

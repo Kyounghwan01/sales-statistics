@@ -13,16 +13,20 @@
           </el-option>
         </el-select>
 
-        <el-date-picker
-          v-model="rangeValue"
-          :type="rangeType === 'week' ? 'week' : 'month'"
-          range-separator="-"
-          start-placeholder="시작일"
-          end-placeholder="종료일"
-          value-format="yyyyMMdd"
-          :clearable="false"
-        >
-        </el-date-picker>
+        <div class="date-box">
+          <h3>{{ dateDisplay }}</h3>
+
+          <el-date-picker
+            v-model="rangeValue"
+            :type="rangeType === 'week' ? 'week' : 'month'"
+            range-separator="-"
+            start-placeholder="시작일"
+            end-placeholder="종료일"
+            value-format="yyyyMMdd"
+            :clearable="false"
+          >
+          </el-date-picker>
+        </div>
       </div>
       <BarChart :chart-data="data" :options="chartOptions" />
       <PieChart :chart-data="pieData" :options="pieOption" />
@@ -40,7 +44,7 @@ export default {
   components: {
     MainLayout,
     BarChart,
-    PieChart
+    PieChart,
   },
 
   data() {
@@ -48,12 +52,12 @@ export default {
       options: [
         {
           value: "week",
-          label: "주간"
+          label: "주간",
         },
         {
           value: "month",
-          label: "월간"
-        }
+          label: "월간",
+        },
       ],
       rangeType: "month",
       rangeValue: moment(new Date())
@@ -69,7 +73,7 @@ export default {
             backgroundColor: "#FC8D59",
             data: [180000, 0, 300000, 0],
             yAxisID: "amount",
-            stack: 1
+            stack: 1,
           },
           {
             label: "재결제",
@@ -77,7 +81,7 @@ export default {
             backgroundColor: "#91BFDB",
             data: [1367000, 580000, 0, 100000],
             yAxisID: "amount",
-            stack: 1
+            stack: 1,
           },
           {
             label: "업그레이드",
@@ -85,7 +89,7 @@ export default {
             backgroundColor: "#D6EECC",
             data: [1600000, 0, 21700000, 6400000],
             yAxisID: "amount",
-            stack: 1
+            stack: 1,
           },
           {
             label: "환불",
@@ -93,9 +97,9 @@ export default {
             backgroundColor: "#FDD8D8",
             data: [0, 0, 0, -7200000],
             yAxisID: "amount",
-            stack: 1
-          }
-        ]
+            stack: 1,
+          },
+        ],
       },
 
       pieData: {
@@ -105,10 +109,10 @@ export default {
             type: "pie",
             data: [0, 0, 1800000, -3600000],
             countData: [0, 2, 1, 2],
-            backgroundColor: ["#FC8D59", "#91BFDB", "#D6EECC", "#FDD8D8"]
-          }
-        ]
-      }
+            backgroundColor: ["#FC8D59", "#91BFDB", "#D6EECC", "#FDD8D8"],
+          },
+        ],
+      },
     };
   },
   computed: {
@@ -133,11 +137,11 @@ export default {
               if (value != 0) {
                 return datasets[datasetIndex].label;
               }
-            }
-          }
+            },
+          },
         },
         legend: {
-          display: false
+          display: false,
         },
         scales: {
           yAxes: [
@@ -145,27 +149,27 @@ export default {
               id: "amount",
               position: "left",
               gridLines: {
-                drawOnChartArea: false
+                drawOnChartArea: false,
               },
               ticks: {
                 beginAtZero: true,
                 callback: function(value) {
                   return `${comma(value)}원`;
-                }
+                },
               },
-              stacked: true
-            }
+              stacked: true,
+            },
           ],
           xAxes: [
             {
               stacked: true,
               barPercentage: 0.7,
               gridLines: {
-                display: false
-              }
-            }
-          ]
-        }
+                display: false,
+              },
+            },
+          ],
+        },
       };
     },
     pieOption() {
@@ -177,13 +181,28 @@ export default {
           bodySpacing: 7,
           xPadding: 10,
           yPadding: 10,
-          callbacks: {}
+          callbacks: {},
         },
         legend: {
-          display: false
-        }
+          display: false,
+        },
       };
-    }
+    },
+
+    dateDisplay() {
+      let text = this.moment(this.rangeValue).format("YYYY년 M월 D일 (ddd)");
+      if (this.rangeType === "week") {
+        const endOfWeek = this.moment(this.rangeValue).add(6, "days");
+        const year = endOfWeek.year();
+        const month = endOfWeek.month() + 1;
+        const week = Math.ceil(endOfWeek.date() / 7);
+        text = `${year}년 ${month}월 ${week}주`;
+      } else if (this.rangeType === "month") {
+        text = this.moment(this.rangeValue).format("YYYY년 M월");
+      }
+
+      return text;
+    },
   },
 
   watch: {
@@ -201,7 +220,7 @@ export default {
           .day(1)
           .format("YYYYMMDD");
       }
-    }
+    },
   },
 
   mounted() {
@@ -220,20 +239,20 @@ export default {
           {
             label: "Data One",
             backgroundColor: "#f87979",
-            data: [this.getRandomInt(), this.getRandomInt()]
+            data: [this.getRandomInt(), this.getRandomInt()],
           },
           {
             label: "Data One",
             backgroundColor: "#f87979",
-            data: [this.getRandomInt(), this.getRandomInt()]
-          }
-        ]
+            data: [this.getRandomInt(), this.getRandomInt()],
+          },
+        ],
       };
     },
     getRandomInt() {
       return Math.floor(Math.random() * (50 - 5 + 1)) + 5;
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>
@@ -252,5 +271,33 @@ export default {
 }
 /deep/ .el-icon-date {
   height: 0;
+}
+.date-box {
+  display: flex;
+  position: relative;
+  h3 {
+    font-size: 18px;
+    position: absolute;
+    top: 30%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    text-align: center;
+    z-index: 1;
+    margin: 0;
+    pointer-events: none;
+  }
+  /deep/ .el-input__inner {
+    border: none;
+    color: white;
+    &:hover {
+      cursor: pointer;
+      border-bottom: 3px solid grey;
+      border-radius: 0;
+    }
+  }
+  /deep/ .el-input__prefix {
+    display: none;
+  }
 }
 </style>
