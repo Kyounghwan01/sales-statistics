@@ -295,6 +295,11 @@ export default {
     console.log(this.rangeValue);
   },
 
+  created() {
+    console.log(this.$store.getters["sales/sales"]);
+    this.$store.dispatch("sales/getSalesData");
+  },
+
   methods: {
     fillData() {
       this.datacollection = {
