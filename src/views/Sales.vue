@@ -1,6 +1,6 @@
 <template>
   <MainLayout :padded="false">
-    <section class="sales">
+    <section class="sales" v-loading="salesStoreData.loading">
       <div class="sales__header">
         <h3>통계</h3>
         <el-select v-model="rangeType" placeholder="Select">
@@ -63,16 +63,6 @@ export default {
       time: moment(new Date())
         .date(1)
         .format("YYYYMMDD"),
-      timeRange: {
-        start: moment(new Date())
-          .date(1)
-          .format("YYYYMMDD"),
-        end: moment(new Date())
-          .date(1)
-          .add(1, "month")
-          .subtract(1, "day")
-          .format("YYYYMMDD")
-      },
       salesData: null,
       datacollection: null,
       data: {
@@ -129,6 +119,10 @@ export default {
   computed: {
     loginUser() {
       return this.$store.getters["loginUser/loginUser"];
+    },
+
+    salesStoreData() {
+      return this.$store.getters["sales/sales"];
     },
 
     chartOptions() {
@@ -228,99 +222,46 @@ export default {
           this.time = moment(value)
             .subtract(1, "day")
             .format("YYYYMMDD");
-          this.timeRange = {
-            start: this.time,
-            end: moment(value)
-              .day(6)
-              .format("YYYYMMDD")
-          };
+          this.$store.dispatch("sales/getSalesData", {
+            date: this.time,
+            id: this.loginUser.id
+          });
         } else {
           this.time = value;
-          this.timeRange = {
-            start: this.time,
-            end: moment(value)
-              .add(1, "month")
-              .subtract(1, "day")
-              .format("YYYYMMDD")
-          };
+          this.$store.dispatch("sales/getSalesData", {
+            date: this.time,
+            id: this.loginUser.id
+          });
         }
       }
     }
   },
-  //TODO
-  //주별로 짤라서 각기 다른 배열에 넣고 1. 한달을 주별로 자른 날짜 4쌍의 start,end (주가 바뀌어도 이 배열은 유지)
-  //월별로 잘라서 주와는 다른 배열에 넣는다 1. 4개월을 1달로 자른 4쌍의 start,end (월이 바뀌어도 이 배열은 유지)
-  //주,월 타입 변경시 사전에 저장된 위 두개 배열 보여줌
-  //주, 월이 바뀌면 새로 만든 배열에 넣고 그 배열의 length가 있으면 이배열 값을 통계에 사용한다.
 
   watch: {
     rangeType: async function(value) {
-      if (value === "month") {
-        this.time = moment(new Date())
-          .date(1)
-          .format("YYYYMMDD");
-        this.timeRange = {
-          start: this.time,
-          end: moment(new Date())
-            .date(1)
-            .add(1, "month")
-            .subtract(1, "day")
-            .format("YYYYMMDD")
-        };
-      } else if (value === "week") {
-        this.time = moment(new Date())
-          .day(0)
-          .format("YYYYMMDD");
-        this.timeRange = {
-          start: this.time,
-          end: moment(new Date())
-            .day(6)
-            .format("YYYYMMDD")
-        };
-      }
+      console.log(value);
+      this.$store.dispatch("sales/getSalesDataWithChangeType", {
+        searchType: value,
+        date: this.time,
+        id: this.loginUser.id
+      });
 
-      const res = await this.$api.order.getOrderAllForSales(
-        this.loginUser.id,
-        this.timeRange
-      );
-      console.log(res);
+      //TODO: rangeType바뀌면 새로운 타입에 맞게 ajax
+      console.log(this.salesStoreData, this.rangeValue);
+
+      // const res = await this.$api.order.getOrderAllForSales(
+      //   this.loginUser.id,
+      //   this.salesStoreData.searchRange[value]
+      // );
+      // console.log(res);
     }
-  },
-
-  mounted() {
-    this.fillData();
-  },
-
-  updated() {
-    console.log(this.rangeValue);
   },
 
   created() {
-    console.log(this.$store.getters["sales/sales"]);
-    this.$store.dispatch("sales/getSalesData");
-  },
-
-  methods: {
-    fillData() {
-      this.datacollection = {
-        labels: [this.getRandomInt(), this.getRandomInt()],
-        datasets: [
-          {
-            label: "Data One",
-            backgroundColor: "#f87979",
-            data: [this.getRandomInt(), this.getRandomInt()]
-          },
-          {
-            label: "Data One",
-            backgroundColor: "#f87979",
-            data: [this.getRandomInt(), this.getRandomInt()]
-          }
-        ]
-      };
-    },
-    getRandomInt() {
-      return Math.floor(Math.random() * (50 - 5 + 1)) + 5;
-    }
+    this.$store.dispatch("sales/getSalesData", {
+      date: this.moment().format("YYYYMMDD"),
+      id: this.loginUser.id
+    });
   }
 };
 </script>

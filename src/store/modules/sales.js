@@ -1,4 +1,6 @@
 import moment from "moment";
+import _ from "lodash";
+import api from "@/api";
 
 const DEFAULT_SALES = {
   searchType: "month",
@@ -6,8 +8,7 @@ const DEFAULT_SALES = {
     month: [],
     week: []
   },
-  salesDate: { month: [], week: [] },
-  BaseDate: moment().format("YYYYMMDD")
+  salesData: { month: [], week: [] }
 };
 
 export const state = {
@@ -36,71 +37,83 @@ export const mutations = {
   },
 
   SET_SALES_DATA(state, data) {
-    state.sales.salesDate = data;
+    state.sales = { ...state.sales, ...data };
+    // console.log(state.sales);
   },
 
   SET_SEARCH_RANGE(state, data) {
+    state.sales.searchRange = _.cloneDeep(DEFAULT_SALES.salesData);
+
     if (state.sales.searchType === "month") {
-      console.log("ASd");
+      for (let i = 4; i >= 0; i--) {
+        const start = moment(data)
+          .subtract(i, "month")
+          .date(1)
+          .format("YYYYMMDD");
+        let end = moment(data)
+          .date(1)
+          .subtract(i - 1, "month")
+          .subtract(1, "day")
+          .format("YYYYMMDD");
+        if (i === 0) {
+          end = moment(data)
+            .date(1)
+            .add(1, "month")
+            .subtract(1, "day")
+            .format("YYYYMMDD");
+        }
+
+        state.sales.searchRange[state.sales.searchType].push({
+          start,
+          end
+        });
+      }
     } else {
-      console.log("zxc");
+      for (let i = 4; i >= 0; i--) {
+        const start = moment(data)
+          .subtract(i * 7, "day")
+          .day(0)
+          .format("YYYYMMDD");
+        const end = moment(data)
+          .subtract(i * 7, "day")
+          .day(6)
+          .format("YYYYMMDD");
+
+        state.sales.searchRange[state.sales.searchType].push({
+          start,
+          end
+        });
+      }
+      console.log(state.sales.searchRange);
     }
-    state.selas.searchRange = data;
   }
 };
 
 export const actions = {
-  async getSalesData({ state, commit }) {
+  async getSalesData({ state, commit }, date) {
+    // console.log(date);
     try {
-      commit("SET_SALES_DATA", true);
-      commit("SET_SEARCH_RANGE", state.BaseDate);
+      commit("SET_LOADING", true);
+      commit("SET_SEARCH_RANGE", date.date);
+
+      const res = await Promise.all(
+        state.sales.searchRange[state.sales.searchType].map(el =>
+          api.order.getOrderAllForSales(date.id, el)
+        )
+      );
+      console.log(res);
+
+      // commit("SET_SALES_DATA", data);
       //state.sales.searchRange 배열만큼 api 호출
     } catch (error) {
-      commit("SET_SALES_DATA", null);
+      commit("SET_SALES_DATA", _.cloneDeep(DEFAULT_SALES));
     } finally {
-      commit("SET_SALES_DATA", false);
+      commit("SET_LOADING", false);
     }
+  },
+
+  async getSalesDataWithChangeType({ commit, dispatch }, data) {
+    commit("SET_SALES_DATA", data);
+    dispatch("getSalesData", data);
   }
 };
-
-//api 는 나누지 않고 호출
-//api 호출한 범위, rangetype을 배열에 넣고, 사용자가 기간 클릭한 범위안에 있으면 그 기간 호출 안함
-
-// {
-//   start: moment(new Date())
-//     .subtract(3, "months")
-//     .date(1)
-//     .format("YYYYMMDD"),
-//   end: moment(new Date())
-//     .date(1)
-//     .subtract(2, "month")
-//     .subtract(1, "day")
-//     .format("YYYYMMDD")
-// },
-// {
-//   start: moment(new Date())
-//     .subtract(2, "month")
-//     .date(1)
-//     .format("YYYYMMDD"),
-//   end: moment(new Date())
-//     .date(1)
-//     .subtract(1, "month")
-//     .subtract(1, "day")
-//     .format("YYYYMMDD")
-// },
-// {
-//   start: moment(new Date())
-//     .subtract(1, "month")
-//     .date(1)
-//     .format("YYYYMMDD"),
-//   end: moment(new Date())
-//     .date(1)
-//     .subtract(1, "day")
-//     .format("YYYYMMDD")
-// },
-// {
-//   start: moment(new Date())
-//     .date(1)
-//     .format("YYYYMMDD"),
-//   end: moment(new Date()).format("YYYYMMDD")
-// }
