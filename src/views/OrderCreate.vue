@@ -153,6 +153,7 @@
 </template>
 
 <script>
+import _ from "lodash";
 import MainLayout from "@/router/layouts/MainLayout";
 import TextInput from "@/components/TextInput";
 import PriceInput from "@/components/PriceInput";
@@ -296,7 +297,7 @@ export default {
       if (res.status === 200) {
         this.isSaving = false;
         this.$message("주문 정보 추가 완료");
-        this.data = DEFAULT_DATA;
+        this.data = _.cloneDeep(DEFAULT_DATA);
         this.search = !this.search;
         this.$v.$reset();
       } else {

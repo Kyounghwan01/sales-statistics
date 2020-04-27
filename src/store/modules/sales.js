@@ -8,7 +8,7 @@ const DEFAULT_SALES = {
     month: [],
     week: []
   },
-  salesData: { month: [], week: [] }
+  salesData: []
 };
 
 export const state = {
@@ -38,11 +38,10 @@ export const mutations = {
 
   SET_SALES_DATA(state, data) {
     state.sales = { ...state.sales, ...data };
-    // console.log(state.sales);
   },
 
   SET_SEARCH_RANGE(state, data) {
-    state.sales.searchRange = _.cloneDeep(DEFAULT_SALES.salesData);
+    state.sales.searchRange = _.cloneDeep(DEFAULT_SALES.searchRange);
 
     if (state.sales.searchType === "month") {
       for (let i = 4; i >= 0; i--) {
@@ -84,7 +83,6 @@ export const mutations = {
           end
         });
       }
-      console.log(state.sales.searchRange);
     }
   }
 };
@@ -101,10 +99,13 @@ export const actions = {
           api.order.getOrderAllForSales(date.id, el)
         )
       );
-      console.log(res);
+      res.sort(function(prev, next) {
+        return prev.data.params.date.$gte - next.data.params.date.$gte;
+      });
 
-      // commit("SET_SALES_DATA", data);
-      //state.sales.searchRange 배열만큼 api 호출
+      commit("SET_SALES_DATA", {
+        salesData: res.map(el => el.data.order)
+      });
     } catch (error) {
       commit("SET_SALES_DATA", _.cloneDeep(DEFAULT_SALES));
     } finally {

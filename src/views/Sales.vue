@@ -3,6 +3,7 @@
     <section class="sales" v-loading="salesStoreData.loading">
       <div class="sales__header">
         <h3>통계</h3>
+        <!-- {{ barChartData }} -->
         <el-select v-model="rangeType" placeholder="Select">
           <el-option
             v-for="item in options"
@@ -14,7 +15,7 @@
         </el-select>
 
         <div class="date-box">
-          <h3>{{ dateDisplay }}</h3>
+          <h3>{{ dateDisplay(rangeValue, rangeType) }}</h3>
 
           <el-date-picker
             v-model="rangeValue"
@@ -28,7 +29,11 @@
           </el-date-picker>
         </div>
       </div>
-      <BarChart :chart-data="data" :options="chartOptions" />
+      <BarChart
+        v-loading="salesStoreData.loading"
+        :chart-data="barChartData"
+        :options="chartOptions"
+      />
       <PieChart :chart-data="pieData" :options="pieOption" />
     </section>
   </MainLayout>
@@ -63,8 +68,6 @@ export default {
       time: moment(new Date())
         .date(1)
         .format("YYYYMMDD"),
-      salesData: null,
-      datacollection: null,
       data: {
         labels: ["20년 1월", "20년 2월", "20년 3월", "20년 4월"],
         datasets: [
@@ -198,21 +201,6 @@ export default {
       };
     },
 
-    dateDisplay() {
-      let text = this.moment(this.rangeValue).format("YYYY년 M월 D일 (ddd)");
-      if (this.rangeType === "week") {
-        const endOfWeek = this.moment(this.rangeValue).add(6, "days");
-        const year = endOfWeek.year();
-        const month = endOfWeek.month() + 1;
-        const week = Math.ceil(endOfWeek.date() / 7);
-        text = `${year}년 ${month}월 ${week}주`;
-      } else if (this.rangeType === "month") {
-        text = this.moment(this.rangeValue).format("YYYY년 M월");
-      }
-
-      return text;
-    },
-
     rangeValue: {
       get() {
         return this.time;
@@ -234,34 +222,94 @@ export default {
           });
         }
       }
+    },
+
+    barChartData() {
+      const { searchRange, searchType, salesData } = this.salesStoreData;
+      const labels = [];
+      const datasets = [
+        {
+          label: "매출",
+          type: "bar",
+          data: [0, 0, 0, 0, 0],
+          backgroundColor: "#FC8D59",
+          yAxisID: "amount",
+          stack: 1
+        },
+        {
+          label: "매입",
+          type: "bar",
+          data: [0, 0, 0, 0, 0],
+          backgroundColor: "#91BFDB",
+          yAxisID: "amount",
+          stack: 1
+        },
+        {
+          label: "순이익",
+          type: "bar",
+          data: [0, 0, 0, 0, 0],
+          backgroundColor: "#D6EECC",
+          yAxisID: "amount",
+          stack: 2
+        }
+      ];
+
+      searchRange[searchType].map(el => {
+        const label = this.dateDisplay(el.start, searchType);
+        labels.push(searchType === "month" ? label.substr(2) : label.substr(6));
+      });
+
+      salesData.map((orderArray, index) => {
+        orderArray.map(orders => {
+          if (orders.type) {
+            datasets[1].data[index] -= orders.price;
+            datasets[2].data[index] -= orders.price;
+          } else {
+            datasets[0].data[index] += orders.price;
+            datasets[2].data[index] += orders.price;
+          }
+        });
+      });
+
+      return {
+        labels,
+        datasets
+      };
     }
   },
 
   watch: {
     rangeType: async function(value) {
-      console.log(value);
       this.$store.dispatch("sales/getSalesDataWithChangeType", {
         searchType: value,
         date: this.time,
         id: this.loginUser.id
       });
-
-      //TODO: rangeType바뀌면 새로운 타입에 맞게 ajax
-      console.log(this.salesStoreData, this.rangeValue);
-
-      // const res = await this.$api.order.getOrderAllForSales(
-      //   this.loginUser.id,
-      //   this.salesStoreData.searchRange[value]
-      // );
-      // console.log(res);
     }
   },
 
-  created() {
-    this.$store.dispatch("sales/getSalesData", {
+  async created() {
+    await this.$store.dispatch("sales/getSalesData", {
       date: this.moment().format("YYYYMMDD"),
       id: this.loginUser.id
     });
+  },
+
+  methods: {
+    dateDisplay(value, type) {
+      let text = this.moment(value).format("YYYY년 M월 D일 (ddd)");
+      if (type === "week") {
+        const endOfWeek = this.moment(value).add(6, "days");
+        const year = endOfWeek.year();
+        const month = endOfWeek.month() + 1;
+        const week = Math.ceil(endOfWeek.date() / 7);
+        text = `${year}년 ${month}월 ${week}주`;
+      } else if (type === "month") {
+        text = this.moment(value).format("YYYY년 M월");
+      }
+
+      return text;
+    }
   }
 };
 </script>
