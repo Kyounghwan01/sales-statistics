@@ -90,7 +90,6 @@ export const mutations = {
 
 export const actions = {
   async getSalesData({ state, commit }, date) {
-    // console.log(date);
     try {
       commit("SET_LOADING", true);
       commit("SET_SEARCH_RANGE", date.date);

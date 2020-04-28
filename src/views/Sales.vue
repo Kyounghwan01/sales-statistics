@@ -33,9 +33,13 @@
         :chart-data="handlSalesData('bar')"
         :options="chartOptions"
       />
-      <PieChart :chart-data="pieData" :options="pieOption" />
+      <PieChart :chart-data="handlSalesData('pieInput')" :options="pieOption" />
+      <PieChart
+        :chart-data="handlSalesData('pieOutput')"
+        :options="pieOption"
+      />
 
-      <line-chart :chart-data="datacollection"></line-chart>
+      <!-- <line-chart :chart-data="datacollection"></line-chart> -->
     </section>
   </MainLayout>
 </template>
@@ -44,62 +48,63 @@
 import MainLayout from "@/router/layouts/MainLayout";
 import BarChart from "@/components/Sale/BarChart";
 import PieChart from "@/components/Sale/PieChart";
-import LineChart from "@/components/Sale/LineChart";
+// import LineChart from "@/components/Sale/LineChart";
 import moment from "moment";
+import _ from "lodash";
 
 export default {
   components: {
     MainLayout,
     BarChart,
-    PieChart,
-    LineChart,
+    PieChart
+    // LineChart
   },
 
   data() {
     return {
-      datacollection: {
-        labels: [
-          "January",
-          "February",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July",
-          "August",
-          "September",
-          "October",
-          "November",
-          "December",
-        ],
-        datasets: [
-          {
-            label: "Data",
-            borderColor: "#80b6f4",
-            pointBorderColor: "#80b6f4",
-            pointBackgroundColor: "#80b6f4",
-            pointHoverBackgroundColor: "#80b6f4",
-            pointHoverBorderColor: "#80b6f4",
-            pointBorderWidth: 10,
-            pointHoverRadius: 10,
-            pointHoverBorderWidth: 1,
-            pointRadius: 3,
-            fill: false,
-            borderWidth: 4,
-            data: [40, 20, 30, 50, 90, 10, 20, 40, 50, 70, 90, 100],
-          },
-        ],
-      },
+      // datacollection: {
+      //   labels: [
+      //     "January",
+      //     "February",
+      //     "March",
+      //     "April",
+      //     "May",
+      //     "June",
+      //     "July",
+      //     "August",
+      //     "September",
+      //     "October",
+      //     "November",
+      //     "December"
+      //   ],
+      //   datasets: [
+      //     {
+      //       label: "Data",
+      //       borderColor: "#80b6f4",
+      //       pointBorderColor: "#80b6f4",
+      //       pointBackgroundColor: "#80b6f4",
+      //       pointHoverBackgroundColor: "#80b6f4",
+      //       pointHoverBorderColor: "#80b6f4",
+      //       pointBorderWidth: 10,
+      //       pointHoverRadius: 10,
+      //       pointHoverBorderWidth: 1,
+      //       pointRadius: 3,
+      //       fill: false,
+      //       borderWidth: 4,
+      //       data: [40, 20, 30, 50, 90, 10, 20, 40, 50, 70, 90, 100]
+      //     }
+      //   ]
+      // },
 
       options: [
         {
           value: "week",
-          label: "주간",
+          label: "주간"
         },
         {
           value: "month",
-          label: "월간",
-        },
+          label: "월간"
+        }
       ],
       rangeType: "month",
       time: moment(new Date())
@@ -114,7 +119,7 @@ export default {
             backgroundColor: "#FC8D59",
             data: [180000, 0, 300000, 0],
             yAxisID: "amount",
-            stack: 1,
+            stack: 1
           },
           {
             label: "재결제",
@@ -122,7 +127,7 @@ export default {
             backgroundColor: "#91BFDB",
             data: [1367000, 580000, 0, 100000],
             yAxisID: "amount",
-            stack: 1,
+            stack: 1
           },
           {
             label: "업그레이드",
@@ -130,7 +135,7 @@ export default {
             backgroundColor: "#D6EECC",
             data: [1600000, 0, 21700000, 6400000],
             yAxisID: "amount",
-            stack: 1,
+            stack: 1
           },
           {
             label: "환불",
@@ -138,9 +143,9 @@ export default {
             backgroundColor: "#FDD8D8",
             data: [0, 0, 0, -7200000],
             yAxisID: "amount",
-            stack: 1,
-          },
-        ],
+            stack: 1
+          }
+        ]
       },
 
       pieData: {
@@ -150,10 +155,10 @@ export default {
             type: "pie",
             data: [100000, 300000, 1800000, -3600000],
             countData: [0, 2, 1, 2],
-            backgroundColor: ["#FC8D59", "#91BFDB", "#D6EECC", "#FDD8D8"],
-          },
-        ],
-      },
+            backgroundColor: ["#FC8D59", "#91BFDB", "#D6EECC", "#FDD8D8"]
+          }
+        ]
+      }
     };
   },
 
@@ -191,11 +196,11 @@ export default {
               if (value != 0) {
                 return datasets[datasetIndex].label;
               }
-            },
-          },
+            }
+          }
         },
         legend: {
-          display: false,
+          display: false
         },
         scales: {
           yAxes: [
@@ -203,27 +208,27 @@ export default {
               id: "amount",
               position: "left",
               gridLines: {
-                drawOnChartArea: false,
+                drawOnChartArea: false
               },
               ticks: {
                 beginAtZero: true,
                 callback: function(value) {
                   return `${comma(value)}원`;
-                },
+                }
               },
-              stacked: true,
-            },
+              stacked: true
+            }
           ],
           xAxes: [
             {
               stacked: true,
               barPercentage: 0.7,
               gridLines: {
-                display: false,
-              },
-            },
-          ],
-        },
+                display: false
+              }
+            }
+          ]
+        }
       };
     },
     pieOption() {
@@ -235,11 +240,11 @@ export default {
           bodySpacing: 7,
           xPadding: 10,
           yPadding: 10,
-          callbacks: {},
+          callbacks: {}
         },
         legend: {
-          display: false,
-        },
+          display: false
+        }
       };
     },
 
@@ -254,70 +259,17 @@ export default {
             .format("YYYYMMDD");
           this.$store.dispatch("sales/getSalesData", {
             date: this.time,
-            id: this.loginUser.id,
+            id: this.loginUser.id
           });
         } else {
           this.time = value;
           this.$store.dispatch("sales/getSalesData", {
             date: this.time,
-            id: this.loginUser.id,
+            id: this.loginUser.id
           });
         }
-      },
-    },
-
-    barChartData() {
-      const { searchRange, searchType, salesData } = this.salesStoreData;
-      const labels = [];
-      const datasets = [
-        {
-          label: "매출",
-          type: "bar",
-          data: [0, 0, 0, 0, 0],
-          backgroundColor: "#FC8D59",
-          yAxisID: "amount",
-          stack: 1,
-        },
-        {
-          label: "매입",
-          type: "bar",
-          data: [0, 0, 0, 0, 0],
-          backgroundColor: "#91BFDB",
-          yAxisID: "amount",
-          stack: 1,
-        },
-        {
-          label: "순이익",
-          type: "bar",
-          data: [0, 0, 0, 0, 0],
-          backgroundColor: "#D6EECC",
-          yAxisID: "amount",
-          stack: 2,
-        },
-      ];
-
-      searchRange[searchType].map((el) => {
-        const label = this.dateDisplay(el.start, searchType);
-        labels.push(searchType === "month" ? label.substr(2) : label.substr(6));
-      });
-
-      salesData.map((orderArray, index) => {
-        orderArray.map((orders) => {
-          if (orders.type) {
-            datasets[1].data[index] -= orders.price;
-            datasets[2].data[index] -= orders.price;
-          } else {
-            datasets[0].data[index] += orders.price;
-            datasets[2].data[index] += orders.price;
-          }
-        });
-      });
-
-      return {
-        labels,
-        datasets,
-      };
-    },
+      }
+    }
   },
 
   watch: {
@@ -325,15 +277,15 @@ export default {
       this.$store.dispatch("sales/getSalesDataWithChangeType", {
         searchType: value,
         date: this.time,
-        id: this.loginUser.id,
+        id: this.loginUser.id
       });
-    },
+    }
   },
 
   async created() {
     await this.$store.dispatch("sales/getSalesData", {
       date: this.moment().format("YYYYMMDD"),
-      id: this.loginUser.id,
+      id: this.loginUser.id
     });
   },
 
@@ -356,54 +308,117 @@ export default {
     handlSalesData(type) {
       const { searchRange, searchType, salesData } = this.salesStoreData;
       const labels = [];
-      //TODO: data 0배열 로직 코딩
+      const flatArray = salesData.flat();
+
+      searchRange[searchType].map(el => {
+        const label = this.dateDisplay(el.start, searchType);
+        labels.push(searchType === "month" ? label.substr(2) : label.substr(6));
+      });
+
       const barDataSets = [
         {
           label: "매출",
           type: "bar",
-          data: [0, 0, 0, 0, 0],
+          data: [],
           backgroundColor: "#FC8D59",
           yAxisID: "amount",
-          stack: 1,
+          stack: 1
         },
         {
           label: "매입",
           type: "bar",
-          data: [0, 0, 0, 0, 0],
+          data: [],
           backgroundColor: "#91BFDB",
           yAxisID: "amount",
-          stack: 1,
+          stack: 1
         },
         {
           label: "순이익",
           type: "bar",
-          data: [0, 0, 0, 0, 0],
+          data: [],
           backgroundColor: "#D6EECC",
           yAxisID: "amount",
-          stack: 2,
-        },
+          stack: 2
+        }
       ];
+
+      for (let i = 0; i < labels.length; i++) {
+        for (let j = 0; j < barDataSets.length; j++) {
+          barDataSets[j].data.push(0);
+        }
+      }
 
       //label: 매입/매출 물품
       //dataset: 매입/매출 나뉜 물품 나뉜 더한 값 + 더한 횟수 (물품 5건 1,000원)
       //상단: 총 매입/매출 건수 + 총 합산 가격 / 매입 건수 + 가격 / 매출 건수 + 가격 / 미수금 건수 + 가격
       //backgroundColor: 컬러셋 지정하고 순서에 맞게 값 넣기
 
-      const pieDataSets = [
-        {
-          type: "pie",
-          data: [0, 0, 0, 0, 0],
-          backgroundColor: ["#FC8D59", "#91BFDB", "#D6EECC"],
-        },
-      ];
+      const pieData = {
+        label: { input: [], output: [] },
+        data: { input: [], output: [] },
+        colorSet: { input: [], output: [] }
+      };
 
-      searchRange[searchType].map((el) => {
-        const label = this.dateDisplay(el.start, searchType);
-        labels.push(searchType === "month" ? label.substr(2) : label.substr(6));
-      });
+      flatArray.map(({ type, goods }) =>
+        type
+          ? pieData.label.input.push({ goods })
+          : pieData.label.output.push({ goods })
+      );
+      pieData.label.input = _.uniq(
+        pieData.label.input.map(({ goods }) => goods)
+      );
+      for (let i = 0; i < pieData.label.input.length; i++) {
+        pieData.data.input.push(0);
+        pieData.colorSet.input.push(
+          `#${Math.round(Math.random() * 0xffffff).toString(16)}`
+        );
+      }
 
+      pieData.label.output = _.uniq(
+        pieData.label.output.map(({ goods }) => goods)
+      );
+      for (let i = 0; i < pieData.label.output.length; i++) {
+        pieData.data.output.push(0);
+        pieData.colorSet.output.push(
+          `#${Math.round(Math.random() * 0xffffff).toString(16)}`
+        );
+      }
+
+      for (let i = 0; i < flatArray.length; i++) {
+        if (flatArray[i].type) {
+          pieData.data.input[pieData.label.input.indexOf(flatArray[i].goods)] +=
+            flatArray[i].price;
+        } else {
+          pieData.data.output[
+            pieData.label.output.indexOf(flatArray[i].goods)
+          ] += flatArray[i].price;
+        }
+      }
+      console.log(pieData);
+
+      const inputPieChart = {
+        labels: pieData.label.input,
+        datasets: [
+          {
+            type: "pie",
+            data: pieData.data.input,
+            backgroundColor: pieData.colorSet.input
+          }
+        ]
+      };
+
+      const outputPieChart = {
+        labels: pieData.label.output,
+        datasets: [
+          {
+            type: "pie",
+            data: pieData.data.output,
+            backgroundColor: pieData.colorSet.output
+          }
+        ]
+      };
       salesData.map((orderArray, index) => {
-        orderArray.map((orders) => {
+        orderArray.map(orders => {
           if (orders.type) {
             barDataSets[1].data[index] -= orders.price;
             barDataSets[2].data[index] -= orders.price;
@@ -416,9 +431,19 @@ export default {
 
       if (type === "bar") {
         return { labels, datasets: barDataSets };
+      } else if (type === "pieInput") {
+        return {
+          labels: inputPieChart.labels,
+          datasets: inputPieChart.datasets
+        };
+      } else {
+        return {
+          labels: outputPieChart.labels,
+          datasets: outputPieChart.datasets
+        };
       }
-    },
-  },
+    }
+  }
 };
 </script>
 <style lang="scss" scoped>
