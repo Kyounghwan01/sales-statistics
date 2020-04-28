@@ -3,7 +3,6 @@
     <section class="sales" v-loading="salesStoreData.loading">
       <div class="sales__header">
         <h3>통계</h3>
-        <!-- {{ barChartData }} -->
         <el-select v-model="rangeType" placeholder="Select">
           <el-option
             v-for="item in options"
@@ -30,11 +29,13 @@
         </div>
       </div>
       <BarChart
-        v-loading="salesStoreData.loading"
-        :chart-data="barChartData"
+        v-loading="loading"
+        :chart-data="handlSalesData('bar')"
         :options="chartOptions"
       />
       <PieChart :chart-data="pieData" :options="pieOption" />
+
+      <line-chart :chart-data="datacollection"></line-chart>
     </section>
   </MainLayout>
 </template>
@@ -43,26 +44,62 @@
 import MainLayout from "@/router/layouts/MainLayout";
 import BarChart from "@/components/Sale/BarChart";
 import PieChart from "@/components/Sale/PieChart";
+import LineChart from "@/components/Sale/LineChart";
 import moment from "moment";
 
 export default {
   components: {
     MainLayout,
     BarChart,
-    PieChart
+    PieChart,
+    LineChart,
   },
 
   data() {
     return {
+      datacollection: {
+        labels: [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December",
+        ],
+        datasets: [
+          {
+            label: "Data",
+            borderColor: "#80b6f4",
+            pointBorderColor: "#80b6f4",
+            pointBackgroundColor: "#80b6f4",
+            pointHoverBackgroundColor: "#80b6f4",
+            pointHoverBorderColor: "#80b6f4",
+            pointBorderWidth: 10,
+            pointHoverRadius: 10,
+            pointHoverBorderWidth: 1,
+            pointRadius: 3,
+            fill: false,
+            borderWidth: 4,
+            data: [40, 20, 30, 50, 90, 10, 20, 40, 50, 70, 90, 100],
+          },
+        ],
+      },
+
       options: [
         {
           value: "week",
-          label: "주간"
+          label: "주간",
         },
         {
           value: "month",
-          label: "월간"
-        }
+          label: "월간",
+        },
       ],
       rangeType: "month",
       time: moment(new Date())
@@ -77,7 +114,7 @@ export default {
             backgroundColor: "#FC8D59",
             data: [180000, 0, 300000, 0],
             yAxisID: "amount",
-            stack: 1
+            stack: 1,
           },
           {
             label: "재결제",
@@ -85,7 +122,7 @@ export default {
             backgroundColor: "#91BFDB",
             data: [1367000, 580000, 0, 100000],
             yAxisID: "amount",
-            stack: 1
+            stack: 1,
           },
           {
             label: "업그레이드",
@@ -93,7 +130,7 @@ export default {
             backgroundColor: "#D6EECC",
             data: [1600000, 0, 21700000, 6400000],
             yAxisID: "amount",
-            stack: 1
+            stack: 1,
           },
           {
             label: "환불",
@@ -101,9 +138,9 @@ export default {
             backgroundColor: "#FDD8D8",
             data: [0, 0, 0, -7200000],
             yAxisID: "amount",
-            stack: 1
-          }
-        ]
+            stack: 1,
+          },
+        ],
       },
 
       pieData: {
@@ -111,14 +148,15 @@ export default {
         datasets: [
           {
             type: "pie",
-            data: [0, 0, 1800000, -3600000],
+            data: [100000, 300000, 1800000, -3600000],
             countData: [0, 2, 1, 2],
-            backgroundColor: ["#FC8D59", "#91BFDB", "#D6EECC", "#FDD8D8"]
-          }
-        ]
-      }
+            backgroundColor: ["#FC8D59", "#91BFDB", "#D6EECC", "#FDD8D8"],
+          },
+        ],
+      },
     };
   },
+
   computed: {
     loginUser() {
       return this.$store.getters["loginUser/loginUser"];
@@ -126,6 +164,10 @@ export default {
 
     salesStoreData() {
       return this.$store.getters["sales/sales"];
+    },
+
+    loading() {
+      return this.$store.getters["sales/loading"];
     },
 
     chartOptions() {
@@ -149,11 +191,11 @@ export default {
               if (value != 0) {
                 return datasets[datasetIndex].label;
               }
-            }
-          }
+            },
+          },
         },
         legend: {
-          display: false
+          display: false,
         },
         scales: {
           yAxes: [
@@ -161,27 +203,27 @@ export default {
               id: "amount",
               position: "left",
               gridLines: {
-                drawOnChartArea: false
+                drawOnChartArea: false,
               },
               ticks: {
                 beginAtZero: true,
                 callback: function(value) {
                   return `${comma(value)}원`;
-                }
+                },
               },
-              stacked: true
-            }
+              stacked: true,
+            },
           ],
           xAxes: [
             {
               stacked: true,
               barPercentage: 0.7,
               gridLines: {
-                display: false
-              }
-            }
-          ]
-        }
+                display: false,
+              },
+            },
+          ],
+        },
       };
     },
     pieOption() {
@@ -193,11 +235,11 @@ export default {
           bodySpacing: 7,
           xPadding: 10,
           yPadding: 10,
-          callbacks: {}
+          callbacks: {},
         },
         legend: {
-          display: false
-        }
+          display: false,
+        },
       };
     },
 
@@ -212,16 +254,16 @@ export default {
             .format("YYYYMMDD");
           this.$store.dispatch("sales/getSalesData", {
             date: this.time,
-            id: this.loginUser.id
+            id: this.loginUser.id,
           });
         } else {
           this.time = value;
           this.$store.dispatch("sales/getSalesData", {
             date: this.time,
-            id: this.loginUser.id
+            id: this.loginUser.id,
           });
         }
-      }
+      },
     },
 
     barChartData() {
@@ -234,7 +276,7 @@ export default {
           data: [0, 0, 0, 0, 0],
           backgroundColor: "#FC8D59",
           yAxisID: "amount",
-          stack: 1
+          stack: 1,
         },
         {
           label: "매입",
@@ -242,7 +284,7 @@ export default {
           data: [0, 0, 0, 0, 0],
           backgroundColor: "#91BFDB",
           yAxisID: "amount",
-          stack: 1
+          stack: 1,
         },
         {
           label: "순이익",
@@ -250,17 +292,17 @@ export default {
           data: [0, 0, 0, 0, 0],
           backgroundColor: "#D6EECC",
           yAxisID: "amount",
-          stack: 2
-        }
+          stack: 2,
+        },
       ];
 
-      searchRange[searchType].map(el => {
+      searchRange[searchType].map((el) => {
         const label = this.dateDisplay(el.start, searchType);
         labels.push(searchType === "month" ? label.substr(2) : label.substr(6));
       });
 
       salesData.map((orderArray, index) => {
-        orderArray.map(orders => {
+        orderArray.map((orders) => {
           if (orders.type) {
             datasets[1].data[index] -= orders.price;
             datasets[2].data[index] -= orders.price;
@@ -273,9 +315,9 @@ export default {
 
       return {
         labels,
-        datasets
+        datasets,
       };
-    }
+    },
   },
 
   watch: {
@@ -283,15 +325,15 @@ export default {
       this.$store.dispatch("sales/getSalesDataWithChangeType", {
         searchType: value,
         date: this.time,
-        id: this.loginUser.id
+        id: this.loginUser.id,
       });
-    }
+    },
   },
 
   async created() {
     await this.$store.dispatch("sales/getSalesData", {
       date: this.moment().format("YYYYMMDD"),
-      id: this.loginUser.id
+      id: this.loginUser.id,
     });
   },
 
@@ -309,8 +351,74 @@ export default {
       }
 
       return text;
-    }
-  }
+    },
+
+    handlSalesData(type) {
+      const { searchRange, searchType, salesData } = this.salesStoreData;
+      const labels = [];
+      //TODO: data 0배열 로직 코딩
+      const barDataSets = [
+        {
+          label: "매출",
+          type: "bar",
+          data: [0, 0, 0, 0, 0],
+          backgroundColor: "#FC8D59",
+          yAxisID: "amount",
+          stack: 1,
+        },
+        {
+          label: "매입",
+          type: "bar",
+          data: [0, 0, 0, 0, 0],
+          backgroundColor: "#91BFDB",
+          yAxisID: "amount",
+          stack: 1,
+        },
+        {
+          label: "순이익",
+          type: "bar",
+          data: [0, 0, 0, 0, 0],
+          backgroundColor: "#D6EECC",
+          yAxisID: "amount",
+          stack: 2,
+        },
+      ];
+
+      //label: 매입/매출 물품
+      //dataset: 매입/매출 나뉜 물품 나뉜 더한 값 + 더한 횟수 (물품 5건 1,000원)
+      //상단: 총 매입/매출 건수 + 총 합산 가격 / 매입 건수 + 가격 / 매출 건수 + 가격 / 미수금 건수 + 가격
+      //backgroundColor: 컬러셋 지정하고 순서에 맞게 값 넣기
+
+      const pieDataSets = [
+        {
+          type: "pie",
+          data: [0, 0, 0, 0, 0],
+          backgroundColor: ["#FC8D59", "#91BFDB", "#D6EECC"],
+        },
+      ];
+
+      searchRange[searchType].map((el) => {
+        const label = this.dateDisplay(el.start, searchType);
+        labels.push(searchType === "month" ? label.substr(2) : label.substr(6));
+      });
+
+      salesData.map((orderArray, index) => {
+        orderArray.map((orders) => {
+          if (orders.type) {
+            barDataSets[1].data[index] -= orders.price;
+            barDataSets[2].data[index] -= orders.price;
+          } else {
+            barDataSets[0].data[index] += orders.price;
+            barDataSets[2].data[index] += orders.price;
+          }
+        });
+      });
+
+      if (type === "bar") {
+        return { labels, datasets: barDataSets };
+      }
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>

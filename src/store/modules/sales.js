@@ -19,7 +19,8 @@ export const state = {
 };
 
 export const getters = {
-  sales: state => state.sales
+  sales: state => state.sales,
+  loading: state => state.loading
 };
 
 export const mutations = {
