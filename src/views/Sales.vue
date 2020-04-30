@@ -6,6 +6,23 @@
         <el-select v-model="rangeType" placeholder="Select">
           <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"> </el-option>
         </el-select>
+        <div class="sales-summary">
+          <div class="income">
+            <p>매출</p>
+            {{ `${comma(barChartDataSet.total.inCome.price)}원` }}
+            {{ `${comma(barChartDataSet.total.inCome.count)}건` }}
+          </div>
+          <div class="outcome">
+            <p>매입</p>
+            {{ `${comma(barChartDataSet.total.outCome.price)}원` }}
+            {{ `${comma(barChartDataSet.total.outCome.count)}건` }}
+          </div>
+          <div class="income">
+            <p>순이익</p>
+            {{ `${comma(barChartDataSet.total.inCome.price + barChartDataSet.total.outCome.price)}원` }}
+            {{ `${comma(barChartDataSet.total.inCome.count + barChartDataSet.total.outCome.count)}건` }}
+          </div>
+        </div>
 
         <div class="date-box">
           <h3>{{ dateDisplay(rangeValue, rangeType) }}</h3>
@@ -23,21 +40,38 @@
         </div>
       </div>
       <BarChart v-loading="loading" :chart-data="barChartDataSet" :options="chartOptions" />
-      <PieChart v-loading="loading" :chart-data="handlSalesData('pieInput')" :options="pieOption" />
-      <span>input count</span>
-      <ul class="policy-links">
-        <li v-for="(salesData, index) in handlSalesData('pieInput').labels" :key="index">
-          {{ salesData }}
-          <!-- {{ index === 'datasets' ? salesData[0].data : salesData }}
-          {{index}} -->
-        </li>
-      </ul>
-      <PieChart v-loading="loading" :chart-data="handlSalesData('pieOutput')" :options="pieOption" />
-      <!-- <ul class="policy-links">
-        <li v-for="(salesData, index) in handlSalesData('pieOutput')" :key="index">
-          {{ index === 'datasets' ? salesData[0].data : salesData }}
-        </li>
-      </ul> -->
+
+      <div class="pie-chart-income-box" v-if="handlSalesData('pieInput').labels.length">
+        <PieChart v-loading="loading" :chart-data="handlSalesData('pieInput')" :options="pieOption" />
+        {{ handlSalesData('pieInput') }}
+
+        <span>input count</span>
+        <ul class="policy-links">
+          <li v-for="(salesData, index) in handlSalesData('pieInput').list" :key="index">
+            {{ salesData.label }}
+            {{ `${comma(salesData.price)}원` }}
+            {{ `${salesData.count}건` }}
+          </li>
+        </ul>
+      </div>
+      <div class="pie-chart-income-box" v-else>
+        표시할 데이터가 없습니다.
+      </div>
+
+      <div class="pie-chart-outcome-box" v-if="handlSalesData('pieOutput').labels.length">
+        <PieChart v-loading="loading" :chart-data="handlSalesData('pieOutput')" :options="pieOption" />
+
+        <ul class="policy-links">
+          <li v-for="(salesData, index) in handlSalesData('pieOutput').list" :key="index">
+            {{ salesData.label }}
+            {{ `${comma(salesData.price)}원` }}
+            {{ `${salesData.count}건` }}
+          </li>
+        </ul>
+      </div>
+      <div class="pie-chart-outcome-box" v-else>
+        표시할 데이터가 없습니다.
+      </div>
 
       <!-- <line-chart :chart-data="datacollection"></line-chart> -->
     </section>
@@ -319,6 +353,7 @@ export default {
           stack: 2,
         },
       ];
+      const count = { inCome: 0, outCome: 0 };
 
       for (let i = 0; i < labels.length; i++) {
         for (let j = 0; j < barDataSets.length; j++) {
@@ -331,14 +366,27 @@ export default {
           if (orders.type) {
             barDataSets[1].data[index] -= orders.price;
             barDataSets[2].data[index] -= orders.price;
+            if (index === salesData.length - 1) {
+              count.outCome++;
+            }
           } else {
             barDataSets[0].data[index] += orders.price;
             barDataSets[2].data[index] += orders.price;
+            if (index === salesData.length - 1) {
+              count.inCome++;
+            }
           }
         });
       });
 
-      return { labels, datasets: barDataSets };
+      return {
+        labels,
+        datasets: barDataSets,
+        total: {
+          inCome: { price: barDataSets[0].data[barDataSets[0].data.length - 1], count: count.inCome },
+          outCome: { price: barDataSets[1].data[barDataSets[1].data.length - 1], count: count.outCome },
+        },
+      };
     },
   },
 
@@ -375,62 +423,78 @@ export default {
       return text;
     },
 
+    comma(value) {
+      return this.$filters.comma(value);
+    },
+
     handlSalesData(chartType) {
-      const flatArray = this.salesStoreData.salesData.flat();
+      const flatArray = this.salesStoreData.currentDateSalesData.flat();
 
       //label: 매입/매출 물품
       //dataset: 매입/매출 나뉜 물품 나뉜 더한 값 + 더한 횟수 (물품 5건 1,000원)
       //상단: 총 매입/매출 건수 + 총 합산 가격 / 매입 건수 + 가격 / 매출 건수 + 가격 / 미수금 건수 + 가격
 
       const pieData = {
-        label: { pieInput: [], pieOutput: [] },
-        data: { pieInput: [], pieOutput: [] },
-        count: { pieInput: [], pieOutput: [] },
-        colorSet: { pieInput: [], pieOutput: [] },
+        chart: {
+          label: [],
+          data: [],
+          count: [],
+          colorSet: [],
+        },
+        list: [],
       };
-
-      //label: "물품", count: 1, price: 100
 
       /** 물품 이름 넣기 */
       flatArray.map(({ type, goods }) => {
         if ((chartType === 'pieInput' && type) || (chartType === 'pieOutput' && !type)) {
-          pieData.label[chartType].push({ goods });
+          pieData.chart.label.push({ goods });
         }
       });
 
       /** 물품 중복 제거 */
-      pieData.label[chartType] = _.uniq(pieData.label[chartType].map(({ goods }) => goods));
+      pieData.chart.label = _.uniq(pieData.chart.label.map(({ goods }) => goods));
 
-      /** pieChart datasets preset */
-      for (let i = 0; i < pieData.label[chartType].length; i++) {
-        pieData.data[chartType].push(0);
-        pieData.count[chartType].push(0);
-        pieData.colorSet[chartType].push(`#${colorSet[i]}`);
+      /** pieChart data preset */
+      for (let i = 0; i < pieData.chart.label.length; i++) {
+        pieData.chart.data.push(0);
+        pieData.chart.count.push(0);
+        pieData.chart.colorSet.push(`#${colorSet[i]}`);
       }
 
-      /** pieChart datasets set */
+      /** pieChart data set */
       flatArray.map(({ type, goods, price }) => {
         if ((chartType === 'pieInput' && type) || (chartType === 'pieOutput' && !type)) {
-          pieData.data[chartType][pieData.label[chartType].indexOf(goods)] += price;
-          pieData.count[chartType][pieData.label[chartType].indexOf(goods)]++;
+          pieData.chart.data[pieData.chart.label.indexOf(goods)] += price;
+          pieData.chart.count[pieData.chart.label.indexOf(goods)]++;
         }
       });
 
+      /** pieChart list data set */
+      for (let i = 0; i < pieData.chart.label.length; i++) {
+        pieData.list.push({
+          label: pieData.chart.label[i],
+          price: pieData.chart.data[i],
+          count: pieData.chart.count[i],
+        });
+      }
+
       return {
-        labels: pieData.label[chartType],
+        labels: pieData.chart.label,
         datasets: [
           {
             type: 'pie',
-            data: pieData.data[chartType],
-            backgroundColor: pieData.colorSet[chartType],
+            data: pieData.chart.data,
+            backgroundColor: pieData.chart.colorSet,
           },
         ],
-        count: pieData.count[chartType],
+        count: pieData.chart.count,
+        list: pieData.list,
       };
     },
   },
 };
 </script>
+
 <style lang="scss" scoped>
 .sales {
   padding: 10px 80px;
