@@ -22,9 +22,22 @@
           </el-date-picker>
         </div>
       </div>
-      <BarChart v-loading="loading" :chart-data="handlSalesData('bar')" :options="chartOptions" />
-      <PieChart :chart-data="handlSalesData('pieInput')" :options="pieOption" />
-      <PieChart :chart-data="handlSalesData('pieOutput')" :options="pieOption" />
+      <BarChart v-loading="loading" :chart-data="barChartDataSet" :options="chartOptions" />
+      <PieChart v-loading="loading" :chart-data="handlSalesData('pieInput')" :options="pieOption" />
+      <span>input count</span>
+      <ul class="policy-links">
+        <li v-for="(salesData, index) in handlSalesData('pieInput').labels" :key="index">
+          {{ salesData }}
+          <!-- {{ index === 'datasets' ? salesData[0].data : salesData }}
+          {{index}} -->
+        </li>
+      </ul>
+      <PieChart v-loading="loading" :chart-data="handlSalesData('pieOutput')" :options="pieOption" />
+      <!-- <ul class="policy-links">
+        <li v-for="(salesData, index) in handlSalesData('pieOutput')" :key="index">
+          {{ index === 'datasets' ? salesData[0].data : salesData }}
+        </li>
+      </ul> -->
 
       <!-- <line-chart :chart-data="datacollection"></line-chart> -->
     </section>
@@ -155,55 +168,6 @@ export default {
       time: moment(new Date())
         .date(1)
         .format('YYYYMMDD'),
-      data: {
-        labels: ['20년 1월', '20년 2월', '20년 3월', '20년 4월'],
-        datasets: [
-          {
-            label: '신규결제',
-            type: 'bar',
-            backgroundColor: '#FC8D59',
-            data: [180000, 0, 300000, 0],
-            yAxisID: 'amount',
-            stack: 1,
-          },
-          {
-            label: '재결제',
-            type: 'bar',
-            backgroundColor: '#91BFDB',
-            data: [1367000, 580000, 0, 100000],
-            yAxisID: 'amount',
-            stack: 1,
-          },
-          {
-            label: '업그레이드',
-            type: 'bar',
-            backgroundColor: '#D6EECC',
-            data: [1600000, 0, 21700000, 6400000],
-            yAxisID: 'amount',
-            stack: 1,
-          },
-          {
-            label: '환불',
-            type: 'bar',
-            backgroundColor: '#FDD8D8',
-            data: [0, 0, 0, -7200000],
-            yAxisID: 'amount',
-            stack: 1,
-          },
-        ],
-      },
-
-      pieData: {
-        labels: ['신규결제', '재결제', '업그레이드', '환불'],
-        datasets: [
-          {
-            type: 'pie',
-            data: [100000, 300000, 1800000, -3600000],
-            countData: [0, 2, 1, 2],
-            backgroundColor: ['#FC8D59', '#91BFDB', '#D6EECC', '#FDD8D8'],
-          },
-        ],
-      },
     };
   },
 
@@ -319,45 +283,10 @@ export default {
         }
       },
     },
-  },
 
-  watch: {
-    rangeType: async function(value) {
-      this.$store.dispatch('sales/getSalesDataWithChangeType', {
-        searchType: value,
-        date: this.time,
-        id: this.loginUser.id,
-      });
-    },
-  },
-
-  async created() {
-    await this.$store.dispatch('sales/getSalesData', {
-      date: this.moment().format('YYYYMMDD'),
-      id: this.loginUser.id,
-    });
-  },
-
-  methods: {
-    dateDisplay(value, type) {
-      let text = this.moment(value).format('YYYY년 M월 D일 (ddd)');
-      if (type === 'week') {
-        const endOfWeek = this.moment(value).add(6, 'days');
-        const year = endOfWeek.year();
-        const month = endOfWeek.month() + 1;
-        const week = Math.ceil(endOfWeek.date() / 7);
-        text = `${year}년 ${month}월 ${week}주`;
-      } else if (type === 'month') {
-        text = this.moment(value).format('YYYY년 M월');
-      }
-
-      return text;
-    },
-
-    handlSalesData(type) {
+    barChartDataSet() {
       const { searchRange, searchType, salesData } = this.salesStoreData;
       const labels = [];
-      const flatArray = salesData.flat();
 
       searchRange[searchType].map(el => {
         const label = this.dateDisplay(el.start, searchType);
@@ -397,62 +326,6 @@ export default {
         }
       }
 
-      //label: 매입/매출 물품
-      //dataset: 매입/매출 나뉜 물품 나뉜 더한 값 + 더한 횟수 (물품 5건 1,000원)
-      //상단: 총 매입/매출 건수 + 총 합산 가격 / 매입 건수 + 가격 / 매출 건수 + 가격 / 미수금 건수 + 가격
-      //backgroundColor: 컬러셋 지정하고 순서에 맞게 값 넣기
-
-      const pieData = {
-        label: { input: [], output: [] },
-        data: { input: [], output: [] },
-        colorSet: { input: [], output: [] },
-      };
-
-      flatArray.map(({ type, goods }) =>
-        type ? pieData.label.input.push({ goods }) : pieData.label.output.push({ goods }),
-      );
-      pieData.label.input = _.uniq(pieData.label.input.map(({ goods }) => goods));
-      for (let i = 0; i < pieData.label.input.length; i++) {
-        pieData.data.input.push(0);
-        pieData.colorSet.input.push(`#${colorSet[i]}`);
-      }
-
-      pieData.label.output = _.uniq(pieData.label.output.map(({ goods }) => goods));
-      for (let i = 0; i < pieData.label.output.length; i++) {
-        pieData.data.output.push(0);
-        pieData.colorSet.output.push(`#${colorSet[i]}`);
-      }
-
-      for (let i = 0; i < flatArray.length; i++) {
-        if (flatArray[i].type) {
-          pieData.data.input[pieData.label.input.indexOf(flatArray[i].goods)] += flatArray[i].price;
-        } else {
-          pieData.data.output[pieData.label.output.indexOf(flatArray[i].goods)] += flatArray[i].price;
-        }
-      }
-      console.log(pieData);
-
-      const inputPieChart = {
-        labels: pieData.label.input,
-        datasets: [
-          {
-            type: 'pie',
-            data: pieData.data.input,
-            backgroundColor: pieData.colorSet.input,
-          },
-        ],
-      };
-
-      const outputPieChart = {
-        labels: pieData.label.output,
-        datasets: [
-          {
-            type: 'pie',
-            data: pieData.data.output,
-            backgroundColor: pieData.colorSet.output,
-          },
-        ],
-      };
       salesData.map((orderArray, index) => {
         orderArray.map(orders => {
           if (orders.type) {
@@ -465,19 +338,95 @@ export default {
         });
       });
 
-      if (type === 'bar') {
-        return { labels, datasets: barDataSets };
-      } else if (type === 'pieInput') {
-        return {
-          labels: inputPieChart.labels,
-          datasets: inputPieChart.datasets,
-        };
-      } else {
-        return {
-          labels: outputPieChart.labels,
-          datasets: outputPieChart.datasets,
-        };
+      return { labels, datasets: barDataSets };
+    },
+  },
+
+  watch: {
+    rangeType: async function(value) {
+      this.$store.dispatch('sales/getSalesDataWithChangeType', {
+        searchType: value,
+        date: this.time,
+        id: this.loginUser.id,
+      });
+    },
+  },
+
+  async created() {
+    await this.$store.dispatch('sales/getSalesData', {
+      date: this.moment().format('YYYYMMDD'),
+      id: this.loginUser.id,
+    });
+  },
+
+  methods: {
+    dateDisplay(value, type) {
+      let text = this.moment(value).format('YYYY년 M월 D일 (ddd)');
+      if (type === 'week') {
+        const endOfWeek = this.moment(value).add(6, 'days');
+        const year = endOfWeek.year();
+        const month = endOfWeek.month() + 1;
+        const week = Math.ceil(endOfWeek.date() / 7);
+        text = `${year}년 ${month}월 ${week}주`;
+      } else if (type === 'month') {
+        text = this.moment(value).format('YYYY년 M월');
       }
+
+      return text;
+    },
+
+    handlSalesData(chartType) {
+      const flatArray = this.salesStoreData.salesData.flat();
+
+      //label: 매입/매출 물품
+      //dataset: 매입/매출 나뉜 물품 나뉜 더한 값 + 더한 횟수 (물품 5건 1,000원)
+      //상단: 총 매입/매출 건수 + 총 합산 가격 / 매입 건수 + 가격 / 매출 건수 + 가격 / 미수금 건수 + 가격
+
+      const pieData = {
+        label: { pieInput: [], pieOutput: [] },
+        data: { pieInput: [], pieOutput: [] },
+        count: { pieInput: [], pieOutput: [] },
+        colorSet: { pieInput: [], pieOutput: [] },
+      };
+
+      //label: "물품", count: 1, price: 100
+
+      /** 물품 이름 넣기 */
+      flatArray.map(({ type, goods }) => {
+        if ((chartType === 'pieInput' && type) || (chartType === 'pieOutput' && !type)) {
+          pieData.label[chartType].push({ goods });
+        }
+      });
+
+      /** 물품 중복 제거 */
+      pieData.label[chartType] = _.uniq(pieData.label[chartType].map(({ goods }) => goods));
+
+      /** pieChart datasets preset */
+      for (let i = 0; i < pieData.label[chartType].length; i++) {
+        pieData.data[chartType].push(0);
+        pieData.count[chartType].push(0);
+        pieData.colorSet[chartType].push(`#${colorSet[i]}`);
+      }
+
+      /** pieChart datasets set */
+      flatArray.map(({ type, goods, price }) => {
+        if ((chartType === 'pieInput' && type) || (chartType === 'pieOutput' && !type)) {
+          pieData.data[chartType][pieData.label[chartType].indexOf(goods)] += price;
+          pieData.count[chartType][pieData.label[chartType].indexOf(goods)]++;
+        }
+      });
+
+      return {
+        labels: pieData.label[chartType],
+        datasets: [
+          {
+            type: 'pie',
+            data: pieData.data[chartType],
+            backgroundColor: pieData.colorSet[chartType],
+          },
+        ],
+        count: pieData.count[chartType],
+      };
     },
   },
 };
