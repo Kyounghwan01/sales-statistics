@@ -3,43 +3,37 @@
     <section class="sales" v-loading="salesStoreData.loading">
       <div class="sales__header">
         <h3>통계</h3>
-        <el-select v-model="rangeType" placeholder="Select">
-          <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"> </el-option>
-        </el-select>
-        <div class="sales-summary">
-          <div class="income">
-            <p>매출</p>
-            {{ `${comma(barChartDataSet.total.inCome.price)}원` }}
-            {{ `${comma(barChartDataSet.total.inCome.count)}건` }}
-          </div>
-          <div class="outcome">
-            <p>매입</p>
-            {{ `${comma(barChartDataSet.total.outCome.price)}원` }}
-            {{ `${comma(barChartDataSet.total.outCome.count)}건` }}
-          </div>
-          <div class="income">
-            <p>순이익</p>
-            {{ `${comma(barChartDataSet.total.inCome.price + barChartDataSet.total.outCome.price)}원` }}
-            {{ `${comma(barChartDataSet.total.inCome.count + barChartDataSet.total.outCome.count)}건` }}
-          </div>
-        </div>
 
-        <div class="date-box">
-          <h3>{{ dateDisplay(rangeValue, rangeType) }}</h3>
+        <div class="sales__date-group">
+          <el-select v-model="rangeType" placeholder="Select">
+            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"> </el-option>
+          </el-select>
 
-          <el-date-picker
-            v-model="rangeValue"
-            :type="rangeType === 'week' ? 'week' : 'month'"
-            range-separator="-"
-            start-placeholder="시작일"
-            end-placeholder="종료일"
-            value-format="yyyyMMdd"
-            :clearable="false"
-          >
-          </el-date-picker>
+          <div class="sales__date-group__date-box">
+            <h3>{{ dateDisplay(rangeValue, rangeType) }}</h3>
+
+            <el-date-picker
+              v-model="rangeValue"
+              :type="rangeType === 'week' ? 'week' : 'month'"
+              range-separator="-"
+              start-placeholder="시작일"
+              end-placeholder="종료일"
+              value-format="yyyyMMdd"
+              :clearable="false"
+            >
+            </el-date-picker>
+          </div>
         </div>
       </div>
-      <BarChart v-loading="loading" :chart-data="barChartDataSet" :options="chartOptions" />
+
+      <Summary v-loading="salesStoreData.loading" :barChartDataSet="barChartDataSet" />
+
+      <div class="sales__chart-group">
+        <el-card shadow="never">
+          <h3>TREND</h3>
+          <BarChart v-loading="loading" :chart-data="barChartDataSet" :options="chartOptions" />
+        </el-card>
+      </div>
 
       <div class="pie-chart-income-box" v-if="handlSalesData('pieInput').labels.length">
         <PieChart v-loading="loading" :chart-data="handlSalesData('pieInput')" :options="pieOption" />
@@ -80,6 +74,7 @@
 
 <script>
 import MainLayout from '@/router/layouts/MainLayout';
+import Summary from '@/components/Sale/Summary';
 import BarChart from '@/components/Sale/BarChart';
 import PieChart from '@/components/Sale/PieChart';
 // import LineChart from "@/components/Sale/LineChart";
@@ -147,6 +142,7 @@ const colorSet = [
 export default {
   components: {
     MainLayout,
+    Summary,
     BarChart,
     PieChart,
     // LineChart
@@ -382,10 +378,20 @@ export default {
       return {
         labels,
         datasets: barDataSets,
-        total: {
-          inCome: { price: barDataSets[0].data[barDataSets[0].data.length - 1], count: count.inCome },
-          outCome: { price: barDataSets[1].data[barDataSets[1].data.length - 1], count: count.outCome },
-        },
+        total: [
+          { label: '매출', price: barDataSets[0].data[barDataSets[0].data.length - 1], count: count.inCome },
+          {
+            label: '매입',
+            price: barDataSets[1].data[barDataSets[1].data.length - 1],
+            count: count.outCome,
+          },
+          {
+            label: '순이익',
+            price:
+              barDataSets[0].data[barDataSets[0].data.length - 1] + barDataSets[1].data[barDataSets[1].data.length - 1],
+            count: count.inCome + count.outCome,
+          },
+        ],
       };
     },
   },
@@ -508,36 +514,48 @@ export default {
       margin: 15px;
     }
   }
+  &__date-group {
+    display: flex;
+    margin-top: 15px;
+    &__date-box {
+      display: flex;
+      position: relative;
+      margin-left: 30px;
+      h3 {
+        font-size: 18px;
+        position: absolute;
+        top: 30%;
+        left: 0;
+        right: 0;
+        transform: translateY(-50%);
+        text-align: center;
+        z-index: 1;
+        margin: 0;
+        pointer-events: none;
+      }
+      /deep/ .el-input__inner {
+        border: none;
+        color: white;
+        &:hover {
+          cursor: pointer;
+          border-bottom: 3px solid grey;
+          border-radius: 0;
+        }
+      }
+      /deep/ .el-input__prefix {
+        display: none;
+      }
+    }
+  }
+
+  &__chart-group {
+    margin-top: 20px;
+    h3 {
+      margin: 0 0 30px 0;
+    }
+  }
 }
 /deep/ .el-icon-date {
   height: 0;
-}
-.date-box {
-  display: flex;
-  position: relative;
-  h3 {
-    font-size: 18px;
-    position: absolute;
-    top: 30%;
-    left: 0;
-    right: 0;
-    transform: translateY(-50%);
-    text-align: center;
-    z-index: 1;
-    margin: 0;
-    pointer-events: none;
-  }
-  /deep/ .el-input__inner {
-    border: none;
-    color: white;
-    &:hover {
-      cursor: pointer;
-      border-bottom: 3px solid grey;
-      border-radius: 0;
-    }
-  }
-  /deep/ .el-input__prefix {
-    display: none;
-  }
 }
 </style>

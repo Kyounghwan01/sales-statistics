@@ -1,10 +1,5 @@
 <template>
-  <el-menu
-    class="main-nav"
-    mode="horizontal"
-    :default-active="activeLink"
-    router
-  >
+  <el-menu class="main-nav" mode="horizontal" :default-active="activeLink" router>
     <el-menu-item
       class="main-nav__item"
       v-for="link in navLinks"
@@ -29,12 +24,7 @@
         </span>
       </span>
       <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item
-          v-for="item in menuItems"
-          :key="item.label"
-          :command="item.onClick"
-          :disabled="item.disabled"
-        >
+        <el-dropdown-item v-for="item in menuItems" :key="item.label" :command="item.onClick" :disabled="item.disabled">
           {{ item.label }}
         </el-dropdown-item>
       </el-dropdown-menu>
@@ -43,66 +33,66 @@
 </template>
 
 <script>
-import * as firebase from "firebase/app";
-import "firebase/auth";
+import * as firebase from 'firebase/app';
+import 'firebase/auth';
 
 export default {
   computed: {
     menuItems() {
       return [
         {
-          label: "마이페이지",
+          label: '마이페이지',
           divided: true,
           onClick: this.handleClickMyPage,
-          disabled: true
+          disabled: true,
         },
         {
-          label: "로그아웃",
+          label: '로그아웃',
           onClick: this.logout,
-          disabled: false
-        }
+          disabled: false,
+        },
       ];
     },
     activeLink() {
-      return `/${this.$route.path.split("/")[1]}`;
+      return `/${this.$route.path.split('/')[1]}`;
     },
     loginUser() {
-      return this.$store.getters["loginUser/loginUser"];
+      return this.$store.getters['loginUser/loginUser'];
     },
 
     navLinks() {
       const links = [
-        { path: "/orders", name: "현황", disabled: false },
-        { path: "/fill", name: "기입", disabled: false },
-        { path: "/users", name: "회사", disabled: false },
-        { path: "/sales", name: "현황분석", disabled: false }
+        { path: '/orders', name: '현황', disabled: false },
+        { path: '/fill', name: '기입', disabled: false },
+        { path: '/users', name: '회사', disabled: false },
+        { path: '/sales', name: '통계', disabled: false },
       ];
 
       return links;
-    }
+    },
   },
   methods: {
     logout() {
-      this.$confirm("로그아웃 하시겠습니까?", "로그아웃", {
-        showClose: true
+      this.$confirm('로그아웃 하시겠습니까?', '로그아웃', {
+        showClose: true,
       })
         .then(async () => {
           try {
             await firebase.auth().signOut();
-            await this.$store.dispatch("loginUser/logOutUser");
+            await this.$store.dispatch('loginUser/logOutUser');
           } catch (error) {
-            this.$alert("로그아웃 에러", "로그아웃 실패");
+            this.$alert('로그아웃 에러', '로그아웃 실패');
           } finally {
-            this.$router.push("/");
+            this.$router.push('/');
           }
         })
         .catch(() => false);
     },
 
     handleClickMyPage() {
-      this.$router.push("/staffs/me");
-    }
-  }
+      this.$router.push('/staffs/me');
+    },
+  },
 };
 </script>
 
