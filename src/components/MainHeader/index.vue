@@ -12,14 +12,14 @@
 </template>
 
 <script>
-import Navigation from "./Navigation";
+import Navigation from './Navigation';
 // import UserMenu from './UserMenu';
 
 export default {
   components: {
-    Navigation
+    Navigation,
     // UserMenu,
-  }
+  },
 
   // computed: {
   //   studio() {

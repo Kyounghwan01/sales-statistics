@@ -28,32 +28,29 @@ export default {
     labelNumber: { type: String, default: null },
     placeholder: { type: String, default: null },
     requireMessage: { type: String, default: null },
-    require: { type: Boolean, default: null }
+    require: { type: Boolean, default: null },
   },
 
   computed: {
     isHaveData() {
       if (this.require) return this.require;
       return null;
-    }
+    },
   },
   methods: {
     handleInput(value) {
-      this.$emit("input", value);
+      this.$emit('input', value);
     },
     formatContact(number) {
       if (!number) return;
-      return number.replace(
-        /(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,
-        "$1-$2-$3"
-      );
+      return number.replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/, '$1-$2-$3');
     },
     validateKey(e) {
-      const isNumber = !!e.key.replace(/\D/g, "");
-      const isMaxLength = e.srcElement.value.replace(/-/g, "").length >= 11;
+      const isNumber = !!e.key.replace(/\D/g, '');
+      const isMaxLength = e.srcElement.value.replace(/-/g, '').length >= 11;
       if (!isNumber || isMaxLength) e.preventDefault();
-    }
-  }
+    },
+  },
 };
 </script>
 

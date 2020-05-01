@@ -42,15 +42,15 @@ export default {
     placeholder: { type: String, default: null },
     requireMessage: { type: String, default: null },
     require: { type: Boolean, default: null },
-    type: { type: String, default: "text" }
+    type: { type: String, default: 'text' },
   },
 
   computed: {
     isHaveData() {
       if (this.require) return this.require;
       return null;
-    }
-  }
+    },
+  },
 };
 </script>
 

@@ -4,9 +4,7 @@
       <div class="header">
         <div class="header__name-group">
           <h3 class="header__name">{{ currentUserData.name }}</h3>
-          <PlainButton class="update-button" @click="goToUserEdit"
-            >회원 정보 수정</PlainButton
-          >
+          <PlainButton class="update-button" @click="goToUserEdit">회원 정보 수정</PlainButton>
         </div>
         <div class="header__content-group">
           <div class="reg-date">등록일 : {{ formRegistreDate }}</div>
@@ -14,53 +12,42 @@
           <div class="address">주소 : {{ currentUserData.address }}</div>
           <div class="content">
             메모 :
-            {{
-              currentUserData.content
-                ? currentUserData.content
-                : "메모가 없습니다"
-            }}
+            {{ currentUserData.content ? currentUserData.content : '메모가 없습니다' }}
           </div>
         </div>
       </div>
       <div class="body">
         <Tabs :tabs="tabs" :activeName="currentTab" :changeTabs="changeTabs" />
-        <OrderHistory
-          v-if="currentTab === 'history'"
-          :changeTabs="changeTabs"
-        />
-        <OrderCreate
-          v-if="currentTab === 'writeTrade'"
-          :userName="currentUserData.name"
-          :changeTabs="changeTabs"
-        />
+        <OrderHistory v-if="currentTab === 'history'" :changeTabs="changeTabs" />
+        <OrderCreate v-if="currentTab === 'writeTrade'" :userName="currentUserData.name" :changeTabs="changeTabs" />
       </div>
     </section>
   </MainLayout>
 </template>
 
 <script>
-import MainLayout from "@/router/layouts/MainLayout.vue";
-import PlainButton from "@/components/PlainButton.vue";
-import OrderCreate from "@/components/Order/OrderCreate";
-import OrderHistory from "@/components/Order/OrderHistory";
-import Tabs from "@/components/Tabs.vue";
+import MainLayout from '@/router/layouts/MainLayout.vue';
+import PlainButton from '@/components/PlainButton.vue';
+import OrderCreate from '@/components/Order/OrderCreate';
+import OrderHistory from '@/components/Order/OrderHistory';
+import Tabs from '@/components/Tabs.vue';
 export default {
   components: {
     MainLayout,
     PlainButton,
     Tabs,
     OrderCreate,
-    OrderHistory
+    OrderHistory,
   },
   data() {
     return {
       user: {},
       loading: false,
-      currentTab: "history",
+      currentTab: 'history',
       tabs: [
-        { value: "history", label: "거래내역" },
-        { value: "writeTrade", label: "거래작성" }
-      ]
+        { value: 'history', label: '거래내역' },
+        { value: 'writeTrade', label: '거래작성' },
+      ],
     };
   },
 
@@ -68,13 +55,13 @@ export default {
     this.loading = true;
     const params = {
       companyUid: this.$route.query.uid,
-      id: this.$route.params.id
+      id: this.$route.params.id,
     };
-    const res = await this.$store.dispatch("users/getCurrentUser", params);
+    const res = await this.$store.dispatch('users/getCurrentUser', params);
 
-    if (res === "fail") {
-      this.$message("회원 정보 로딩 실패 다시 접속하세요");
-      this.$router.push("/users");
+    if (res === 'fail') {
+      this.$message('회원 정보 로딩 실패 다시 접속하세요');
+      this.$router.push('/users');
     }
 
     this.loading = false;
@@ -82,24 +69,22 @@ export default {
 
   computed: {
     formRegistreDate() {
-      return this.moment(this.currentUserData.registreDate).format(
-        "YYYY년 M월 D일"
-      );
+      return this.moment(this.currentUserData.registreDate).format('YYYY년 M월 D일');
     },
     currentUserData() {
-      return this.$store.getters["users/currentUser"];
+      return this.$store.getters['users/currentUser'];
     },
     formatMobile() {
       return this.$filters.mobile(this.currentUserData.phone);
-    }
+    },
   },
 
   watch: {
     currentTab: function(value) {
-      if (value === "history") {
-        this.$store.commit("editOrder/SET_RESET_ORDER_DATA");
+      if (value === 'history') {
+        this.$store.commit('editOrder/SET_RESET_ORDER_DATA');
       }
-    }
+    },
   },
 
   methods: {
@@ -108,13 +93,13 @@ export default {
 
       this.$router.push({
         path: `/users/edit/${id}`,
-        query: { ...this.currentUserData }
+        query: { ...this.currentUserData },
       });
     },
     changeTabs(tabName) {
       this.currentTab = tabName;
-    }
-  }
+    },
+  },
 };
 </script>
 

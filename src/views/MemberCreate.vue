@@ -2,7 +2,7 @@
   <MainLayout :padded="false">
     <section class="create-user">
       <div class="header">
-        <h3>{{ edit ? "고객 수정" : "고객 추가" }}</h3>
+        <h3>{{ edit ? '고객 수정' : '고객 추가' }}</h3>
         <el-tooltip class="item" effect="light" placement="top">
           <p v-if="edit" slot="content">
             고객 추가를 위해 필수항목을 적고 수정 버튼을 누르세요<br />
@@ -11,10 +11,7 @@
           <p v-else slot="content">
             고객 추가를 위해 필수항목을 적고 등록 버튼을 누르세요
           </p>
-          <i
-            class="el-icon-question"
-            :style="{ color: '#64AEFF', fontSize: '18px' }"
-          ></i>
+          <i class="el-icon-question" :style="{ color: '#64AEFF', fontSize: '18px' }"></i>
         </el-tooltip>
       </div>
 
@@ -63,39 +60,28 @@
       />
 
       <BottomActionBar>
-        <el-button v-if="!edit" v-loading="isSaving" @click="registredUser"
-          >등록</el-button
-        >
-        <el-button
-          type="danger"
-          v-if="edit"
-          plain
-          v-loading="isSaving"
-          @click="deleteUser"
-          >삭제</el-button
-        >
-        <el-button v-if="edit" v-loading="isSaving" @click="updateUser"
-          >수정</el-button
-        >
+        <el-button v-if="!edit" v-loading="isSaving" @click="registredUser">등록</el-button>
+        <el-button type="danger" v-if="edit" plain v-loading="isSaving" @click="deleteUser">삭제</el-button>
+        <el-button v-if="edit" v-loading="isSaving" @click="updateUser">수정</el-button>
       </BottomActionBar>
     </section>
   </MainLayout>
 </template>
 
 <script>
-import MainLayout from "@/router/layouts/MainLayout";
-import BottomActionBar from "@/components/BottomActionBar";
-import TextInput from "@/components/TextInput";
-import PhoneInput from "@/components/PhoneInput";
-import { validationMixin } from "vuelidate";
-import { required } from "vuelidate/lib/validators";
+import MainLayout from '@/router/layouts/MainLayout';
+import BottomActionBar from '@/components/BottomActionBar';
+import TextInput from '@/components/TextInput';
+import PhoneInput from '@/components/PhoneInput';
+import { validationMixin } from 'vuelidate';
+import { required } from 'vuelidate/lib/validators';
 
 export default {
   components: {
     MainLayout,
     BottomActionBar,
     TextInput,
-    PhoneInput
+    PhoneInput,
   },
   data() {
     return {
@@ -104,10 +90,10 @@ export default {
         registreDate: null,
         phone: null,
         address: null,
-        content: null
+        content: null,
       },
       isSaving: false,
-      edit: false
+      edit: false,
     };
   },
 
@@ -117,8 +103,8 @@ export default {
       name: { required },
       registreDate: { required },
       phone: { required },
-      address: { required }
-    }
+      address: { required },
+    },
   },
 
   created() {
@@ -130,26 +116,23 @@ export default {
 
   computed: {
     loginUser() {
-      return this.$store.getters["loginUser/loginUser"];
-    }
+      return this.$store.getters['loginUser/loginUser'];
+    },
   },
 
   methods: {
     valid() {
       const checkType = [
-        { value: "name", text: "회사명을" },
-        { value: "phone", text: "휴대폰 번호를" },
-        { value: "address", text: "주소를" },
-        { value: "registreDate", text: "등록일을" }
+        { value: 'name', text: '회사명을' },
+        { value: 'phone', text: '휴대폰 번호를' },
+        { value: 'address', text: '주소를' },
+        { value: 'registreDate', text: '등록일을' },
       ];
 
-      const message = this.$utils.validate.checkAlertMessage(
-        this.data,
-        checkType
-      );
+      const message = this.$utils.validate.checkAlertMessage(this.data, checkType);
 
       if (message) {
-        this.alertMessage(message, "회원 추가 실패");
+        this.alertMessage(message, '회원 추가 실패');
         return false;
       }
 
@@ -167,18 +150,15 @@ export default {
       const res = await this.$api.user.createUser({
         ...this.data,
         password: this.data.phone,
-        companyUid: this.loginUser.id
+        companyUid: this.loginUser.id,
       });
 
       if (res.status === 200) {
-        this.alertMessage("회원 추가 성공하였습니다.", "회원 추가 성공");
-        this.$router.push("/users");
+        this.alertMessage('회원 추가 성공하였습니다.', '회원 추가 성공');
+        this.$router.push('/users');
       } else {
-        this.alertMessage(
-          "회원 추가 실패하였습니다. 다시 시도해주세요",
-          "회원 추가 실패"
-        );
-        this.$router.push("/users");
+        this.alertMessage('회원 추가 실패하였습니다. 다시 시도해주세요', '회원 추가 실패');
+        this.$router.push('/users');
       }
     },
 
@@ -186,15 +166,12 @@ export default {
       if (!this.valid()) return;
       this.isSaving = true;
 
-      const res = await this.$api.user.updateUser(
-        this.data,
-        this.$route.params.id
-      );
+      const res = await this.$api.user.updateUser(this.data, this.$route.params.id);
       if (res.status === 200) {
-        this.alertMessage("회원 수정을 성공하였습니다.", "회원 수정 성공");
-        this.$router.push("/users");
+        this.alertMessage('회원 수정을 성공하였습니다.', '회원 수정 성공');
+        this.$router.push('/users');
       } else {
-        this.alertMessage("관리자에게 문의해주세요", "회원 수정 실패");
+        this.alertMessage('관리자에게 문의해주세요', '회원 수정 실패');
       }
     },
 
@@ -202,13 +179,13 @@ export default {
       this.isSaving = true;
       const res = await this.$api.user.deleteUser(this.$route.params.id);
       if (res.status === 200) {
-        this.alertMessage("회원 삭제 성공하였습니다.", "회원 삭제 성공");
-        this.$router.push("/users");
+        this.alertMessage('회원 삭제 성공하였습니다.', '회원 삭제 성공');
+        this.$router.push('/users');
       } else {
-        this.alertMessage("관리자에게 문의해주세요", "회원 삭제 실패");
+        this.alertMessage('관리자에게 문의해주세요', '회원 삭제 실패');
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

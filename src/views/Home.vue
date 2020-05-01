@@ -22,12 +22,8 @@
               placeholder="example@naver.com"
             />
             <div class="invalid-feedback">
-              <span class="required" v-if="!$v.data.loginId.required"
-                >이메일은 필수값 입니다</span
-              >
-              <span class="required" v-if="!$v.data.loginId.email"
-                >이메일 형식을 맞춰주세요</span
-              >
+              <span class="required" v-if="!$v.data.loginId.required">이메일은 필수값 입니다</span>
+              <span class="required" v-if="!$v.data.loginId.email">이메일 형식을 맞춰주세요</span>
             </div>
           </div>
         </div>
@@ -39,10 +35,8 @@
           </div>
           <el-input
             :class="
-              ($v.data.loginPassword.$dirty &&
-                !$v.data.loginPassword.required) ||
-              ($v.data.loginPassword.$dirty &&
-                !$v.data.loginPassword.maxLength) ||
+              ($v.data.loginPassword.$dirty && !$v.data.loginPassword.required) ||
+              ($v.data.loginPassword.$dirty && !$v.data.loginPassword.maxLength) ||
               ($v.data.loginPassword.$dirty && !$v.data.loginPassword.minLength)
                 ? 'error'
                 : null
@@ -52,15 +46,9 @@
             placeholder="비밀번호를 입력해주세요"
           ></el-input>
           <div class="invalid-feedback">
-            <span class="required" v-if="!$v.data.loginPassword.required"
-              >비밀번호는 필수값 입니다</span
-            >
-            <span class="required" v-if="!$v.data.loginPassword.minLength"
-              >비밀번호를 6자리 이상으로 맞춰주세요</span
-            >
-            <span class="required" v-if="!$v.data.loginPassword.maxLength"
-              >비밀번호를 10자리 이하로 맞춰주세요</span
-            >
+            <span class="required" v-if="!$v.data.loginPassword.required">비밀번호는 필수값 입니다</span>
+            <span class="required" v-if="!$v.data.loginPassword.minLength">비밀번호를 6자리 이상으로 맞춰주세요</span>
+            <span class="required" v-if="!$v.data.loginPassword.maxLength">비밀번호를 10자리 이하로 맞춰주세요</span>
           </div>
         </div>
 
@@ -76,28 +64,23 @@
 </template>
 
 <script>
-import MainLayout from "@/router/layouts/MainLayout";
-import { validationMixin } from "vuelidate";
-import {
-  required,
-  email,
-  minLength,
-  maxLength
-} from "vuelidate/lib/validators";
-import * as firebase from "firebase/app";
-import "firebase/auth";
+import MainLayout from '@/router/layouts/MainLayout';
+import { validationMixin } from 'vuelidate';
+import { required, email, minLength, maxLength } from 'vuelidate/lib/validators';
+import * as firebase from 'firebase/app';
+import 'firebase/auth';
 
 export default {
   components: {
-    MainLayout
+    MainLayout,
   },
   data() {
     return {
       data: {
         loginId: null,
-        loginPassword: null
+        loginPassword: null,
       },
-      loading: false
+      loading: false,
     };
   },
 
@@ -108,9 +91,9 @@ export default {
       loginPassword: {
         required,
         minLength: minLength(6),
-        maxLength: maxLength(10)
-      }
-    }
+        maxLength: maxLength(10),
+      },
+    },
   },
 
   created() {
@@ -121,8 +104,8 @@ export default {
     check() {
       firebase.auth().onAuthStateChanged(user => {
         if (user) {
-          this.$router.push("users").catch(error => {
-            if (error.name != "NavigationDuplicated") {
+          this.$router.push('users').catch(error => {
+            if (error.name != 'NavigationDuplicated') {
               throw error;
             }
           });
@@ -131,7 +114,7 @@ export default {
     },
 
     async login() {
-      ["loginId", "loginPassword"].forEach(key => {
+      ['loginId', 'loginPassword'].forEach(key => {
         if (!this.$v.data[key].required || !this.$v.data[key].email) {
           this.$v.data[key].$touch();
         }
@@ -139,18 +122,13 @@ export default {
 
       this.loading = true;
       try {
-        const res = await firebase
-          .auth()
-          .signInWithEmailAndPassword(
-            this.data.loginId,
-            this.data.loginPassword
-          );
+        const res = await firebase.auth().signInWithEmailAndPassword(this.data.loginId, this.data.loginPassword);
         if (res) {
           this.loading = false;
           const response = await this.$api.loginUser.getLoginUser(res.user.uid);
-          await this.$store.dispatch("loginUser/setUser", response.data);
-          this.$router.push("users").catch(error => {
-            if (error.name != "NavigationDuplicated") {
+          await this.$store.dispatch('loginUser/setUser', response.data);
+          this.$router.push('users').catch(error => {
+            if (error.name != 'NavigationDuplicated') {
               throw error;
             }
           });
@@ -158,8 +136,8 @@ export default {
       } catch (error) {
         this.loading = false;
       }
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>

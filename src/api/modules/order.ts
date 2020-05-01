@@ -1,7 +1,6 @@
-import axios from "axios";
+import axios from 'axios';
 
-const BASE_URL =
-  "https://9wnw9kggv9.execute-api.ap-northeast-2.amazonaws.com/2020-03-07/order";
+const BASE_URL = 'https://9wnw9kggv9.execute-api.ap-northeast-2.amazonaws.com/2020-03-07/order';
 
 export default {
   getOrderAll: (
@@ -13,7 +12,7 @@ export default {
       companies: string | number[];
       soldType: boolean;
       dateSort: number;
-    }
+    },
   ) => {
     let url = `${BASE_URL}?companyUid=${companyUid}&page=${page}&limit=${limit}&start_date=${filters.dateRange[0]}&end_date=${filters.dateRange[1]}`;
     if (filters) {
@@ -40,9 +39,7 @@ export default {
   },
 
   getOrderByUserAndDate: (id: number, startDate: number, endDate: number) => {
-    return axios.get(
-      `${BASE_URL}/${id}?start_date=${startDate}&end_date=${endDate}`
-    );
+    return axios.get(`${BASE_URL}/${id}?start_date=${startDate}&end_date=${endDate}`);
   },
 
   createOrder: async (id: number, data: object) => {
@@ -62,10 +59,8 @@ export default {
     params: {
       start: string;
       end: string;
-    }
+    },
   ) => {
-    return axios.get(
-      `${BASE_URL}?companyUid=${companyUid}&start_date=${params.start}&end_date=${params.end}`
-    );
-  }
+    return axios.get(`${BASE_URL}?companyUid=${companyUid}&start_date=${params.start}&end_date=${params.end}`);
+  },
 };

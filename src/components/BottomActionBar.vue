@@ -1,14 +1,7 @@
 <template>
   <div class="bottom-action-bar-container">
-    <div
-      class="bottom-action-bar__inner"
-      :style="{ maxWidth: contentMaxWidth }"
-    >
-      <button
-        v-if="!hideButtonBack"
-        class="bottom-action-bar__back-button"
-        @click="$router.go(-1)"
-      >
+    <div class="bottom-action-bar__inner" :style="{ maxWidth: contentMaxWidth }">
+      <button v-if="!hideButtonBack" class="bottom-action-bar__back-button" @click="$router.go(-1)">
         <i class="el-icon-arrow-left"></i>
         <span>뒤로가기</span>
       </button>
@@ -16,11 +9,11 @@
         <slot name="left"></slot>
       </div>
       <div class="message">
-        {{ message || "" }}
+        {{ message || '' }}
       </div>
 
       <div class="alert-message">
-        {{ alert || "" }}
+        {{ alert || '' }}
       </div>
       <div>
         <slot></slot>
@@ -35,8 +28,8 @@ export default {
     message: String,
     alert: String,
     hideButtonBack: { type: Boolean, default: false },
-    contentMaxWidth: { type: String, default: "100%" }
-  }
+    contentMaxWidth: { type: String, default: '100%' },
+  },
 };
 </script>
 

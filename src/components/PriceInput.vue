@@ -18,22 +18,22 @@
 export default {
   props: {
     value: Number,
-    unit: String
+    unit: String,
   },
   computed: {
     formattedValue() {
       return this.$filters.comma(parseInt(this.value));
-    }
+    },
   },
   methods: {
     validateKey(e) {
-      if (!e.key.replace(/\D/g, "")) e.preventDefault();
+      if (!e.key.replace(/\D/g, '')) e.preventDefault();
     },
     handleInput(value) {
-      const filtered = Number(value.replace(/\D/g, ""));
-      this.$emit("input", filtered);
-    }
-  }
+      const filtered = Number(value.replace(/\D/g, ''));
+      this.$emit('input', filtered);
+    },
+  },
 };
 </script>
 

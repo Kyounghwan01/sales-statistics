@@ -1,10 +1,7 @@
 <template>
   <div class="floating-action-button" @click="$emit('click')">
     <p class="plus">+</p>
-    <img
-      class="edit"
-      src="https://ssl.gstatic.com/bt/C3341AA7A1A076756462EE2E5CD71C11/1x/bt_compose2_1x.png"
-    />
+    <img class="edit" src="https://ssl.gstatic.com/bt/C3341AA7A1A076756462EE2E5CD71C11/1x/bt_compose2_1x.png" />
   </div>
 </template>
 

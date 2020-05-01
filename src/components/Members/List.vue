@@ -15,12 +15,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column
-        label="전화번호"
-        min-width="100"
-        header-align="center"
-        align="center"
-      >
+      <el-table-column label="전화번호" min-width="100" header-align="center" align="center">
         <template v-slot="scope">
           <div class="members-list__phone">
             {{ formatMobile(scope.row.phone) }}
@@ -28,12 +23,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column
-        label="등록일"
-        min-width="100"
-        header-align="center"
-        align="center"
-      >
+      <el-table-column label="등록일" min-width="100" header-align="center" align="center">
         <template v-slot="scope">
           <div class="members-list__registered-at">
             {{ formatDate(scope.row.registreDate) }}
@@ -41,12 +31,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column
-        label="주소"
-        min-width="140"
-        header-align="center"
-        align="center"
-      >
+      <el-table-column label="주소" min-width="140" header-align="center" align="center">
         <template v-slot="scope">
           <div class="members-list__address">
             {{ scope.row.address }}
@@ -54,12 +39,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column
-        label="메모"
-        min-width="140"
-        header-align="center"
-        align="center"
-      >
+      <el-table-column label="메모" min-width="140" header-align="center" align="center">
         <template v-slot="scope">
           <div class="members-list__address">
             {{ scope.row.content }}
@@ -74,7 +54,7 @@
 export default {
   props: {
     users: Array,
-    companyUid: String
+    companyUid: String,
   },
 
   methods: {
@@ -88,8 +68,8 @@ export default {
 
     handleCellClick(row) {
       this.$router.push(`/users/${row.id}?uid=${this.companyUid}`);
-    }
-  }
+    },
+  },
 };
 </script>
 

@@ -80,64 +80,7 @@ import PieChart from '@/components/Sale/PieChart';
 // import LineChart from "@/components/Sale/LineChart";
 import moment from 'moment';
 import _ from 'lodash';
-
-const colorSet = [
-  'fa8787',
-  'ffb7ce',
-  'ffa4a8',
-  'ffad87',
-  'ffda62',
-  'b5e384',
-  '68e7c5',
-  '81e0fa',
-  '92c6ff',
-  '8792c5',
-  'c9aaf4',
-  'f95454',
-  'ff99b9',
-  'ff7e83',
-  'ff8a54',
-  'ffcb1f',
-  '96d750',
-  '27dead',
-  '4bd4f8',
-  '64aeff',
-  '5464ad',
-  'b286f0',
-  'c74343',
-  'cc7a94',
-  'cc6468',
-  'cc6e43',
-  'cca218',
-  '78ac40',
-  '1fb18a',
-  '3ca9c6',
-  '508bcc',
-  '43508a',
-  '8e6bc0',
-  '953232',
-  '995b6f',
-  '994b4e',
-  '995232',
-  '997912',
-  '5a8130',
-  '178567',
-  '2d7f94',
-  '3c6899',
-  '323c67',
-  '6a5090',
-  '632121',
-  '663d4a',
-  '663234',
-  '663721',
-  '66510c',
-  '3c5620',
-  '0f5845',
-  '1e5463',
-  '284566',
-  '212845',
-  '473560',
-];
+import constant from '@/constant';
 
 export default {
   components: {
@@ -328,7 +271,7 @@ export default {
           label: '매출',
           type: 'bar',
           data: [],
-          backgroundColor: '#FC8D59',
+          backgroundColor: constant.inComeColor,
           yAxisID: 'amount',
           stack: 1,
         },
@@ -336,7 +279,7 @@ export default {
           label: '매입',
           type: 'bar',
           data: [],
-          backgroundColor: '#91BFDB',
+          backgroundColor: constant.outComeColor,
           yAxisID: 'amount',
           stack: 1,
         },
@@ -344,7 +287,7 @@ export default {
           label: '순이익',
           type: 'bar',
           data: [],
-          backgroundColor: '#D6EECC',
+          backgroundColor: constant.profitColor,
           yAxisID: 'amount',
           stack: 2,
         },
@@ -464,7 +407,7 @@ export default {
       for (let i = 0; i < pieData.chart.label.length; i++) {
         pieData.chart.data.push(0);
         pieData.chart.count.push(0);
-        pieData.chart.colorSet.push(`#${colorSet[i]}`);
+        pieData.chart.colorSet.push(`#${constant.colorSet[i]}`);
       }
 
       /** pieChart data set */

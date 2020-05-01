@@ -1,7 +1,7 @@
-import api from "@/api";
-import filters from "@/filters";
-import store from "@/store";
-import moment from "moment";
+import api from '@/api';
+import filters from '@/filters';
+import store from '@/store';
+import moment from 'moment';
 
 export const state = {
   orderLoading: false,
@@ -11,15 +11,15 @@ export const state = {
   searchId: null,
   filter: {
     companies: [],
-    soldType: "",
-    dateSort: "",
+    soldType: '',
+    dateSort: '',
     dateRange: [
       moment(new Date())
-        .subtract(3, "months")
-        .format("YYYYMMDD"),
-      moment(new Date()).format("YYYYMMDD")
-    ]
-  }
+        .subtract(3, 'months')
+        .format('YYYYMMDD'),
+      moment(new Date()).format('YYYYMMDD'),
+    ],
+  },
 };
 
 export const getters = {
@@ -31,7 +31,7 @@ export const getters = {
   user: state => state.user,
   copyUser: state => state.copyUser,
 
-  currentUser: state => state.currentUser
+  currentUser: state => state.currentUser,
 };
 
 export const mutations = {
@@ -65,45 +65,36 @@ export const mutations = {
 
   SET_CURRENT_USER(state, currentUser) {
     state.currentUser = currentUser;
-  }
+  },
 };
 
 export const actions = {
   async getOrdersByUser({ commit }, params) {
     try {
-      commit("SET_ORDER_LOADING", true);
-      const res = await api.order.getOrderByUser(
-        params.id,
-        params.page,
-        params.limit
-      );
-      commit("SET_FILTER_ORDERS", res.data.order);
-      return "success";
+      commit('SET_ORDER_LOADING', true);
+      const res = await api.order.getOrderByUser(params.id, params.page, params.limit);
+      commit('SET_FILTER_ORDERS', res.data.order);
+      return 'success';
     } catch (error) {
-      commit("SET_ORDERS", []);
-      commit("SET_ORDER_LOADING", false);
-      return "fail";
+      commit('SET_ORDERS', []);
+      commit('SET_ORDER_LOADING', false);
+      return 'fail';
     } finally {
-      commit("SET_ORDER_LOADING", false);
+      commit('SET_ORDER_LOADING', false);
     }
   },
 
   async getOrderFilterList({ commit, dispatch }, values) {
-    await commit("SET_FILTER", values);
-    dispatch("getOrderList");
+    await commit('SET_FILTER', values);
+    dispatch('getOrderList');
   },
 
   async getOrderList({ commit }) {
-    commit("SET_ORDER_LOADING", true);
+    commit('SET_ORDER_LOADING', true);
     try {
-      const companyUid = store.getters["loginUser/loginUser"];
+      const companyUid = store.getters['loginUser/loginUser'];
       //3번째 param에 회사 id 배열로
-      const res = await api.order.getOrderAll(
-        companyUid.id,
-        0,
-        50,
-        state.filter
-      );
+      const res = await api.order.getOrderAll(companyUid.id, 0, 50, state.filter);
 
       let income = 0;
       let outcome = 0;
@@ -115,16 +106,16 @@ export const actions = {
         }
       });
 
-      commit("SET_COUNT", { income, outcome });
-      commit("SET_ORDERS", res.data.order);
+      commit('SET_COUNT', { income, outcome });
+      commit('SET_ORDERS', res.data.order);
 
-      return "success";
+      return 'success';
     } catch {
-      commit("SET_ORDERS", []);
-      commit("SET_ORDER_LOADING", false);
-      return "fail";
+      commit('SET_ORDERS', []);
+      commit('SET_ORDER_LOADING', false);
+      return 'fail';
     } finally {
-      commit("SET_ORDER_LOADING", false);
+      commit('SET_ORDER_LOADING', false);
     }
   },
 
@@ -133,15 +124,15 @@ export const actions = {
   async filterOrder({ commit, dispatch }, params) {
     if (!params.keyword) {
       /* keyword 없으면 조건 초기화 */
-      return commit("SET_ORDERS", state.orderCopy);
+      return commit('SET_ORDERS', state.orderCopy);
     }
 
     let searchId = null;
-    let users = store.getters["users/user"];
+    let users = store.getters['users/user'];
 
     if (!users.length) {
-      await store.dispatch("users/getUser");
-      users = store.getters["users/user"];
+      await store.dispatch('users/getUser');
+      users = store.getters['users/user'];
     }
 
     users.map(el => {
@@ -153,24 +144,24 @@ export const actions = {
     state.searchId = searchId;
 
     if (state.searchId) {
-      dispatch("getOrdersByUser", { id: state.searchId, page: 0, limit: 100 });
+      dispatch('getOrdersByUser', { id: state.searchId, page: 0, limit: 100 });
     } else {
-      commit("SET_FILTER_ORDERS", []);
+      commit('SET_FILTER_ORDERS', []);
     }
   },
 
   async getCurrentUser({ commit }, id) {
     try {
-      commit("SET_USER_LOADING", true);
+      commit('SET_USER_LOADING', true);
       const res = await api.user.getCurrentUser(id);
-      commit("SET_CURRENT_USER", res.data);
-      return "success";
+      commit('SET_CURRENT_USER', res.data);
+      return 'success';
     } catch (error) {
-      commit("SET_CURRENT_USER", {});
-      commit("SET_USER_LOADING", false);
-      return "fail";
+      commit('SET_CURRENT_USER', {});
+      commit('SET_USER_LOADING', false);
+      return 'fail';
     } finally {
-      commit("SET_USER_LOADING", false);
+      commit('SET_USER_LOADING', false);
     }
-  }
+  },
 };

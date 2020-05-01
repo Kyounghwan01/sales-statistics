@@ -7,18 +7,8 @@
           <label>매입 / 매출 : </label>
         </div>
         <div class="input-group radio-group">
-          <el-radio
-            :disabled="editId ? true : null"
-            v-model="data.type"
-            :label="true"
-            >매입</el-radio
-          >
-          <el-radio
-            :disabled="editId ? true : null"
-            v-model="data.type"
-            :label="false"
-            >매출</el-radio
-          >
+          <el-radio :disabled="editId ? true : null" v-model="data.type" :label="true">매입</el-radio>
+          <el-radio :disabled="editId ? true : null" v-model="data.type" :label="false">매출</el-radio>
         </div>
       </div>
 
@@ -29,9 +19,7 @@
         </div>
         <div class="input-group">
           <el-date-picker
-            :class="
-              $v.data.date.$dirty && !$v.data.date.required ? 'error' : null
-            "
+            :class="$v.data.date.$dirty && !$v.data.date.required ? 'error' : null"
             v-model="$v.data.date.$model"
             type="date"
             placeholder="거래일을 입력해주세요"
@@ -48,17 +36,8 @@
           <label>상품명 : </label>
         </div>
 
-        <div
-          :class="[
-            'input-group',
-            $v.data.goods.$dirty && !$v.data.goods.required ? 'error' : null
-          ]"
-        >
-          <el-input
-            v-model="$v.data.goods.$model"
-            class="goods-input"
-            placeholder="상품명을 입력해주세요"
-          ></el-input>
+        <div :class="['input-group', $v.data.goods.$dirty && !$v.data.goods.required ? 'error' : null]">
+          <el-input v-model="$v.data.goods.$model" class="goods-input" placeholder="상품명을 입력해주세요"></el-input>
         </div>
       </div>
 
@@ -68,11 +47,7 @@
           <label style="margin-right: 20px;">메 모 :</label>
         </div>
         <div class="input-group">
-          <el-input
-            class="goods-input"
-            v-model="data.memo"
-            placeholder="메모를 입력해주세요"
-          ></el-input>
+          <el-input class="goods-input" v-model="data.memo" placeholder="메모를 입력해주세요"></el-input>
         </div>
       </div>
     </div>
@@ -85,11 +60,7 @@
         </div>
         <div class="input-group">
           <PriceInput
-            :class="
-              $v.data.unitPrice.$dirty && !$v.data.unitPrice.required
-                ? 'error'
-                : null
-            "
+            :class="$v.data.unitPrice.$dirty && !$v.data.unitPrice.required ? 'error' : null"
             v-model="$v.data.unitPrice.$model"
             unit="원"
           />
@@ -103,9 +74,7 @@
         </div>
         <div class="input-group">
           <PriceInput
-            :class="
-              $v.data.count.$dirty && !$v.data.count.required ? 'error' : null
-            "
+            :class="$v.data.count.$dirty && !$v.data.count.required ? 'error' : null"
             v-model="$v.data.count.$model"
             unit="개"
           />
@@ -136,29 +105,19 @@
       </div>
     </div>
     <BottomActionBar>
-      <el-button
-        slot="left"
-        v-if="editId"
-        class="cancel-edit"
-        @click="cancelEdit"
-        >취소</el-button
-      >
-      <el-button v-if="editId" v-loading="isSaving" @click="deleteOrder"
-        >삭제</el-button
-      >
-      <el-button v-loading="isSaving" @click="saveOrder">{{
-        editId ? "수정" : "저장"
-      }}</el-button>
+      <el-button slot="left" v-if="editId" class="cancel-edit" @click="cancelEdit">취소</el-button>
+      <el-button v-if="editId" v-loading="isSaving" @click="deleteOrder">삭제</el-button>
+      <el-button v-loading="isSaving" @click="saveOrder">{{ editId ? '수정' : '저장' }}</el-button>
     </BottomActionBar>
   </div>
 </template>
 
 <script>
-import PriceInput from "@/components/PriceInput";
-import BottomActionBar from "@/components/BottomActionBar";
-import { validationMixin } from "vuelidate";
-import { required } from "vuelidate/lib/validators";
-import _ from "lodash";
+import PriceInput from '@/components/PriceInput';
+import BottomActionBar from '@/components/BottomActionBar';
+import { validationMixin } from 'vuelidate';
+import { required } from 'vuelidate/lib/validators';
+import _ from 'lodash';
 
 const DEFAULT_DATA = {
   type: true,
@@ -168,25 +127,25 @@ const DEFAULT_DATA = {
   goods: null,
   unitPrice: null,
   count: null,
-  outstanding: 0
+  outstanding: 0,
 };
 
 export default {
   components: {
     PriceInput,
-    BottomActionBar
+    BottomActionBar,
   },
 
   props: {
     userName: { type: String, default: null },
-    changeTabs: Function
+    changeTabs: Function,
   },
 
   data() {
     return {
       isSaving: false,
       data: _.cloneDeep(DEFAULT_DATA),
-      editId: null
+      editId: null,
     };
   },
 
@@ -198,26 +157,16 @@ export default {
       goods: { required },
       unitPrice: { required },
       count: { required },
-      outstanding: { required }
-    }
+      outstanding: { required },
+    },
   },
 
   created() {
-    const editData = this.$store.getters["editOrder/orderData"];
+    const editData = this.$store.getters['editOrder/orderData'];
 
     if (editData._id) {
-      const {
-        type,
-        date,
-        goods,
-        unitPrice,
-        count,
-        outstanding,
-        memo
-      } = editData;
-      const editDate = date
-        .toString()
-        .replace(/(\d{4})(\d{2})(\d+)/g, "$1-$2-$3");
+      const { type, date, goods, unitPrice, count, outstanding, memo } = editData;
+      const editDate = date.toString().replace(/(\d{4})(\d{2})(\d+)/g, '$1-$2-$3');
 
       this.editId = editData._id;
       this.data = {
@@ -227,7 +176,7 @@ export default {
         count,
         outstanding,
         date: editDate,
-        memo
+        memo,
       };
     }
   },
@@ -237,17 +186,17 @@ export default {
       return this.$filters.comma(this.data.unitPrice * this.data.count);
     },
     loginUser() {
-      return this.$store.getters["loginUser/loginUser"];
-    }
+      return this.$store.getters['loginUser/loginUser'];
+    },
   },
 
   methods: {
     valid() {
       const checkType = [
-        { value: "date", text: "거래일을" },
-        { value: "goods", text: "상품명을" },
-        { value: "unitPrice", text: "단가를" },
-        { value: "count", text: "갯수를" }
+        { value: 'date', text: '거래일을' },
+        { value: 'goods', text: '상품명을' },
+        { value: 'unitPrice', text: '단가를' },
+        { value: 'count', text: '갯수를' },
       ];
 
       checkType.forEach(key => {
@@ -256,13 +205,10 @@ export default {
         }
       });
 
-      const message = this.$utils.validate.checkAlertMessage(
-        this.data,
-        checkType
-      );
+      const message = this.$utils.validate.checkAlertMessage(this.data, checkType);
 
       if (message) {
-        this.$alert(message, "주문 추가 실패", { showClose: false });
+        this.$alert(message, '주문 추가 실패', { showClose: false });
         return false;
       }
 
@@ -275,24 +221,21 @@ export default {
       this.isSaving = true;
       const params = {
         ...this.data,
-        date: Number(this.data.date.split("-").join("")),
+        date: Number(this.data.date.split('-').join('')),
         userName: this.userName,
         price: this.data.count * this.data.unitPrice,
-        companyUid: this.loginUser.id
+        companyUid: this.loginUser.id,
       };
       const res = !this.editId
-        ? await this.$api.order.createOrder(
-            Number(this.$route.params.id),
-            params
-          )
+        ? await this.$api.order.createOrder(Number(this.$route.params.id), params)
         : await this.$api.order.updateOrder(this.editId, params);
 
       if (res.status === 200) {
         this.$v.$reset();
-        this.$store.commit("editOrder/SET_RESET_ORDER_DATA");
-        this.$message(!this.editId ? "주문 추가 완료" : "주문 수정 완료");
+        this.$store.commit('editOrder/SET_RESET_ORDER_DATA');
+        this.$message(!this.editId ? '주문 추가 완료' : '주문 수정 완료');
         this.isSaving = false;
-        this.changeTabs("history");
+        this.changeTabs('history');
       }
     },
 
@@ -304,30 +247,30 @@ export default {
 
     //TODO confirm 후 함수 로직 분리 -> true하면 다음 함수 진행
     async deleteOrder() {
-      this.$confirm("주문을 삭제하시겠습니까?", "주문삭제", {
-        showClose: true
+      this.$confirm('주문을 삭제하시겠습니까?', '주문삭제', {
+        showClose: true,
       })
         .then(async () => {
           try {
             this.isSaving = true;
             const res = await this.$api.order.deleteOrder(this.editId);
-            if (res.data === "success") {
-              this.$store.commit("editOrder/SET_RESET_ORDER_DATA");
-              this.$message("주문 삭제 완료");
+            if (res.data === 'success') {
+              this.$store.commit('editOrder/SET_RESET_ORDER_DATA');
+              this.$message('주문 삭제 완료');
               this.$v.$reset();
-              this.changeTabs("history");
+              this.changeTabs('history');
             } else {
-              this.$message("주문 삭제 실패. 관리자에게 문의하세요");
+              this.$message('주문 삭제 실패. 관리자에게 문의하세요');
             }
           } catch (error) {
-            this.$message("주문 삭제 실패. 관리자에게 문의하세요");
+            this.$message('주문 삭제 실패. 관리자에게 문의하세요');
           } finally {
             this.isSaving = false;
           }
         })
         .catch(() => false);
-    }
-  }
+    },
+  },
 };
 </script>
 

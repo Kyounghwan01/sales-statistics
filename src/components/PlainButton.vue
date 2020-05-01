@@ -1,9 +1,5 @@
 <template>
-  <button
-    v-bind="$attrs"
-    :class="[type, size, round ? 'round' : null]"
-    @click="$emit('click')"
-  >
+  <button v-bind="$attrs" :class="[type, size, round ? 'round' : null]" @click="$emit('click')">
     <slot></slot>
   </button>
 </template>
@@ -13,8 +9,8 @@ export default {
   props: {
     type: String,
     size: String,
-    round: { type: Boolean, default: false }
-  }
+    round: { type: Boolean, default: false },
+  },
 };
 </script>
 

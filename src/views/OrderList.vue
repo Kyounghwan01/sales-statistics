@@ -21,28 +21,28 @@
 </template>
 
 <script>
-import MainLayout from "@/router/layouts/MainLayout";
-import ListFilters from "@/components/Order/ListFilters";
-import List from "@/components/Order/List";
+import MainLayout from '@/router/layouts/MainLayout';
+import ListFilters from '@/components/Order/ListFilters';
+import List from '@/components/Order/List';
 
 export default {
   components: {
     MainLayout,
     ListFilters,
-    List
+    List,
   },
   data() {
     return {
       companies: [],
-      filterValues: {}
+      filterValues: {},
     };
   },
 
   async created() {
-    const res = await this.$store.dispatch("order/getOrderList");
+    const res = await this.$store.dispatch('order/getOrderList');
 
-    if (res === "fail") {
-      this.$store.dispatch("order/getOrderList");
+    if (res === 'fail') {
+      this.$store.dispatch('order/getOrderList');
     }
 
     this.getCompanies();
@@ -50,76 +50,76 @@ export default {
 
   computed: {
     loginUser() {
-      return this.$store.getters["loginUser/loginUser"];
+      return this.$store.getters['loginUser/loginUser'];
     },
 
     loading() {
-      return this.$store.getters["order/orderLoading"];
+      return this.$store.getters['order/orderLoading'];
     },
 
     orderList() {
-      return this.$store.getters["order/orders"];
+      return this.$store.getters['order/orders'];
     },
 
     inComeOutCome() {
-      return this.$store.getters["order/countInComeOutCome"];
+      return this.$store.getters['order/countInComeOutCome'];
     },
 
     filterOptions() {
       const companiesOptions = this.companies.map(({ id, name }) => ({
         value: id,
-        label: name
+        label: name,
       }));
       return {
         companies: {
           multiple: true,
-          placeholder: "모든 회사",
-          options: companiesOptions
+          placeholder: '모든 회사',
+          options: companiesOptions,
         },
         soldType: {
           multiple: false,
-          placeholder: "매출/매입",
+          placeholder: '매출/매입',
           options: [
             {
               value: false,
-              label: "매출"
+              label: '매출',
             },
             {
               value: true,
-              label: "매입"
-            }
-          ]
+              label: '매입',
+            },
+          ],
         },
         dateSort: {
           multiple: false,
-          placeholder: "최신순",
+          placeholder: '최신순',
           options: [
             {
               value: 1,
-              label: "과거순"
+              label: '과거순',
             },
             {
               value: 0,
-              label: "최신순"
-            }
-          ]
-        }
+              label: '최신순',
+            },
+          ],
+        },
       };
     },
     filters() {
-      return this.$store.getters["order/filter"];
-    }
+      return this.$store.getters['order/filter'];
+    },
   },
 
   methods: {
     async getCompanies() {
-      if (!this.$store.getters["users/user"].length) {
-        await this.$store.dispatch("users/getUser", this.loginUser.id);
+      if (!this.$store.getters['users/user'].length) {
+        await this.$store.dispatch('users/getUser', this.loginUser.id);
       }
 
-      this.companies = this.$store.getters["users/user"];
-    }
-  }
+      this.companies = this.$store.getters['users/user'];
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>
