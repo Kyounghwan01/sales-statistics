@@ -253,7 +253,7 @@ export default {
 
     alertMessage(message, title) {
       this.isSaving = false;
-      this.$alert(message, title, { showClose: false });
+      this.$alert(message, title, { showClose: true });
     },
 
     async saveOrder() {
@@ -270,13 +270,13 @@ export default {
       const res = await this.$api.order.createOrder(this.data.userId, params);
       if (res.status === 200) {
         this.isSaving = false;
-        this.$message('주문 정보 추가 완료');
+        this.$message({ showClose: true, message: '주문 정보 추가 완료' });
         this.data = _.cloneDeep(DEFAULT_DATA);
         this.search = !this.search;
         this.$v.$reset();
       } else {
         this.isSaving = false;
-        this.$message('주문 정보 추가 실패. 관리자에게 문의하세요');
+        this.$message({ showClose: true, message: '주문 정보 추가 실패. 관리자에게 문의하세요' });
       }
     },
   },

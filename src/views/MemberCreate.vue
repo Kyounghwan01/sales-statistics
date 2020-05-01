@@ -141,7 +141,7 @@ export default {
 
     alertMessage(message, title) {
       this.isSaving = false;
-      this.$alert(message, title, { showClose: false });
+      this.$alert(message, title, { showClose: true });
     },
 
     async registredUser() {

@@ -52,7 +52,7 @@ export default {
     } else {
       this.orderLoading = false;
       this.$router.push('/users');
-      this.$message('회원 정보 로딩 실패 다시 접속하세요');
+      this.$message({ showClose: true, message: '회원 정보 로딩 실패 다시 접속하세요' });
     }
   },
 

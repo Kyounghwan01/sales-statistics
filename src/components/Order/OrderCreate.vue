@@ -208,7 +208,7 @@ export default {
       const message = this.$utils.validate.checkAlertMessage(this.data, checkType);
 
       if (message) {
-        this.$alert(message, '주문 추가 실패', { showClose: false });
+        this.$alert(message, '주문 추가 실패', { showClose: true });
         return false;
       }
 
@@ -233,7 +233,7 @@ export default {
       if (res.status === 200) {
         this.$v.$reset();
         this.$store.commit('editOrder/SET_RESET_ORDER_DATA');
-        this.$message(!this.editId ? '주문 추가 완료' : '주문 수정 완료');
+        this.$message({ showClose: true, message: !this.editId ? '주문 추가 완료' : '주문 수정 완료' });
         this.isSaving = false;
         this.changeTabs('history');
       }
@@ -256,14 +256,14 @@ export default {
             const res = await this.$api.order.deleteOrder(this.editId);
             if (res.data === 'success') {
               this.$store.commit('editOrder/SET_RESET_ORDER_DATA');
-              this.$message('주문 삭제 완료');
+              this.$message({ showClose: true, message: '주문 삭제 완료' });
               this.$v.$reset();
               this.changeTabs('history');
             } else {
-              this.$message('주문 삭제 실패. 관리자에게 문의하세요');
+              this.$message({ showClose: true, message: '주문 삭제 실패. 관리자에게 문의하세요' });
             }
           } catch (error) {
-            this.$message('주문 삭제 실패. 관리자에게 문의하세요');
+            this.$message({ showClose: true, message: '주문 삭제 실패. 관리자에게 문의하세요' });
           } finally {
             this.isSaving = false;
           }

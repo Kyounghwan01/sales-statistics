@@ -60,7 +60,7 @@ export default {
     const res = await this.$store.dispatch('users/getCurrentUser', params);
 
     if (res === 'fail') {
-      this.$message('회원 정보 로딩 실패 다시 접속하세요');
+      this.$message({ showClose: true, message: '회원 정보 로딩 실패 다시 접속하세요' });
       this.$router.push('/users');
     }
 

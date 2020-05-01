@@ -29,42 +29,58 @@
       <Summary v-loading="salesStoreData.loading" :barChartDataSet="barChartDataSet" />
 
       <div class="sales__chart-group">
-        <el-card shadow="never">
+        <el-card class="sales__chart-group__bar-chart" shadow="never">
           <h3>TREND</h3>
           <BarChart v-loading="loading" :chart-data="barChartDataSet" :options="chartOptions" />
         </el-card>
-      </div>
 
-      <div class="pie-chart-income-box" v-if="handlSalesData('pieInput').labels.length">
-        <PieChart v-loading="loading" :chart-data="handlSalesData('pieInput')" :options="pieOption" />
-        {{ handlSalesData('pieInput') }}
+        <div class="sales__chart-group__pie-chart-group">
+          <el-card class="sales__chart-group__pie-chart-group__pie-chart" shadow="never">
+            <h3>{{ dateDisplay(rangeValue, rangeType) }} 매출</h3>
+            <div class="sales__chart-group__pie-chart-group__pie-chart__chart-resize">
+              <PieChart
+                v-if="handlSalesData('pieOutput').labels.length"
+                v-loading="loading"
+                :chart-data="handlSalesData('pieOutput')"
+                :options="pieOption"
+              />
+            </div>
 
-        <span>input count</span>
-        <ul class="policy-links">
-          <li v-for="(salesData, index) in handlSalesData('pieInput').list" :key="index">
-            {{ salesData.label }}
-            {{ `${comma(salesData.price)}원` }}
-            {{ `${salesData.count}건` }}
-          </li>
-        </ul>
-      </div>
-      <div class="pie-chart-income-box" v-else>
-        표시할 데이터가 없습니다.
-      </div>
+            <ul v-if="handlSalesData('pieOutput').labels.length" class="policy-links">
+              <li v-for="(salesData, index) in handlSalesData('pieOutput').list" :key="index">
+                {{ salesData.label }}
+                {{ `${comma(salesData.price)}원` }}
+                {{ `${salesData.count}건` }}
+              </li>
+            </ul>
+            <div class="pie-chart-outcome-box" v-else>
+              표시할 데이터가 없습니다.
+            </div>
+          </el-card>
 
-      <div class="pie-chart-outcome-box" v-if="handlSalesData('pieOutput').labels.length">
-        <PieChart v-loading="loading" :chart-data="handlSalesData('pieOutput')" :options="pieOption" />
+          <el-card class="sales__chart-group__pie-chart-group__pie-chart" shadow="never">
+            <h3>{{ dateDisplay(rangeValue, rangeType) }} 매입</h3>
+            <div class="sales__chart-group__pie-chart-group__pie-chart__chart-resize">
+              <PieChart
+                v-if="handlSalesData('pieInput').labels.length"
+                v-loading="loading"
+                :chart-data="handlSalesData('pieInput')"
+                :options="pieOption"
+              />
+            </div>
 
-        <ul class="policy-links">
-          <li v-for="(salesData, index) in handlSalesData('pieOutput').list" :key="index">
-            {{ salesData.label }}
-            {{ `${comma(salesData.price)}원` }}
-            {{ `${salesData.count}건` }}
-          </li>
-        </ul>
-      </div>
-      <div class="pie-chart-outcome-box" v-else>
-        표시할 데이터가 없습니다.
+            <ul v-if="handlSalesData('pieInput').labels.length" class="policy-links">
+              <li v-for="(salesData, index) in handlSalesData('pieInput').list" :key="index">
+                {{ salesData.label }}
+                {{ `${comma(salesData.price)}원` }}
+                {{ `${salesData.count}건` }}
+              </li>
+            </ul>
+            <div class="pie-chart-outcome-box" v-else>
+              표시할 데이터가 없습니다.
+            </div>
+          </el-card>
+        </div>
       </div>
 
       <!-- <line-chart :chart-data="datacollection"></line-chart> -->
@@ -495,6 +511,21 @@ export default {
     margin-top: 20px;
     h3 {
       margin: 0 0 30px 0;
+    }
+    &__pie-chart-group {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      &__pie-chart {
+        width: 49%;
+        height: 400px;
+        overflow-y: auto;
+        &__chart-resize {
+          float: right;
+          width: 200px;
+          height: 200px;
+        }
+      }
     }
   }
 }

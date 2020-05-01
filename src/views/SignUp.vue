@@ -155,7 +155,7 @@ export default {
             });
             if (resStore === 'success') {
               this.$alert('회원가입 성공하였습니다.', '회원가입 성공', {
-                showClose: false,
+                showClose: true,
                 dangerouslyUseHTMLString: true,
               }).then(() => this.$router.push('/'));
             }
@@ -163,7 +163,7 @@ export default {
         }
       } catch (err) {
         this.$alert(err.message, '회원가입 실패', {
-          showClose: false,
+          showClose: true,
           dangerouslyUseHTMLString: true,
         });
       }
