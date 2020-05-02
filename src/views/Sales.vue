@@ -37,28 +37,13 @@
               </el-option>
             </el-select>
           </div>
-          <BarChart
-            v-if="chartType === 'bar'"
-            v-loading="loading"
-            :chart-data="barChartDataSet"
-            :options="chartOptions"
-          />
-          {{ lineChartDataSet }}
-          <line-chart :chart-data="datacollection" :options="lineoptions"></line-chart>
+          <BarChart v-if="chartType === 'bar'" v-loading="loading" :chart-data="barChartDataSet" />
+          <line-chart v-else v-loading="loading" :chart-data="lineChartDataSet"></line-chart>
         </el-card>
 
         <div v-loading="loading" class="sales__chart-group__pie-chart-group">
-          <DetailList
-            :title="`${dateDisplay(rangeValue, rangeType)} 매출`"
-            :data="handlSalesData('pieOutput')"
-            :pieOption="pieOption"
-          />
-
-          <DetailList
-            :title="`${dateDisplay(rangeValue, rangeType)} 매입`"
-            :data="handlSalesData('pieInput')"
-            :pieOption="pieOption"
-          />
+          <DetailList :title="`${dateDisplay(rangeValue, rangeType)} 매출`" :data="handlSalesData('pieOutput')" />
+          <DetailList :title="`${dateDisplay(rangeValue, rangeType)} 매입`" :data="handlSalesData('pieInput')" />
         </div>
       </div>
     </section>
@@ -93,49 +78,18 @@ export default {
             label: '2018 Sales',
             borderColor: 'rgba(50, 115, 220, 0.5)',
             backgroundColor: 'rgba(50, 115, 220, 0.1)',
+            fill: false,
             data: [300, 700, 450, 750, 450],
           },
           {
             label: '2017 Sales',
             borderColor: 'rgba(255, 56, 96, 0.5)',
             backgroundColor: 'rgba(255, 56, 96, 0.1)',
+            fill: false,
             data: [600, 550, 750, 250, 700],
           },
         ],
       },
-      // datacollection: {
-      //   labels: [
-      //     "January",
-      //     "February",
-      //     "March",
-      //     "April",
-      //     "May",
-      //     "June",
-      //     "July",
-      //     "August",
-      //     "September",
-      //     "October",
-      //     "November",
-      //     "December"
-      //   ],
-      //   datasets: [
-      //     {
-      //       label: "Data",
-      //       borderColor: "#80b6f4",
-      //       pointBorderColor: "#80b6f4",
-      //       pointBackgroundColor: "#80b6f4",
-      //       pointHoverBackgroundColor: "#80b6f4",
-      //       pointHoverBorderColor: "#80b6f4",
-      //       pointBorderWidth: 10,
-      //       pointHoverRadius: 10,
-      //       pointHoverBorderWidth: 1,
-      //       pointRadius: 3,
-      //       fill: false,
-      //       borderWidth: 4,
-      //       data: [40, 20, 30, 50, 90, 10, 20, 40, 50, 70, 90, 100]
-      //     }
-      //   ]
-      // },
 
       options: [
         {
@@ -176,96 +130,6 @@ export default {
 
     loading() {
       return this.$store.getters['sales/loading'];
-    },
-
-    chartOptions() {
-      const { comma } = this.$filters;
-
-      return {
-        responsive: true,
-        maintainAspectRatio: false,
-        tooltips: {
-          mode: 'point',
-          bodyFontSize: 15,
-          bodySpacing: 7,
-          xPadding: 10,
-          yPadding: 10,
-          callbacks: {
-            title() {
-              return null;
-            },
-            label(tooltipItem, { datasets }) {
-              const { datasetIndex, value } = tooltipItem;
-              if (value != 0) {
-                return datasets[datasetIndex].label;
-              }
-            },
-          },
-        },
-        legend: {
-          display: false,
-        },
-        scales: {
-          yAxes: [
-            {
-              id: 'amount',
-              position: 'left',
-              gridLines: {
-                drawOnChartArea: false,
-              },
-              ticks: {
-                beginAtZero: true,
-                callback: function(value) {
-                  return `${comma(value)}원`;
-                },
-              },
-              stacked: true,
-            },
-          ],
-          xAxes: [
-            {
-              stacked: true,
-              barPercentage: 0.7,
-              gridLines: {
-                display: false,
-              },
-            },
-          ],
-        },
-      };
-    },
-    pieOption() {
-      return {
-        responsive: true,
-        tooltips: {
-          mode: 'point',
-          bodyFontSize: 15,
-          bodySpacing: 7,
-          xPadding: 10,
-          yPadding: 10,
-          callbacks: {
-            label(tooltipItem, { labels }) {
-              return labels[tooltipItem.index];
-            },
-          },
-        },
-        legend: {
-          display: false,
-        },
-      };
-    },
-    lineoptions() {
-      return {
-        ...this.chartOptions,
-        scales: {
-          xAxes: [
-            {
-              type: 'category',
-              labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-            },
-          ],
-        },
-      };
     },
 
     rangeValue: {
@@ -373,8 +237,25 @@ export default {
     },
 
     lineChartDataSet() {
-      // const data = {labels: this.barChartDataSet.labels, datasets: }
-      return 'awd';
+      const lineDataSets = this.barChartDataSet.datasets.map((el, index) => {
+        return {
+          ..._.omit(el, ['type', 'yAxisID', 'stack']),
+          borderColor: constant.lineChartColorSet[index],
+          backgroundColor: constant.lineChartColorSet[index],
+          fill: false,
+        };
+      });
+      // for (let i = 0; i < this.barChartDataSet.datasets.length; i++) {
+      //   lineDataSets.push({
+      //     ..._.omit(this.barChartDataSet.datasets[i], ['type', 'yAxisID', 'stack']),
+      //     borderColor: constant.lineChartColorSet[i],
+      //     backgroundColor: constant.lineChartColorSet[i],
+      //     fill: false,
+      //   });
+      // }
+      // console.log(lineDataSets);
+
+      return { labels: this.barChartDataSet.labels, datasets: lineDataSets };
     },
   },
 
@@ -385,10 +266,6 @@ export default {
         date: this.time,
         id: this.loginUser.id,
       });
-    },
-
-    chartType: function(value) {
-      console.log(value);
     },
   },
 

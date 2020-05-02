@@ -59,4 +59,5 @@ export default {
   inComeColor: '#91BFDB',
   outComeColor: '#FC8D59',
   profitColor: '#D6EECC',
+  lineChartColorSet: ['rgba(50, 115, 220, 0.5)', 'rgba(255, 56, 96, 0.5)', '#D6EECC'],
 };
