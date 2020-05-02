@@ -34,52 +34,18 @@
           <BarChart v-loading="loading" :chart-data="barChartDataSet" :options="chartOptions" />
         </el-card>
 
-        <div class="sales__chart-group__pie-chart-group">
-          <el-card class="sales__chart-group__pie-chart-group__pie-chart" shadow="never">
-            <h3>{{ dateDisplay(rangeValue, rangeType) }} 매출</h3>
-            <div class="sales__chart-group__pie-chart-group__pie-chart__chart-resize">
-              <PieChart
-                v-if="handlSalesData('pieOutput').labels.length"
-                v-loading="loading"
-                :chart-data="handlSalesData('pieOutput')"
-                :options="pieOption"
-              />
-            </div>
+        <div v-loading="loading" class="sales__chart-group__pie-chart-group">
+          <DetailList
+            :title="`${dateDisplay(rangeValue, rangeType)} 매출`"
+            :data="handlSalesData('pieOutput')"
+            :pieOption="pieOption"
+          />
 
-            <ul v-if="handlSalesData('pieOutput').labels.length" class="policy-links">
-              <li v-for="(salesData, index) in handlSalesData('pieOutput').list" :key="index">
-                {{ salesData.label }}
-                {{ `${comma(salesData.price)}원` }}
-                {{ `${salesData.count}건` }}
-              </li>
-            </ul>
-            <div class="pie-chart-outcome-box" v-else>
-              표시할 데이터가 없습니다.
-            </div>
-          </el-card>
-
-          <el-card class="sales__chart-group__pie-chart-group__pie-chart" shadow="never">
-            <h3>{{ dateDisplay(rangeValue, rangeType) }} 매입</h3>
-            <div class="sales__chart-group__pie-chart-group__pie-chart__chart-resize">
-              <PieChart
-                v-if="handlSalesData('pieInput').labels.length"
-                v-loading="loading"
-                :chart-data="handlSalesData('pieInput')"
-                :options="pieOption"
-              />
-            </div>
-
-            <ul v-if="handlSalesData('pieInput').labels.length" class="policy-links">
-              <li v-for="(salesData, index) in handlSalesData('pieInput').list" :key="index">
-                {{ salesData.label }}
-                {{ `${comma(salesData.price)}원` }}
-                {{ `${salesData.count}건` }}
-              </li>
-            </ul>
-            <div class="pie-chart-outcome-box" v-else>
-              표시할 데이터가 없습니다.
-            </div>
-          </el-card>
+          <DetailList
+            :title="`${dateDisplay(rangeValue, rangeType)} 매입`"
+            :data="handlSalesData('pieInput')"
+            :pieOption="pieOption"
+          />
         </div>
       </div>
 
@@ -92,8 +58,8 @@
 import MainLayout from '@/router/layouts/MainLayout';
 import Summary from '@/components/Sale/Summary';
 import BarChart from '@/components/Sale/BarChart';
-import PieChart from '@/components/Sale/PieChart';
 // import LineChart from "@/components/Sale/LineChart";
+import DetailList from '@/components/Sale/DetailList';
 import moment from 'moment';
 import _ from 'lodash';
 import constant from '@/constant';
@@ -103,7 +69,7 @@ export default {
     MainLayout,
     Summary,
     BarChart,
-    PieChart,
+    DetailList,
     // LineChart
   },
 
@@ -518,12 +484,16 @@ export default {
       justify-content: space-between;
       &__pie-chart {
         width: 49%;
-        height: 400px;
+        min-height: 500px;
         overflow-y: auto;
-        &__chart-resize {
-          float: right;
-          width: 200px;
-          height: 200px;
+        &__header {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 20px;
+          &__chart-resize {
+            height: 200px;
+            width: 200px;
+          }
         }
       }
     }
