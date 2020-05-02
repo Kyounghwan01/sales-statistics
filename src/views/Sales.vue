@@ -30,8 +30,21 @@
 
       <div class="sales__chart-group">
         <el-card class="sales__chart-group__bar-chart" shadow="never">
-          <h3>TREND</h3>
-          <BarChart v-loading="loading" :chart-data="barChartDataSet" :options="chartOptions" />
+          <div class="sales__chart-group__bar-chart__header">
+            <h3>TREND</h3>
+            <el-select v-model="chartType" placeholder="Select">
+              <el-option v-for="item in chartTypeOptions" :key="item.value" :label="item.label" :value="item.value">
+              </el-option>
+            </el-select>
+          </div>
+          <BarChart
+            v-if="chartType === 'bar'"
+            v-loading="loading"
+            :chart-data="barChartDataSet"
+            :options="chartOptions"
+          />
+          {{ lineChartDataSet }}
+          <line-chart :chart-data="datacollection" :options="lineoptions"></line-chart>
         </el-card>
 
         <div v-loading="loading" class="sales__chart-group__pie-chart-group">
@@ -48,8 +61,6 @@
           />
         </div>
       </div>
-
-      <!-- <line-chart :chart-data="datacollection"></line-chart> -->
     </section>
   </MainLayout>
 </template>
@@ -58,7 +69,7 @@
 import MainLayout from '@/router/layouts/MainLayout';
 import Summary from '@/components/Sale/Summary';
 import BarChart from '@/components/Sale/BarChart';
-// import LineChart from "@/components/Sale/LineChart";
+import LineChart from '@/components/Sale/LineChart';
 import DetailList from '@/components/Sale/DetailList';
 import moment from 'moment';
 import _ from 'lodash';
@@ -70,11 +81,28 @@ export default {
     Summary,
     BarChart,
     DetailList,
-    // LineChart
+    LineChart,
   },
 
   data() {
     return {
+      datacollection: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+        datasets: [
+          {
+            label: '2018 Sales',
+            borderColor: 'rgba(50, 115, 220, 0.5)',
+            backgroundColor: 'rgba(50, 115, 220, 0.1)',
+            data: [300, 700, 450, 750, 450],
+          },
+          {
+            label: '2017 Sales',
+            borderColor: 'rgba(255, 56, 96, 0.5)',
+            backgroundColor: 'rgba(255, 56, 96, 0.1)',
+            data: [600, 550, 750, 250, 700],
+          },
+        ],
+      },
       // datacollection: {
       //   labels: [
       //     "January",
@@ -119,6 +147,17 @@ export default {
           label: '월간',
         },
       ],
+      chartTypeOptions: [
+        {
+          value: 'bar',
+          label: '막대 그래프',
+        },
+        {
+          value: 'line',
+          label: '꺾은선 그래프',
+        },
+      ],
+      chartType: 'bar',
       rangeType: 'month',
       time: moment(new Date())
         .date(1)
@@ -212,6 +251,19 @@ export default {
         },
         legend: {
           display: false,
+        },
+      };
+    },
+    lineoptions() {
+      return {
+        ...this.chartOptions,
+        scales: {
+          xAxes: [
+            {
+              type: 'category',
+              labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+            },
+          ],
         },
       };
     },
@@ -319,6 +371,11 @@ export default {
         ],
       };
     },
+
+    lineChartDataSet() {
+      // const data = {labels: this.barChartDataSet.labels, datasets: }
+      return 'awd';
+    },
   },
 
   watch: {
@@ -328,6 +385,10 @@ export default {
         date: this.time,
         id: this.loginUser.id,
       });
+    },
+
+    chartType: function(value) {
+      console.log(value);
     },
   },
 
@@ -475,27 +536,19 @@ export default {
 
   &__chart-group {
     margin-top: 20px;
-    h3 {
-      margin: 0 0 30px 0;
+    &__bar-chart {
+      &__header {
+        display: flex;
+        justify-content: space-between;
+        h3 {
+          margin: 0 0 30px 0;
+        }
+      }
     }
     &__pie-chart-group {
       margin-top: 20px;
       display: flex;
       justify-content: space-between;
-      &__pie-chart {
-        width: 49%;
-        min-height: 500px;
-        overflow-y: auto;
-        &__header {
-          display: flex;
-          justify-content: space-between;
-          margin-bottom: 20px;
-          &__chart-resize {
-            height: 200px;
-            width: 200px;
-          }
-        }
-      }
     }
   }
 }

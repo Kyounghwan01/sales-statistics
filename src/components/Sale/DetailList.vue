@@ -7,7 +7,7 @@
       </div>
     </div>
 
-    <el-table :data="data.list" empty-text="표시할 데이터가 없습니다." fit>
+    <el-table :data="data.list" empty-text="데이터가 없습니다." fit>
       <el-table-column fixed="left" label="물품명" min-width="80" align="center">
         <template v-slot="scope">
           <div class="members-list__name">
