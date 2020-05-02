@@ -42,8 +42,21 @@
         </el-card>
 
         <div v-loading="loading" class="sales__chart-group__pie-chart-group">
-          <DetailList :title="`${dateDisplay(rangeValue, rangeType)} 매출`" :data="handlSalesData('pieOutput')" />
-          <DetailList :title="`${dateDisplay(rangeValue, rangeType)} 매입`" :data="handlSalesData('pieInput')" />
+          <DetailList
+            :title="`${dateDisplay(rangeValue, rangeType)} 물품별 매출`"
+            :data="handlSalesData('pieOutput')"
+          />
+          <DetailList :title="`${dateDisplay(rangeValue, rangeType)} 물품별 매입`" :data="handlSalesData('pieInput')" />
+        </div>
+        <div v-loading="loading" class="sales__chart-group__pie-chart-group">
+          <DetailList
+            :title="`${dateDisplay(rangeValue, rangeType)} 회사별 매출`"
+            :data="handlSalesData('pieCompanyOutput')"
+          />
+          <DetailList
+            :title="`${dateDisplay(rangeValue, rangeType)} 회사별 매입`"
+            :data="handlSalesData('pieCompanyInput')"
+          />
         </div>
       </div>
     </section>
@@ -71,26 +84,6 @@ export default {
 
   data() {
     return {
-      datacollection: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-        datasets: [
-          {
-            label: '2018 Sales',
-            borderColor: 'rgba(50, 115, 220, 0.5)',
-            backgroundColor: 'rgba(50, 115, 220, 0.1)',
-            fill: false,
-            data: [300, 700, 450, 750, 450],
-          },
-          {
-            label: '2017 Sales',
-            borderColor: 'rgba(255, 56, 96, 0.5)',
-            backgroundColor: 'rgba(255, 56, 96, 0.1)',
-            fill: false,
-            data: [600, 550, 750, 250, 700],
-          },
-        ],
-      },
-
       options: [
         {
           value: 'week',
@@ -245,15 +238,6 @@ export default {
           fill: false,
         };
       });
-      // for (let i = 0; i < this.barChartDataSet.datasets.length; i++) {
-      //   lineDataSets.push({
-      //     ..._.omit(this.barChartDataSet.datasets[i], ['type', 'yAxisID', 'stack']),
-      //     borderColor: constant.lineChartColorSet[i],
-      //     backgroundColor: constant.lineChartColorSet[i],
-      //     fill: false,
-      //   });
-      // }
-      // console.log(lineDataSets);
 
       return { labels: this.barChartDataSet.labels, datasets: lineDataSets };
     },
@@ -299,10 +283,6 @@ export default {
     handlSalesData(chartType) {
       const flatArray = this.salesStoreData.currentDateSalesData.flat();
 
-      //label: 매입/매출 물품
-      //dataset: 매입/매출 나뉜 물품 나뉜 더한 값 + 더한 횟수 (물품 5건 1,000원)
-      //상단: 총 매입/매출 건수 + 총 합산 가격 / 매입 건수 + 가격 / 매출 건수 + 가격 / 미수금 건수 + 가격
-
       const pieData = {
         chart: {
           label: [],
@@ -314,14 +294,24 @@ export default {
       };
 
       /** 물품 이름 넣기 */
-      flatArray.map(({ type, goods }) => {
+      flatArray.map(({ type, goods, userName }) => {
         if ((chartType === 'pieInput' && type) || (chartType === 'pieOutput' && !type)) {
           pieData.chart.label.push({ goods });
+        } else if ((chartType === 'pieCompanyInput' && type) || (chartType === 'pieCompanyOutput' && !type)) {
+          pieData.chart.label.push({ userName });
         }
       });
 
       /** 물품 중복 제거 */
-      pieData.chart.label = _.uniq(pieData.chart.label.map(({ goods }) => goods));
+      pieData.chart.label = _.uniq(
+        pieData.chart.label.map(({ goods, userName }) => {
+          if (chartType === 'pieInput' || chartType === 'pieOutput') {
+            return goods;
+          } else {
+            return userName;
+          }
+        }),
+      );
 
       /** pieChart data preset */
       for (let i = 0; i < pieData.chart.label.length; i++) {
@@ -331,10 +321,13 @@ export default {
       }
 
       /** pieChart data set */
-      flatArray.map(({ type, goods, price }) => {
+      flatArray.map(({ type, goods, userName, price }) => {
         if ((chartType === 'pieInput' && type) || (chartType === 'pieOutput' && !type)) {
           pieData.chart.data[pieData.chart.label.indexOf(goods)] += price;
           pieData.chart.count[pieData.chart.label.indexOf(goods)]++;
+        } else if ((chartType === 'pieCompanyInput' && type) || (chartType === 'pieCompanyOutput' && !type)) {
+          pieData.chart.data[pieData.chart.label.indexOf(userName)] += price;
+          pieData.chart.count[pieData.chart.label.indexOf(userName)]++;
         }
       });
 
@@ -346,6 +339,8 @@ export default {
           count: pieData.chart.count[i],
         });
       }
+
+      /** 회사별 매출/매입 현황 */
 
       return {
         labels: pieData.chart.label,

@@ -8,7 +8,12 @@
     </div>
 
     <el-table :data="data.list" empty-text="데이터가 없습니다." fit>
-      <el-table-column fixed="left" label="물품명" min-width="80" align="center">
+      <el-table-column
+        fixed="left"
+        :label="title.slice(-6).slice(0, 3) === '회사별' ? '회사명' : '물품명'"
+        min-width="80"
+        align="center"
+      >
         <template v-slot="scope">
           <div class="members-list__name">
             {{ scope.row.label }}
