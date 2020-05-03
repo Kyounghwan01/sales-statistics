@@ -71,6 +71,8 @@ export default {
 <style lang="scss" scoped>
 .user-list {
   padding: 10px 80px;
+  overflow-y: auto;
+  height: 85vh;
   &__header {
     display: flex;
     justify-content: space-between;

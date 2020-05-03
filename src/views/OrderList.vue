@@ -3,6 +3,7 @@
     <section class="order-list">
       <div class="order-list__header">
         <h3>거래 현황</h3>
+        <PlainButton class="update-button" @click="downloadExcel">엑셀다운로드</PlainButton>
         <div class="order-list__header__total-comes">
           <span class="order-list__header__total-comes__outcome"
             >총 매출: <b>{{ inComeOutCome.outcome }}</b> 원</span
@@ -13,7 +14,7 @@
         </div>
       </div>
 
-      <ListFilters :filterOptions="filterOptions" :filterValues="filters" />
+      <ListFilters v-loading="loading" :filterOptions="filterOptions" :filterValues="filters" />
 
       <List v-loading="loading" :orderList="orderList" />
     </section>
@@ -24,12 +25,14 @@
 import MainLayout from '@/router/layouts/MainLayout';
 import ListFilters from '@/components/Order/ListFilters';
 import List from '@/components/Order/List';
+import PlainButton from '@/components/PlainButton.vue';
 
 export default {
   components: {
     MainLayout,
     ListFilters,
     List,
+    PlainButton,
   },
   data() {
     return {
@@ -118,6 +121,15 @@ export default {
       }
 
       this.companies = this.$store.getters['users/user'];
+    },
+
+    downloadExcel() {
+      this.$store.commit('order/SET_ORDER_LOADING', true);
+      const res = this.$utils.excel.formatJSON(this.orderList);
+      const title = `데이터목록_${this.moment().format('YYYYMMDD_HHmm')}.xlsx`;
+
+      this.$utils.excel.excelDownload(res, title);
+      this.$store.commit('order/SET_ORDER_LOADING', false);
     },
   },
 };
