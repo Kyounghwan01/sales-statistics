@@ -63,4 +63,6 @@ export default {
   ) => {
     return axios.get(`${BASE_URL}?companyUid=${companyUid}&start_date=${params.start}&end_date=${params.end}`);
   },
+
+  getOrderForExcel: (companyUid: string) => axios.get(`${BASE_URL}?companyUid=${companyUid}`),
 };

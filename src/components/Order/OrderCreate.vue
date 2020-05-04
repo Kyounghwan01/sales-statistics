@@ -245,7 +245,6 @@ export default {
       this.$v.$reset();
     },
 
-    //TODO confirm 후 함수 로직 분리 -> true하면 다음 함수 진행
     async deleteOrder() {
       this.$confirm('주문을 삭제하시겠습니까?', '주문삭제', {
         showClose: true,

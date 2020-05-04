@@ -3,14 +3,19 @@
     <section class="order-list">
       <div class="order-list__header">
         <h3>거래 현황</h3>
-        <PlainButton class="update-button" @click="downloadExcel">엑셀다운로드</PlainButton>
-        <div class="order-list__header__total-comes">
-          <span class="order-list__header__total-comes__outcome"
-            >총 매출: <b>{{ inComeOutCome.outcome }}</b> 원</span
-          >
-          <span class="order-list__header__total-comes__income"
-            >총 매입: <b>{{ inComeOutCome.income }}</b> 원</span
-          >
+        <div class="order-list__header__content">
+          <div class="order-list__header__content__total-comes">
+            <span class="order-list__header__content__total-comes__outcome"
+              >총 매출: <b>{{ inComeOutCome.outcome }}</b> 원</span
+            >
+            <span class="order-list__header__content__total-comes__income"
+              >총 매입: <b>{{ inComeOutCome.income }}</b> 원</span
+            >
+          </div>
+          <div class="order-list__header__content__excel-button-group">
+            <PlainButton class="update-button" @click="downloadExcel(orderList)">필터 목록 다운로드</PlainButton>
+            <PlainButton class="update-button" @click="entireDownloadExcel">전체 목록 다운로드</PlainButton>
+          </div>
         </div>
       </div>
 
@@ -123,13 +128,18 @@ export default {
       this.companies = this.$store.getters['users/user'];
     },
 
-    downloadExcel() {
+    downloadExcel(data) {
       this.$store.commit('order/SET_ORDER_LOADING', true);
-      const res = this.$utils.excel.formatJSON(this.orderList);
+      const res = this.$utils.excel.formatJSON(data);
       const title = `데이터목록_${this.moment().format('YYYYMMDD_HHmm')}.xlsx`;
 
       this.$utils.excel.excelDownload(res, title);
       this.$store.commit('order/SET_ORDER_LOADING', false);
+    },
+
+    async entireDownloadExcel() {
+      const res = await this.$api.order.getOrderForExcel(this.loginUser.id);
+      this.downloadExcel(res.data.order);
     },
   },
 };
@@ -143,91 +153,34 @@ export default {
     display: flex;
     justify-content: space-between;
     height: 65px;
-    &__total-comes {
+    &__content {
       display: flex;
-      flex-direction: column;
-      margin: 10px 0;
-      &__income {
-        b {
-          color: red;
+      margin-left: 10px;
+      &__total-comes {
+        display: flex;
+        flex-direction: column;
+        margin: 10px 10px 0 0;
+        &__income {
+          b {
+            color: red;
+          }
+        }
+        &__outcome {
+          b {
+            color: dodgerblue;
+          }
         }
       }
-      &__outcome {
-        b {
-          color: dodgerblue;
+
+      &__excel-button-group {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        button {
+          font-size: 10px;
         }
       }
     }
-  }
-}
-.outter {
-  width: 100%;
-  height: 86vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.login-user {
-  height: 480px;
-  width: 500px;
-  border-radius: 10px;
-}
-.header {
-  padding: 40px 0 25px 0;
-  display: flex;
-  justify-content: center;
-  h3 {
-    font-size: 25px;
-    margin: 0;
-  }
-}
-
-.login-button,
-.register {
-  padding: 20px;
-  ::v-deep .el-button {
-    width: 460px;
-    height: 50px;
-    color: white;
-    font-weight: bold;
-    font-size: 15px;
-    background-color: rgba(dodgerblue, 0.8);
-  }
-  ::v-deep .el-button:hover {
-    background-color: rgba(dodgerblue, 1);
-  }
-}
-.padding-top {
-  padding-top: 0px;
-}
-
-.id,
-.password {
-  .label-group {
-    margin-bottom: 20px;
-    label {
-      font-weight: bold;
-      margin-right: 10px;
-    }
-  }
-  padding: 20px;
-  ::v-deep .el-input {
-    width: 460px;
-  }
-}
-.error {
-  border: 1px solid red;
-  border-radius: 4px;
-  ::v-deep .el-input__inner {
-    border: none;
-  }
-}
-.invalid-feedback {
-  height: 15px;
-  .required {
-    color: red;
-    margin-left: 5px;
-    font-size: 13px;
   }
 }
 </style>
