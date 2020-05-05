@@ -4,6 +4,7 @@
 
 - **sales-statistics** 매출, 매입을 손쉽게 등록하고 기간별로 통계내어 현황 관찰을 쉽게 보기도록 이용하는 웹입니다.
 - 엑셀로 일일히 관리하시기 어려우신 개인사업자분의 요청을 기반으로 만들어졌으며 데이터베이스 초기화를 염려하시는 분이 많아 엑셀 다운로드 기능을 따로 만들었습니다.
+- 프로젝트 기간 : 2020. 3 ~ 2020. 5
 
 ## Content
 
@@ -33,19 +34,21 @@ yarn start
 
 Features
 
-- JSON Web Token Authentication
-- 회원가입
-- 로그아웃
-- 사용자 주문 내역 페이지
-- 카페 메뉴 및 배치도 가져와서 자리 설정 및 메뉴 선정 기능
-- 결재 후 본인 자리 확인 및 잔여시간 확인 기능
-- 잔여시간 30분 이전, 잔여시간 2시간 추가 기능
-- 잔여시간 초과시 자동 자리 초기화
-
-### admin
-- 카페 내부 배치도 수정 기능
-- 카페 메뉴 수정 기능
-- 주문 내역 확인 및 주문 처리 완료 기능
+- 계정
+  - 회원가입
+  - 로그인
+  - 로그아웃
+- 매출/매입할 회사 정보 CRUD
+- 회사 이름/전화번호로 찾기
+- 각 회사별 매출/매입 CRUD
+- 매출/매입 현황 필터링 (기간별, 회사별, 매출/매입별, 최신/과거순)
+- 통계 
+  - 선택 월/주 기준 이전 5개월/5주 통계
+  - 선택 기간 매출/매입 현황을 막대/꺾은선 그래프로 트렌드 체크
+  - 선택 월/주 기준 매출/매입을 회사 및 물품별 파이 그래프로 현황 체크
+- 엑셀 다운로드
+  - 매출/매입 현황 필터링 된 목록 엑셀 다운로드
+  - 매출/매입 현황 전체 엑셀 다운로드
 
 ## Skills
 ### Client-Side
@@ -55,8 +58,10 @@ Features
 - Vuex
 - Vue Router
 - Scss
-
----- 여기부터 
+- vue-chartjs
+- element-ui
+- firebase auth
+- vuelidate
 
 ### Server-Side
 - AWS Lambda
@@ -67,6 +72,16 @@ Features
 - MongoDB
 - Mongoose
 - Atlas
+
+## Deployment & Continuous Integration
+
+### Client
+
+- Netlify CI를 통한 배포 자동화
+
+### Server
+- AWS Lambda 이용으로 코드 바로 배포
+
 
 ### AWS lambda + api gateway 백엔드 api docs
 - 고객 생성 POST - (/board) -
@@ -307,3 +322,35 @@ past: 값있으면 과거순 없으면 최신순
 start_date, end_date: 기간 파람
 type: 값 있으면 매입, 없으면 매출
 ```
+
+## Challenges
+- AWS Lambda, api gateway 기본 사용법 숙지
+  - lambda 함수 내에서 mongodb, mongoose를 설치하는 과정에서 시간 소요
+  - lambda내 계층 탭에 mongoose node_module를 직접 다운받아 넣어서 사용함
+- 통계
+  - 5개월치를 한번에 ajax호출시 서버 과부하로 정상적인 실행이 안됨
+  - 기간내 30일이 넘지 않도록 하고, 30일이 넘으면 api를 한번더 호출하는 방법으로 기간을 쪼개 여러번 호출
+  - promise all로 빠르게 response를 받도록 기능 구현
+- element ui
+  - 매번 css를 구현하다가 처음으로 부트스트랩을 사용했는데, 사용법만 익히면 빠르게 코딩이 가능한 장점이 있음
+  - docs를 제대로 익히면 web에서 많이 쓰이는 기능은 단기간내 구현가능
+- ts 프로젝트 구조 설정
+  - 가장 시간이 많이 걸린 부분은 맨처음 프로젝트 세팅이였다.
+  - 프로젝트 세팅에 너무 힘을 많이 쏟아 가장 기본적인 `main.js`, `api` 부분만 ts로 구현하고 나머지는 js로 구현하였다.
+  - 구현시 ts로 인해 module not found 에러에 대해서 전역으로 `types/vue-global.d.ts`이라는 파일을 만들어 ts를 사용하는 모듈/파일을 declare함
+- 여러 번 사용하는 로직/컴포넌트 분리
+  - 많이 사용하는 함수(숫자 3자리 이상 comma찍기 등)는 `utils`파일로 빼서 전역으로 모든 파일에서 호출 사용 가능하도록 만듬
+  - priceInput, numberInput, textInput, tabs등 여러 곳에서 사용하는 컴포넌트 분리하여 사용 
+
+## Things To Do
+- 모바일 웹뷰 만들기
+  - react-native 웹뷰 테스트 완료
+  - 해당 프로젝트 반응형으로 만들면 바로 react-native에서 실행 가능할 것으로 예상
+- client test 만들기
+  - 기능 구현에 중점을 두어 test파일을 만들지 못함
+- 모든 js 파일 ts화
+  - ts로 프로젝트 구조를 짜다가 기본 개념 부족으로 인해 ts + js로 프로젝트 방향을 바꿈
+  - ts를 더 공부하여 이 프로젝트를 모두 ts로 바꿀 것
+- cors 에러 문제
+  - 간헐적으로 cors에러가 발생함. AWS Lambda내에서 모든 cors를 열어 놓은 상태인데 간헐적으로 나오는 이 문제를 해결하지 못함. 새로고침시 cors 에러가 뜨지 않음. 원인 파악 불가
+  
