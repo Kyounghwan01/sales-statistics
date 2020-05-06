@@ -14,7 +14,6 @@
 - [Skills](#Skills)
 - [Test](#Test)
 - [Deployment & Continuous Integration](#Deployment-&-Continuous-Integration)
-- [Project Control](#Project-Control)
 - [Challenges](#Challenges)
 - [Things To Do](#Things-To-Do)
 
@@ -84,86 +83,123 @@ Features
 
 
 ### AWS lambda + api gateway 백엔드 api docs
-- 고객 생성 POST - (/board) -
-  body: {
+
+## 로그인 유저 api
+
+### GET
+1. 전체 로그인 유저 조회 
+```
+GET: https://BASEURL/2020-03-07/user
+
+[
+  {
+    "_id": "5e88b344eb56c200073b1e82",
+    "name": "nk",
+    "email": "noh23@gmail.com",
+  },
+  {
+    "_id": "5e88b6888f11570007ab5f21",
+    "name": "nk",
+    "email": "noh23@gmail.com",
+  },
+]
+
+```
+2. 특정 로그인 유저 조회
+```
+GET: https://BASEURL/2020-03-07/user/유저 _id
+{
+  "_id": "5e88b344eb56c200073b1e82",
+  "name": "nk",
+  "email": "noh23@gmail.com",
+}
+
+```
+
+### POST
+
+1. 회원가입시 유저 정보 등록
+```
+POST: https://BASEURL/2020-03-07/user
+
+body:
+{
+  "name":"ksh",
+  "email": "1s23noh23@gmail.com"
+}
+```
+
+## 회사 api
+
+### GET
+1. 전체 회사 목록 조회
+```
+GET:  https://BASEURL/2020-03-07/board
+res: [{회사정보}, {회사정보} ... ]
+```
+2. 로그인한 유저에 등록된 회사 목록 조회
+```
+GET:  https://BASEURL/2020-03-07/board/:companyUid
+res: [{회사정보}, {회사정보} ... ]
+```
+
+### POST
+1. 회사 생성
+```
+POST: https://BASEURL/2020-03-07/board
+
+body: {
+  "name" : "hihi",
+  "content": "hihihihihihi",
+  "phone": "01022349891",
+  "address": "경기 하남",
+  "registreDate": "2020-03-07"
+}
+```
+
+### PUT
+1. 회사 정보 수정
+```
+PUT: https://BASEURL/2020-03-07/:id
+
+body: {
   "name" : "hihi",
   "content": "hihihihihihi",
   "password": "123",
   "phone": "01022349891",
   "address": "경기 하남",
   "registreDate": "2020-03-07"
-  }
-- 고객 수정 PUT - (/board/:id) -
-  body: {
-  "name" : "hihi",
-  "content": "hihihihihihi",
-  "password": "123",
-  "phone": "01022349891",
-  "address": "경기 하남",
-  "registreDate": "2020-03-07"
-  }
-- 고객 삭제 DELETE - (/board:id)
-- 고객 조회 GET - (/board)
-- 고객 상세 조회 GET - (/board/:id)
-- 고객 주문 생성 POST - (/board/:id?order_history_id="주문번호") -
-  body: {
-  "type": false,
-  "date": "2025-03-02",
-  "price": 3000,
-  "memo": "new memo??",
-  "goods": "new 상품",
-  "unitPrice": 100,
-  "count": 30,
-  "outstanding": 30000000000
-  }
-- 고객 주문 수정 PUT - (/board/:id?order_history_id="주문번호") -
-  body: {
-  "type": false,
-  "date": "2025-03-02",
-  "price": 3000,
-  "memo": "new memo??",
-  "goods": "new 상품",
-  "unitPrice": 100,
-  "count": 30,
-  "outstanding": 30000000000
-  }
-- 고객 주문 삭제 DELETE - (/board/:id?order_history_id="주문번호")
+}
 
----
+```
 
-## 주문 관련 api 수정
+### DELETE
+1. 회사 삭제
+```
+DELETE: https://BASEURL/2020-03-07/:id
+
+```
+
+##  주문 api
 
 ### GET
 
-1. 전체 주문 조회
+1. 주문 조회
+- companyUid: 로그인한 유저 id (string)
+- page, limit: pagenation 값 (number)
+- start_date, end_date: 기간 조회 값 (string)
+- userId: 회사별 조회 값 (array)
+- past: 값 있으면 과거순, 없으면 
 
 ```
-GET: https://9wnw9kggv9.execute-api.ap-northeast-2.amazonaws.com/2020-03-07/order
-페이지네이션 작업 필요
-```
+GET: https://BASEURL/2020-03-07/order?page=0&limit=100&companyUid=gVkEsl6w21TgXgIRD10XwPoUy9o1&start_date=20200407&end_date=20200409&type=true&userId=['3', '4']
 
-2. 고객별 주문 조회
-
-- page는 0부터 시작, total이 전체 count 값, 38번 고객의 주문 조회
-
-```
-GET: https://9wnw9kggv9.execute-api.ap-northeast-2.amazonaws.com/2020-03-07/order/38?page=0&limit=4
-
-```
-
-3. 기간별 주문 조회
-
-- 2020.01.23 일부터 2020.03.20일 까지
-
-```
-GET: https://9wnw9kggv9.execute-api.ap-northeast-2.amazonaws.com/2020-03-07/order?start_date=20200123&end_date=20200320
-
-```
-
-4. 고객별 기간별 주문 조회
-
-```
-GET: https://9wnw9kggv9.execute-api.ap-northeast-2.amazonaws.com/2020-03-07/order/38?start_date=20200123&end_date=20200320
+res: {
+  "order": [
+   {주문정보}, {주문정보}, ...
+  ],
+  "count": 2
+}
 ```
 
 ### POST
@@ -173,19 +209,23 @@ GET: https://9wnw9kggv9.execute-api.ap-northeast-2.amazonaws.com/2020-03-07/orde
 - 주문 생성할 고객 id를 파람으로 넘긴다.
 
 ```
-POST: https://9wnw9kggv9.execute-api.ap-northeast-2.amazonaws.com/2020-03-07/order/38
+POST: https://BASEURL/2020-03-07/order/4
 
 body:
 {
-	"type": true,
-	"date": 20200322,
-	"price": 123123,
-	"memo": "dawdawdawdawdqweqwe테스트으됬니??",
-	"goods": "상품명",
-	"unitPrice": 10,
-	"count": 10,
-	"outstanding": -1
+  "companyUid": "gVkEsl6w21TgXgIRD10XwPoUy9o1"
+  "userName": "2"
+  "type": true,
+  "date": 20200322,
+  "price": 123123,
+  "memo": "메모",
+  "goods": "상품명",
+  "unitPrice": 10,
+  "count": 10,
+  "outstanding": 1000
 }
+
+res: '주문정보 추가 완료'
 ```
 
 ### PUT
@@ -195,83 +235,34 @@ body:
 - 주문 수정할 주문 id를 파람으로 넘긴다.
 
 ```
-PUT: https://9wnw9kggv9.execute-api.ap-northeast-2.amazonaws.com/2020-03-07/order/5e7213ab99d73b00096ff8ae
+PUT: https://BASEURL/2020-03-07/order/5e7213ab99d73b00096ff8ae
 
 body:
 {
-	"type": false,
-	"date": 50190322,
-	"price": 123123,
-	"memo": "dawdawdawdawdqweqwe테스트으됬니??",
-	"goods": "dddddd",
-	"unitPrice": 10,
-	"count": 10,
-	"outstanding": -1
+  "companyUid": "gVkEsl6w21TgXgIRD10XwPoUy9o1"
+  userName: "2"
+  "type": false,
+  "date": 50190322,
+  "price": 123123,
+  "memo": "dawdawdawdawdqweqwe테스트으됬니??",
+  "goods": "dddddd",
+  "unitPrice": 10,
+  "count": 10,
+  "outstanding": 100
 }
+
+res: "success"
 ```
 
 ### DELETE
 
 1. 주문 삭제
 
-- 주문 삭제힐 주문 id를 파람으로 넘긴다.
+- 주문 삭제할 주문 id를 파람으로 넘긴다.
 
 ```
-DELETE: https://9wnw9kggv9.execute-api.ap-northeast-2.amazonaws.com/2020-03-07/order/5e7207ef4bdb80000715689d
-```
-
-## 로그인 유저 api
-
-### GET
-1. 전체 로그인 유저 조회
-```
-GET: https://9wnw9kggv9.execute-api.ap-northeast-2.amazonaws.com/2020-03-07/user
-
-[
-    {
-        "_id": "5e88b344eb56c200073b1e82",
-        "name": "nk",
-        "email": "noh23@gmail.com",
-        "__v": 0
-    },
-    {
-        "_id": "5e88b6888f11570007ab5f21",
-        "name": "nk",
-        "email": "noh23@gmail.com",
-        "__v": 0
-    },
-]
-
-```
-2. 특정 로그인 유저 조회
-```
-GET: https://9wnw9kggv9.execute-api.ap-northeast-2.amazonaws.com/2020-03-07/user/유저 _id
-{
-    "_id": "5e88b344eb56c200073b1e82",
-    "name": "nk",
-    "email": "noh23@gmail.com",
-    "__v": 0
-}
-
-
-```
-3. 회원가입시 유저 정보 등록
-```
-https://9wnw9kggv9.execute-api.ap-northeast-2.amazonaws.com/2020-03-07/user
-
-body:
-{
-	"name":"ksh",
-	"email": "1s23noh23@gmail.com"
-}
-```
-
-- api - 과거순
-```js
-//최산순
-Order.sort({date: -1})
-//과거순
-Order.sort({date: 1})
+DELETE: https://BASEURL/2020-03-07/order/5e7207ef4bdb80000715689d
+res: "success"
 ```
 
 TODO
@@ -299,29 +290,6 @@ TODO
   - 기간 필터(월/주), 원형 그래프, 꺾은선 그래프 - 매출 % 출력 **완**
 - 엑셀다운로드 : 현황 (기간별 매출/매입 리스트 다운) **완** (추후 엑셀 다운로드에 대한 요구 있을 시 로직 수정)
 - 현황, 회사 리스트 - 페이지네이션
-
-0410
-### 주문 api
-- 전체 주문 get
-```
-BASEURL/order?page=0&limit=100&past=1&companyUid=gVkEsl6w21TgXgIRD10XwPoUy9o1&start_date=20200407&end_date=20200409&type=true
-
-companyUid : 회사 uid
-page, limit: 페이지 네이션 파람
-past: 값있으면 과거순 없으면 최신순
-start_date, end_date: 기간 파람
-type: 값 있으면 매입, 없으면 매출
-```
-- 특정 회사 주문 get
-```
-BASEURL/order/3?page=0&limit=100&start_date=20200407&end_date=20200409&type=true&past=1
-
-pathParameters = 주문 id
-page, limit: 페이지 네이션 파람
-past: 값있으면 과거순 없으면 최신순
-start_date, end_date: 기간 파람
-type: 값 있으면 매입, 없으면 매출
-```
 
 ## Challenges
 - AWS Lambda, api gateway 기본 사용법 숙지
