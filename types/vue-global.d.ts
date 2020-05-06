@@ -35,6 +35,20 @@ interface utils {
   validate: Function;
 }
 
+interface filters {
+  comma: Function;
+  date: Function;
+  mobile: Function;
+}
+
+interface constant {
+  colorSet: string[];
+  inComeColor: string;
+  outComeColor: string;
+  profitColor: string;
+  lineChartColorSet: string[];
+}
+
 //이곳이 가장 중요한 곳입니다.
 declare module 'vue/types/vue' {
   interface Vue {
@@ -42,6 +56,15 @@ declare module 'vue/types/vue' {
   }
   interface Vue {
     $utils: utils;
+  }
+  interface Vue {
+    $filters: filters;
+  }
+  interface Vue {
+    $filters: filters;
+  }
+  interface Vue {
+    $constant: constant;
   }
 }
 

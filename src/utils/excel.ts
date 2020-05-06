@@ -12,8 +12,8 @@ export default {
         count: number;
         price: number;
         type: boolean;
-        memo: string | null;
-        outstanding: number | null;
+        memo: string;
+        outstanding: number;
       },
     ],
   ) => {
