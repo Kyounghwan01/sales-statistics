@@ -30,10 +30,18 @@ interface apis {
   order: order;
 }
 
+interface utils {
+  excel: Function;
+  validate: Function;
+}
+
 //이곳이 가장 중요한 곳입니다.
 declare module 'vue/types/vue' {
   interface Vue {
     $api: apis;
+  }
+  interface Vue {
+    $utils: utils;
   }
 }
 

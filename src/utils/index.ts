@@ -1,9 +1,10 @@
-const functions = {};
+/* eslint-disable */
+const functions: any = {};
 
 const requireFunction = require.context(
   '.', // 현재 폴더 검색
   false, // 하위 폴더 확인 안함
-  /^((?!index).)*\.js$/, // index.js를 제외한 모든 js 파일
+  /^((?!index).)*\.ts$/, // index.js를 제외한 모든 js 파일
 );
 
 requireFunction.keys().forEach(filename => {

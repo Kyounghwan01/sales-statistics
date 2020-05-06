@@ -2,7 +2,21 @@ import filters from '@/filters';
 import XLSX from 'xlsx';
 
 export default {
-  formatJSON(data) {
+  formatJSON: (
+    data: [
+      {
+        userName: string;
+        goods: string;
+        date: number;
+        unitPrice: number;
+        count: number;
+        price: number;
+        type: boolean;
+        memo: string | null;
+        outstanding: number | null;
+      },
+    ],
+  ) => {
     const { comma, date } = filters;
 
     return data.map(el => {
@@ -20,9 +34,10 @@ export default {
     });
   },
 
-  excelDownload(data, title) {
+  excelDownload: (data: string[], title: string) => {
     const sheet = XLSX.utils.json_to_sheet(data);
-    const workbook = new XLSX.utils.book_new();
+    /* eslint-disable */
+    const workbook = new (XLSX as any).utils.book_new();
     XLSX.utils.book_append_sheet(workbook, sheet);
 
     /** 다운로드 */
