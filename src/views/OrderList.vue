@@ -22,6 +22,16 @@
       <ListFilters v-loading="loading" :filterOptions="filterOptions" :filterValues="filters" />
 
       <List v-loading="loading" :orderList="orderList" />
+
+      <el-pagination
+        style="text-align: center; margin-top: 10px;"
+        layout="prev, pager, next"
+        :current-page.sync="pageParams.page + 1"
+        @current-change="handleCurrentChange"
+        :page-size="pageParams.limit"
+        :total="pageParams.total"
+      >
+      </el-pagination>
     </section>
   </MainLayout>
 </template>
@@ -47,9 +57,9 @@ export default {
   },
 
   async created() {
-    const res = await this.$store.dispatch('order/getOrderList');
+    const res = await this.$store.dispatch('order/getOrderList', this.pageParams);
 
-    if (res === 'fail') {
+    if (res.message === 'fail') {
       this.$store.dispatch('order/getOrderList');
     }
 
@@ -67,6 +77,10 @@ export default {
 
     orderList() {
       return this.$store.getters['order/orders'];
+    },
+
+    pageParams() {
+      return this.$store.getters['order/pageParams'];
     },
 
     inComeOutCome() {
@@ -140,6 +154,13 @@ export default {
     async entireDownloadExcel() {
       const res = await this.$api.order.getOrderForExcel(this.loginUser.id);
       this.downloadExcel(res.data.order);
+    },
+
+    async handleCurrentChange(value) {
+      console.log(value);
+      const params = { ...this.pageParams, page: value - 1 };
+      await this.$store.commit('order/SET_PAGE_PARAMS', params);
+      this.$store.dispatch('order/getOrderList', this.pageParams);
     },
   },
 };

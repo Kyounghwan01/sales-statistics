@@ -10,7 +10,16 @@
     </div>
     <ListFilters :filterOptions="filterOptions" :filterValues="filters" />
     <div v-if="orders.length" class="have-data">
-      <List :orderList="orders" :changeTabs="changeTabs" />
+      <List v-loading="loading" :orderList="orders" :changeTabs="changeTabs" />
+      <el-pagination
+        style="text-align: center; margin-top: 10px;"
+        layout="prev, pager, next"
+        :current-page.sync="pageParams.page + 1"
+        @current-change="handleCurrentChange"
+        :page-size="pageParams.limit"
+        :total="pageParams.total"
+      >
+      </el-pagination>
     </div>
     <div v-else class="no-data">
       <span>거래 내역이 없습니다</span>
@@ -47,7 +56,7 @@ export default {
     });
 
     const res = await this.$store.dispatch('order/getOrderList');
-    if (res === 'success') {
+    if (res.message === 'success') {
       this.orderLoading = false;
     } else {
       this.orderLoading = false;
@@ -60,9 +69,19 @@ export default {
     orders() {
       return this.$store.getters['order/orders'];
     },
+
     filters() {
       return this.$store.getters['order/filter'];
     },
+
+    pageParams() {
+      return this.$store.getters['order/pageParams'];
+    },
+
+    loading() {
+      return this.$store.getters['order/orderLoading'];
+    },
+
     filterOptions() {
       return {
         soldType: {
@@ -95,8 +114,17 @@ export default {
         },
       };
     },
+
     inComeOutCome() {
       return this.$store.getters['order/countInComeOutCome'];
+    },
+  },
+
+  methods: {
+    async handleCurrentChange(value) {
+      const params = { ...this.pageParams, page: value - 1 };
+      await this.$store.commit('order/SET_PAGE_PARAMS', params);
+      this.$store.dispatch('order/getOrderList', this.pageParams);
     },
   },
 };

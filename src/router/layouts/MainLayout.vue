@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts">
-import MainHeader from '../../components/MainHeader/index.vue';
+import MainHeader from '@/components/MainHeader/index.vue';
 
 export default {
   components: { MainHeader },
