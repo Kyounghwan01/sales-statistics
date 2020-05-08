@@ -41,10 +41,10 @@ export default {
     menuItems() {
       return [
         {
-          label: '마이페이지',
+          label: '유저삭제',
           divided: true,
-          onClick: this.handleClickMyPage,
-          disabled: true,
+          onClick: this.deleteUser,
+          disabled: false,
         },
         {
           label: '로그아웃',
@@ -89,8 +89,26 @@ export default {
         .catch(() => false);
     },
 
-    handleClickMyPage() {
-      this.$router.push('/staffs/me');
+    async deleteUser() {
+      this.$confirm(`주의! ${this.loginUser.name} 계정을 삭제 하시겠습니까?`, '계정 삭제', {
+        showClose: true,
+      })
+        .then(() => {
+          // eslint-disable-next-line @typescript-eslint/no-this-alias
+          const that = this;
+          firebase
+            .auth()
+            .currentUser.delete()
+            .then(async function() {
+              const test = await that.$api.loginUser.deleteLoginUser(that.loginUser.id);
+              if (test.data === 'success') {
+                that.$store.dispatch('loginUser/logOutUser');
+                that.$router.push('/');
+                this.$alert('계정 삭제완료', '삭제');
+              }
+            });
+        })
+        .catch(() => false);
     },
   },
 };

@@ -14,4 +14,8 @@ export default {
   createLoginUser: (data: object) => {
     return axios.post(BASE_URL, data);
   },
+
+  deleteLoginUser: (id: string) => {
+    return axios.delete(`${BASE_URL}/${id}`);
+  },
 };
