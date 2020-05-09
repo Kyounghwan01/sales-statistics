@@ -15,6 +15,10 @@ export default {
     return axios.post(BASE_URL, data);
   },
 
+  editLoginUser: (id: string, data: object) => {
+    return axios.put(`${BASE_URL}/${id}`, data);
+  },
+
   deleteLoginUser: (id: string) => {
     return axios.delete(`${BASE_URL}/${id}`);
   },

@@ -1,45 +1,74 @@
 <template>
-  <el-menu class="main-nav" mode="horizontal" :default-active="activeLink" router>
-    <el-menu-item
-      class="main-nav__item"
-      v-for="link in navLinks"
-      :disabled="link.disabled"
-      :key="link.path"
-      :index="link.path"
-    >
-      {{ link.name }}
-    </el-menu-item>
+  <Fragment>
+    <el-menu class="main-nav" mode="horizontal" :default-active="activeLink" router>
+      <el-menu-item
+        class="main-nav__item"
+        v-for="link in navLinks"
+        :disabled="link.disabled"
+        :key="link.path"
+        :index="link.path"
+      >
+        {{ link.name }}
+      </el-menu-item>
 
-    <el-dropdown
-      class="logout"
-      trigger="click"
-      placement="top-end"
-      v-if="loginUser.name"
-      @command="command => command()"
-    >
-      <span class="user-menu__user">
-        <span>
-          <b>{{ loginUser.name }}님</b>
-          <i class="el-icon-arrow-down"></i>
+      <el-dropdown
+        class="logout"
+        trigger="click"
+        placement="top-end"
+        v-if="loginUser.name"
+        @command="command => command()"
+      >
+        <span class="user-menu__user">
+          <span>
+            <b>{{ loginUser.name }}님</b>
+            <i class="el-icon-arrow-down"></i>
+          </span>
         </span>
-      </span>
-      <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item v-for="item in menuItems" :key="item.label" :command="item.onClick" :disabled="item.disabled">
-          {{ item.label }}
-        </el-dropdown-item>
-      </el-dropdown-menu>
-    </el-dropdown>
-  </el-menu>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item
+            v-for="item in menuItems"
+            :key="item.label"
+            :command="item.onClick"
+            :disabled="item.disabled"
+          >
+            {{ item.label }}
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+    </el-menu>
+
+    <EditLoginUser :show="isShowEditModal" @close="editUserData" :prevData="editData" />
+  </Fragment>
 </template>
 
 <script>
 import * as firebase from 'firebase/app';
 import 'firebase/auth';
+import _ from 'lodash';
+import { Fragment } from 'vue-fragment';
+import EditLoginUser from '@/components/Members/EditLoginUser';
 
 export default {
+  components: {
+    Fragment,
+    EditLoginUser,
+  },
+
+  data() {
+    return {
+      isShowEditModal: false,
+    };
+  },
+
   computed: {
     menuItems() {
       return [
+        {
+          label: '유저수정',
+          divided: true,
+          onClick: this.showEditModal,
+          disabled: false,
+        },
         {
           label: '유저삭제',
           divided: true,
@@ -70,6 +99,10 @@ export default {
 
       return links;
     },
+
+    editData() {
+      return _.omit(this.loginUser, ['_id', 'id', '__v']);
+    },
   },
   methods: {
     logout() {
@@ -89,6 +122,32 @@ export default {
         .catch(() => false);
     },
 
+    showEditModal() {
+      this.isShowEditModal = true;
+    },
+
+    async editUserData(result, value) {
+      this.isShowEditModal = result;
+      if (value) {
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const that = this;
+        firebase
+          .auth()
+          .currentUser.updateEmail(value.email)
+          .then(async function() {
+            const res = await that.$api.loginUser.editLoginUser(that.loginUser.id, value);
+            if (res.data === 'success') {
+              that.$store.commit('loginUser/SET_LOGIN_USER', {
+                ...that.loginUser,
+                name: value.name,
+                email: value.email,
+              });
+            }
+          })
+          .catch(() => that.$alert('로그아웃 이후 다시 실행 해주세요', '계정 수정 실패'));
+      }
+    },
+
     async deleteUser() {
       this.$confirm(`주의! ${this.loginUser.name} 계정을 삭제 하시겠습니까?`, '계정 삭제', {
         showClose: true,
@@ -100,8 +159,8 @@ export default {
             .auth()
             .currentUser.delete()
             .then(async function() {
-              const test = await that.$api.loginUser.deleteLoginUser(that.loginUser.id);
-              if (test.data === 'success') {
+              const res = await that.$api.loginUser.deleteLoginUser(that.loginUser.id);
+              if (res.data === 'success') {
                 that.$store.dispatch('loginUser/logOutUser');
                 that.$router.push('/');
                 this.$alert('계정 삭제완료', '삭제');

@@ -1,5 +1,5 @@
 //지우면 vue-chart.js name error 지우지 말것
-import Vue from 'vue'
+import Vue from 'vue';
 
 //api파일들에 대해 interface를 정의하는 부분입니다.
 interface firebase {
@@ -21,6 +21,7 @@ interface user {
   getUser: Function;
   createUser: Function;
   getCurrentUser: Function;
+  editLoginUser: Function;
   updateUser: Function;
 }
 

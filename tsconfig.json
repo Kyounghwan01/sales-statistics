@@ -37,7 +37,7 @@
     "types/vue-global.d.ts",
     "src/store/index.ts",
     "src/store/modules/users.js",
-    "src/store/modules/index.js"
+    "src/store/modules/index.js", "src/constant.js"
   ],
   "exclude": [
     "node_modules"
