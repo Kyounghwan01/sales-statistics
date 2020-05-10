@@ -157,7 +157,6 @@ export default {
     },
 
     async handleCurrentChange(value) {
-      console.log(value);
       const params = { ...this.pageParams, page: value - 1 };
       await this.$store.commit('order/SET_PAGE_PARAMS', params);
       this.$store.dispatch('order/getOrderList', this.pageParams);

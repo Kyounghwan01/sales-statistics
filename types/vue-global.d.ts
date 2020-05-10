@@ -25,10 +25,19 @@ interface user {
   updateUser: Function;
 }
 
+interface loginUser {
+  getUserAll: Function;
+  getLoginUser: Function;
+  createLoginUser: Function;
+  editLoginUser: Function;
+  deleteLoginUser: Function;
+}
+
 interface apis {
   firebase: firebase;
   user: user;
   order: order;
+  loginUser: loginUser;
 }
 
 interface utils {

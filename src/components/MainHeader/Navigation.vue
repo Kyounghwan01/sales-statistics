@@ -10,7 +10,6 @@
       >
         {{ link.name }}
       </el-menu-item>
-
       <el-dropdown
         class="logout"
         trigger="click"
@@ -41,136 +40,139 @@
   </Fragment>
 </template>
 
-<script>
+<script lang="ts">
 import * as firebase from 'firebase/app';
 import 'firebase/auth';
-import _ from 'lodash';
 import { Fragment } from 'vue-fragment';
-import EditLoginUser from '@/components/Members/EditLoginUser';
+import * as _ from 'lodash';
+import EditLoginUser from '@/components/Members/EditLoginUser.vue';
+import { Component, Vue } from 'vue-property-decorator';
 
-export default {
+@Component({
   components: {
     Fragment,
     EditLoginUser,
   },
+})
+export default class Navigation extends Vue {
+  public isShowEditModal = false;
 
-  data() {
-    return {
-      isShowEditModal: false,
-    };
-  },
+  get menuItems() {
+    return [
+      {
+        label: '유저수정',
+        divided: true,
+        onClick: this.showEditModal,
+        disabled: false,
+      },
+      {
+        label: '유저삭제',
+        divided: true,
+        onClick: this.deleteUser,
+        disabled: false,
+      },
+      {
+        label: '로그아웃',
+        onClick: this.logout,
+        disabled: false,
+      },
+    ];
+  }
 
-  computed: {
-    menuItems() {
-      return [
-        {
-          label: '유저수정',
-          divided: true,
-          onClick: this.showEditModal,
-          disabled: false,
-        },
-        {
-          label: '유저삭제',
-          divided: true,
-          onClick: this.deleteUser,
-          disabled: false,
-        },
-        {
-          label: '로그아웃',
-          onClick: this.logout,
-          disabled: false,
-        },
-      ];
-    },
-    activeLink() {
-      return `/${this.$route.path.split('/')[1]}`;
-    },
-    loginUser() {
-      return this.$store.getters['loginUser/loginUser'];
-    },
+  get activeLink() {
+    return `/${this.$route.path.split('/')[1]}`;
+  }
+  get loginUser() {
+    return this.$store.getters['loginUser/loginUser'];
+  }
+  get navLinks() {
+    const links = [
+      { path: '/orders', name: '현황', disabled: false },
+      { path: '/fill', name: '기입', disabled: false },
+      { path: '/users', name: '회사', disabled: false },
+      { path: '/sales', name: '통계', disabled: false },
+    ];
 
-    navLinks() {
-      const links = [
-        { path: '/orders', name: '현황', disabled: false },
-        { path: '/fill', name: '기입', disabled: false },
-        { path: '/users', name: '회사', disabled: false },
-        { path: '/sales', name: '통계', disabled: false },
-      ];
+    return links;
+  }
+  get editData() {
+    return _.omit(this.loginUser, ['_id', 'id', '__v']);
+  }
 
-      return links;
-    },
-
-    editData() {
-      return _.omit(this.loginUser, ['_id', 'id', '__v']);
-    },
-  },
-  methods: {
-    logout() {
-      this.$confirm('로그아웃 하시겠습니까?', '로그아웃', {
-        showClose: true,
+  logout() {
+    this.$confirm('로그아웃 하시겠습니까?', '로그아웃', {
+      showClose: true,
+    })
+      .then(async () => {
+        try {
+          await firebase.auth().signOut();
+          await this.$store.dispatch('loginUser/logOutUser');
+        } catch (error) {
+          this.$alert('로그아웃 에러', '로그아웃 실패');
+        } finally {
+          this.$router.push('/');
+        }
       })
-        .then(async () => {
-          try {
-            await firebase.auth().signOut();
-            await this.$store.dispatch('loginUser/logOutUser');
-          } catch (error) {
-            this.$alert('로그아웃 에러', '로그아웃 실패');
-          } finally {
-            this.$router.push('/');
-          }
-        })
-        .catch(() => false);
-    },
+      .catch(() => false);
+  }
 
-    showEditModal() {
-      this.isShowEditModal = true;
-    },
+  showEditModal() {
+    this.isShowEditModal = true;
+  }
 
-    async editUserData(result, value) {
-      this.isShowEditModal = result;
-      if (value) {
+  async editUserData(
+    result: boolean,
+    value: {
+      email: string;
+      name: string;
+    },
+  ) {
+    this.isShowEditModal = result;
+    if (value) {
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
+      const that = this;
+      const test = firebase.auth();
+      test.currentUser
+        ? test.currentUser
+            .updateEmail(value.email)
+            .then(async function() {
+              const res = await that.$api.loginUser.editLoginUser(that.loginUser.id, value);
+              if (res.data === 'success') {
+                that.$store.commit('loginUser/SET_LOGIN_USER', {
+                  ...that.loginUser,
+                  name: value.name,
+                  email: value.email,
+                });
+              }
+            })
+            .catch(() => that.$alert('로그아웃 이후 다시 실행 해주세요', '계정 수정 실패'))
+        : Promise.resolve();
+    }
+  }
+
+  async deleteUser() {
+    // TODO: 계정 삭제시 관련된 order, company데이터 삭제
+    this.$confirm(`주의! ${this.loginUser.name} 계정을 삭제 하시겠습니까?`, '계정 삭제', {
+      showClose: true,
+    })
+      .then(() => {
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         const that = this;
-        firebase
-          .auth()
-          .currentUser.updateEmail(value.email)
-          .then(async function() {
-            const res = await that.$api.loginUser.editLoginUser(that.loginUser.id, value);
-            if (res.data === 'success') {
-              that.$store.commit('loginUser/SET_LOGIN_USER', {
-                ...that.loginUser,
-                name: value.name,
-                email: value.email,
-              });
-            }
-          })
-          .catch(() => that.$alert('로그아웃 이후 다시 실행 해주세요', '계정 수정 실패'));
-      }
-    },
-
-    async deleteUser() {
-      this.$confirm(`주의! ${this.loginUser.name} 계정을 삭제 하시겠습니까?`, '계정 삭제', {
-        showClose: true,
-      })
-        .then(() => {
-          // eslint-disable-next-line @typescript-eslint/no-this-alias
-          const that = this;
-          firebase
-            .auth()
-            .currentUser.delete()
-            .then(async function() {
+        const test = firebase.auth();
+        test.currentUser
+          ? test.currentUser.delete().then(async function() {
               const res = await that.$api.loginUser.deleteLoginUser(that.loginUser.id);
               if (res.data === 'success') {
                 that.$store.dispatch('loginUser/logOutUser');
                 that.$router.push('/');
-                this.$alert('계정 삭제완료', '삭제');
+                that.$alert('계정 삭제완료', '삭제');
               }
-            });
-        })
-        .catch(() => false);
-    },
-  },
-};
+            })
+          : Promise.resolve();
+      })
+      .catch(() => false);
+  }
+}
 </script>
 
 <style lang="scss" scoped>

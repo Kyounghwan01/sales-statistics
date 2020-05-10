@@ -6,7 +6,7 @@
       <router-link to="/" class="main-header__home">
         <img style="width: 30px" src="../../assets/logo.png" alt="뷰 로고" />
       </router-link>
-      <navigation />
+      <Navigation />
     </div>
   </header>
 </template>
