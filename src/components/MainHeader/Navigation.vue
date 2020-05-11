@@ -16,6 +16,7 @@
         placement="top-end"
         v-if="loginUser.name"
         @command="command => command()"
+        v-loading="loading"
       >
         <span class="user-menu__user">
           <span>
@@ -56,6 +57,7 @@ import { Component, Vue } from 'vue-property-decorator';
 })
 export default class Navigation extends Vue {
   public isShowEditModal = false;
+  public loading = false;
 
   get menuItems() {
     return [
@@ -129,6 +131,7 @@ export default class Navigation extends Vue {
   ) {
     this.isShowEditModal = result;
     if (value) {
+      this.loading = true;
       // eslint-disable-next-line @typescript-eslint/no-this-alias
       const that = this;
       const test = firebase.auth();
@@ -147,6 +150,7 @@ export default class Navigation extends Vue {
             })
             .catch(() => that.$alert('로그아웃 이후 다시 실행 해주세요', '계정 수정 실패'))
         : Promise.resolve();
+      this.loading = false;
     }
   }
 

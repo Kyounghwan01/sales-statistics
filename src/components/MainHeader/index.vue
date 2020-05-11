@@ -11,37 +11,16 @@
   </header>
 </template>
 
-<script>
-import Navigation from './Navigation';
-// import UserMenu from './UserMenu';
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator';
+import Navigation from './Navigation.vue';
 
-export default {
+@Component({
   components: {
     Navigation,
-    // UserMenu,
   },
-
-  // computed: {
-  //   studio() {
-  //     return this.$store.getters['studio/studio'];
-  //   },
-  // },
-
-  // watch: {
-  //   $route: {
-  //     handler: 'handleRouteChange',
-  //     immediate: true,
-  //   },
-  // },
-
-  // methods: {
-  //   async handleRouteChange() {
-  //     if (!this.studio || !this.studio.name) {
-  //       this.$store.dispatch('studio/getStudio');
-  //     }
-  //   },
-  // },
-};
+})
+export default class Index extends Vue {}
 </script>
 
 <style lang="scss" scoped>

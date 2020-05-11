@@ -50,27 +50,26 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    users: Array,
-    companyUid: String,
-  },
+<script lang="ts">
+import { Component, Vue, Prop } from 'vue-property-decorator';
 
-  methods: {
-    formatMobile(phone) {
-      return this.$filters.mobile(phone);
-    },
+@Component
+export default class List extends Vue {
+  @Prop() public users!: string[];
+  @Prop() public readonly companyUid!: string;
 
-    formatDate(date) {
-      return this.$filters.date(date);
-    },
+  formatMobile(phone: number) {
+    return this.$filters.mobile(phone);
+  }
 
-    handleCellClick(row) {
-      this.$router.push(`/users/${row.id}?uid=${this.companyUid}`);
-    },
-  },
-};
+  formatDate(date: string) {
+    return this.$filters.date(date);
+  }
+
+  handleCellClick(row: { id: string }) {
+    this.$router.push(`/users/${row.id}?uid=${this.companyUid}`);
+  }
+}
 </script>
 
 <style lang="scss" scoped>

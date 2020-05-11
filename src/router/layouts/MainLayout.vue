@@ -8,16 +8,18 @@
 </template>
 
 <script lang="ts">
+import { Component, Vue, Prop } from 'vue-property-decorator';
 import MainHeader from '@/components/MainHeader/index.vue';
 
-export default {
-  components: { MainHeader },
-
-  props: {
-    padded: { type: Boolean, default: true },
-    borderTop: { type: String },
+@Component({
+  components: {
+    MainHeader,
   },
-};
+})
+export default class MainLayout extends Vue {
+  @Prop() public padded!: { type: boolean; default: true };
+  @Prop() public borderTop!: { type: string };
+}
 </script>
 
 <style lang="scss" scoped>

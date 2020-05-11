@@ -19,7 +19,7 @@
 
 ## Requirements
 
-- 웹 사용을 권장합니다. 
+- 웹 사용을 권장합니다.
 - 추후 웹앱으로 개발할 예정으로 웹앱 개발 완료시 앱 사용도 가능하게 됩니다. 이 프로젝트를 반응형으로 css개발 후, react-native기반으로 webview로 웹을 감쌀 예정입니다.
 
 ## Installation
@@ -41,7 +41,7 @@ Features
 - 회사 이름/전화번호로 찾기
 - 각 회사별 매출/매입 CRUD
 - 매출/매입 현황 필터링 (기간별, 회사별, 매출/매입별, 최신/과거순)
-- 통계 
+- 통계
   - 선택 월/주 기준 이전 5개월/5주 통계
   - 선택 기간 매출/매입 현황을 막대/꺾은선 그래프로 트렌드 체크
   - 선택 월/주 기준 매출/매입을 회사 및 물품별 파이 그래프로 현황 체크
@@ -50,6 +50,7 @@ Features
   - 매출/매입 현황 전체 엑셀 다운로드
 
 ## Skills
+
 ### Client-Side
 
 - ES2015+
@@ -63,6 +64,7 @@ Features
 - vuelidate
 
 ### Server-Side
+
 - AWS Lambda
 - AWS api gateway
 - Node.js
@@ -79,15 +81,17 @@ Features
 - Netlify CI를 통한 배포 자동화
 
 ### Server
-- AWS Lambda 이용으로 코드 바로 배포
 
+- AWS Lambda 이용으로 코드 바로 배포
 
 ### AWS lambda + api gateway 백엔드 api docs
 
 ## 로그인 유저 api
 
 ### GET
-1. 전체 로그인 유저 조회 
+
+1. 전체 로그인 유저 조회
+
 ```
 GET: https://BASEURL/2020-03-07/user
 
@@ -105,7 +109,9 @@ GET: https://BASEURL/2020-03-07/user
 ]
 
 ```
+
 2. 특정 로그인 유저 조회
+
 ```
 GET: https://BASEURL/2020-03-07/user/유저 _id
 {
@@ -119,6 +125,7 @@ GET: https://BASEURL/2020-03-07/user/유저 _id
 ### POST
 
 1. 회원가입시 유저 정보 등록
+
 ```
 POST: https://BASEURL/2020-03-07/user
 
@@ -132,19 +139,25 @@ body:
 ## 회사 api
 
 ### GET
+
 1. 전체 회사 목록 조회
+
 ```
 GET:  https://BASEURL/2020-03-07/board
 res: [{회사정보}, {회사정보} ... ]
 ```
+
 2. 로그인한 유저에 등록된 회사 목록 조회
+
 ```
 GET:  https://BASEURL/2020-03-07/board/:companyUid
 res: [{회사정보}, {회사정보} ... ]
 ```
 
 ### POST
+
 1. 회사 생성
+
 ```
 POST: https://BASEURL/2020-03-07/board
 
@@ -158,7 +171,9 @@ body: {
 ```
 
 ### PUT
+
 1. 회사 정보 수정
+
 ```
 PUT: https://BASEURL/2020-03-07/:id
 
@@ -174,22 +189,25 @@ body: {
 ```
 
 ### DELETE
+
 1. 회사 삭제
+
 ```
 DELETE: https://BASEURL/2020-03-07/:id
 
 ```
 
-##  주문 api
+## 주문 api
 
 ### GET
 
 1. 주문 조회
+
 - companyUid: 로그인한 유저 id (string)
 - page, limit: pagenation 값 (number)
 - start_date, end_date: 기간 조회 값 (string)
 - userId: 회사별 조회 값 (array)
-- past: 값 있으면 과거순, 없으면 
+- past: 값 있으면 과거순, 없으면 최신순
 
 ```
 GET: https://BASEURL/2020-03-07/order?page=0&limit=100&companyUid=gVkEsl6w21TgXgIRD10XwPoUy9o1&start_date=20200407&end_date=20200409&type=true&userId=['3', '4']
@@ -267,6 +285,7 @@ res: "success"
 
 TODO
 **BACK**
+
 - api - board - user 이름 또는 폰번으로 id 찾기 - (정확한 이름으로 검색시 id 리턴 후, id로 order찾기) - **완**
 - api - 기간별, 고객별, 전채, 과거, 최신순 정렬 **완**
 - api - 매출/매입별 소팅 **완**
@@ -279,6 +298,7 @@ TODO
 - 불필요 api 제거 - queryString으로 api 2개 (전체 주문, 회사별 주문)로 축소 **완**
 
 **FRONT**
+
 - 로그인, 회원가입 페이지 공용 컴포넌트로 재구성
 - 로그인 - 비밀번호 , 이메일 틀리면 모달
 - 기입 - orderCreate - validate 작성할것 **완**
@@ -292,6 +312,7 @@ TODO
 - 현황, 회사 리스트 - 페이지네이션
 
 ## Challenges
+
 - AWS Lambda, api gateway 기본 사용법 숙지
   - lambda 함수 내에서 mongodb, mongoose를 설치하는 과정에서 시간 소요
   - lambda내 계층 탭에 mongoose node_module를 직접 다운받아 넣어서 사용함
@@ -308,9 +329,10 @@ TODO
   - 구현시 ts로 인해 module not found 에러에 대해서 전역으로 `types/vue-global.d.ts`이라는 파일을 만들어 ts를 사용하는 모듈/파일을 declare함
 - 여러 번 사용하는 로직/컴포넌트 분리
   - 많이 사용하는 함수(숫자 3자리 이상 comma찍기 등)는 `utils`파일로 빼서 전역으로 모든 파일에서 호출 사용 가능하도록 만듬
-  - priceInput, numberInput, textInput, tabs등 여러 곳에서 사용하는 컴포넌트 분리하여 사용 
+  - priceInput, numberInput, textInput, tabs등 여러 곳에서 사용하는 컴포넌트 분리하여 사용
 
 ## Things To Do
+
 - 모바일 웹뷰 만들기
   - react-native 웹뷰 테스트 완료
   - 해당 프로젝트 반응형으로 만들면 바로 react-native에서 실행 가능할 것으로 예상
@@ -318,7 +340,6 @@ TODO
   - 기능 구현에 중점을 두어 test파일을 만들지 못함
 - 모든 js 파일 ts화
   - ts로 프로젝트 구조를 짜다가 기본 개념 부족으로 인해 ts + js로 프로젝트 방향을 바꿈
-  - ts를 더 공부하여 이 프로젝트를 모두 ts로 바꿀 것
+  - ts를 더 공부하여 이 프로젝트를 모두 ts로 바꿀 것 (컴포넌트 ts화 진행중 - Oredr - List.vue부터 재시작)
 - cors 에러 문제
   - 간헐적으로 cors에러가 발생함. AWS Lambda내에서 모든 cors를 열어 놓은 상태인데 간헐적으로 나오는 이 문제를 해결하지 못함. 새로고침시 cors 에러가 뜨지 않음. 원인 파악 불가
-  

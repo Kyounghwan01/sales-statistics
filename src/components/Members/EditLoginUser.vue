@@ -32,32 +32,31 @@
   </el-dialog>
 </template>
 
-<script>
-import TextInput from '@/components/TextInput';
+<script lang="ts">
+import { Component, Vue, Prop } from 'vue-property-decorator';
+import TextInput from '@/components/TextInput.vue';
 
-export default {
-  props: {
-    show: Boolean,
-    prevData: Object,
-  },
-
+@Component({
   components: {
     TextInput,
   },
+})
+export default class EditLoginUser extends Vue {
+  @Prop() public show!: boolean;
+  @Prop() public prevData!: {
+    email: string;
+    name: string;
+  };
 
-  data() {
-    return {
-      edit: {
-        email: null,
-        name: null,
-      },
-    };
-  },
+  public edit = {
+    email: '',
+    name: '',
+  };
 
   created() {
     this.edit = { ...this.prevData };
-  },
-};
+  }
+}
 </script>
 
 <style lang="scss" scoped>
