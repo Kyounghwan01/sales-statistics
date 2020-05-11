@@ -88,6 +88,7 @@ export default {
     },
 
     filterOptions() {
+      // TODO: 기간내 매출/매입 리스트가 있는 회사만 가져오기
       const companiesOptions = this.companies.map(({ id, name }) => ({
         value: id,
         label: name,

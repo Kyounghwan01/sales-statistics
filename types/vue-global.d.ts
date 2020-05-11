@@ -42,7 +42,11 @@ interface apis {
 
 interface utils {
   excel: Function;
-  validate: Function;
+  validate: validate;
+}
+
+interface validate {
+  checkAlertMessage: Function;
 }
 
 interface filters {
@@ -66,9 +70,6 @@ declare module 'vue/types/vue' {
   }
   interface Vue {
     $utils: utils;
-  }
-  interface Vue {
-    $filters: filters;
   }
   interface Vue {
     $filters: filters;

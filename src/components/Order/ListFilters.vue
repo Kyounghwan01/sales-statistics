@@ -46,51 +46,43 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    filterValues: Object,
-    filterOptions: { type: Object },
-  },
+<script lang="ts">
+import { Component, Vue, Prop } from 'vue-property-decorator';
 
-  data() {
-    return {
-      keyword: null,
-    };
-  },
+@Component
+export default class ListFilters extends Vue {
+  @Prop() public filterValues!: object;
+  @Prop() public filterOptions!: object;
 
-  computed: {
-    loginUser() {
-      return this.$store.getters['loginUser/loginUser'];
-    },
+  public keyword = null;
 
-    filterKeys() {
-      if (this.$route.name === 'orders_list') {
-        return ['dateRange', 'companies', 'soldType', 'dateSort'];
-      }
-      return ['dateRange', 'soldType', 'dateSort'];
-    },
+  get loginUser(): object {
+    return this.$store.getters['loginUser/loginUser'];
+  }
 
-    searchDateRange: {
-      get() {
-        return this.$store.getters['order/filter'].dateRange;
-      },
-      set(range) {
-        this.$store.dispatch('order/getOrderFilterList', { dateRange: range });
-      },
-    },
-  },
+  get filterKeys(): string[] {
+    if (this.$route.name === 'orders_list') {
+      return ['dateRange', 'companies', 'soldType', 'dateSort'];
+    }
+    return ['dateRange', 'soldType', 'dateSort'];
+  }
 
-  methods: {
-    handleChangeKeyword() {
-      this.$store.dispatch('order/filterOrder', { keyword: this.keyword });
-      this.$store.commit('order/SET_FILTER', { keyword: this.keyword });
-    },
-    handleChangeFilter(values) {
-      this.$store.dispatch('order/getOrderFilterList', values);
-    },
-  },
-};
+  get searchDateRange(): string {
+    return this.$store.getters['order/filter'].dateRange;
+  }
+  set searchDateRange(range: string) {
+    this.$store.dispatch('order/getOrderFilterList', { dateRange: range });
+  }
+
+  handleChangeKeyword() {
+    this.$store.dispatch('order/filterOrder', { keyword: this.keyword });
+    this.$store.commit('order/SET_FILTER', { keyword: this.keyword });
+  }
+
+  handleChangeFilter(values: object) {
+    this.$store.dispatch('order/getOrderFilterList', values);
+  }
+}
 </script>
 
 <style lang="scss" scoped>

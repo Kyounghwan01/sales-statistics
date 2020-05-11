@@ -13,20 +13,11 @@
     "sourceMap": true,
     "baseUrl": ".",
     "experimentalDecorators": true,
-    "types": [
-      "webpack-env"
-    ],
+    "types": ["webpack-env"],
     "paths": {
-      "@/*": [
-        "src/*"
-      ]
+      "@/*": ["src/*"]
     },
-    "lib": [
-      "esnext",
-      "dom",
-      "dom.iterable",
-      "scripthost"
-    ]
+    "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
   },
   "include": [
     "src/**/*.ts",
@@ -38,9 +29,9 @@
     "types/vue-global.d.ts",
     "src/store/index.ts",
     "src/store/modules/users.js",
-    "src/store/modules/index.js", "src/constant.js"
+    "src/store/modules/index.js",
+    "src/constant.js",
+    "src/types/vue-global.d.ts"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

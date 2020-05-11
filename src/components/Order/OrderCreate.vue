@@ -112,44 +112,45 @@
   </div>
 </template>
 
-<script>
-import PriceInput from '@/components/PriceInput';
-import BottomActionBar from '@/components/BottomActionBar';
+<script lang="ts">
+import { Component, Vue, Prop } from 'vue-property-decorator';
+import PriceInput from '@/components/PriceInput.vue';
+import BottomActionBar from '@/components/BottomActionBar.vue';
 import { validationMixin } from 'vuelidate';
 import { required } from 'vuelidate/lib/validators';
-import _ from 'lodash';
 
-const DEFAULT_DATA = {
+const DEFAULT_DATA: {
+  type: boolean;
+  date: string;
+  price: number;
+  memo: string | null;
+  goods: string;
+  unitPrice: number;
+  count: number;
+  outstanding: number | null;
+} = {
   type: true,
-  date: null,
-  price: null,
+  date: '',
+  price: 0,
   memo: null,
-  goods: null,
-  unitPrice: null,
-  count: null,
+  goods: '',
+  unitPrice: 0,
+  count: 0,
   outstanding: 0,
 };
 
-export default {
+interface ResType {
+  status: number;
+  data: string;
+}
+
+@Component({
   components: {
     PriceInput,
     BottomActionBar,
   },
-
-  props: {
-    userName: { type: String, default: null },
-    changeTabs: Function,
-  },
-
-  data() {
-    return {
-      isSaving: false,
-      data: _.cloneDeep(DEFAULT_DATA),
-      editId: null,
-    };
-  },
-
   mixins: [validationMixin],
+
   validations: {
     data: {
       type: { required },
@@ -160,6 +161,31 @@ export default {
       outstanding: { required },
     },
   },
+})
+export default class OrderCreate extends Vue {
+  @Prop() public userName!: string;
+  @Prop() public changeTabs!: (text: string) => void;
+
+  public isSaving = false;
+  public data: {
+    type: boolean;
+    date: string;
+    price?: number;
+    memo: string | null;
+    goods: string;
+    unitPrice: number;
+    count: number;
+    outstanding: number | null;
+  } = { ...DEFAULT_DATA };
+  public editId: string | null = '';
+
+  get totalPrice() {
+    return this.$filters.comma(this.data.unitPrice * this.data.count);
+  }
+
+  get loginUser() {
+    return this.$store.getters['loginUser/loginUser'];
+  }
 
   created() {
     const editData = this.$store.getters['editOrder/orderData'];
@@ -179,98 +205,90 @@ export default {
         memo,
       };
     }
-  },
+  }
 
-  computed: {
-    totalPrice() {
-      return this.$filters.comma(this.data.unitPrice * this.data.count);
-    },
-    loginUser() {
-      return this.$store.getters['loginUser/loginUser'];
-    },
-  },
+  valid() {
+    const checkType = [
+      { value: 'date', text: '거래일을' },
+      { value: 'goods', text: '상품명을' },
+      { value: 'unitPrice', text: '단가를' },
+      { value: 'count', text: '갯수를' },
+    ];
 
-  methods: {
-    valid() {
-      const checkType = [
-        { value: 'date', text: '거래일을' },
-        { value: 'goods', text: '상품명을' },
-        { value: 'unitPrice', text: '단가를' },
-        { value: 'count', text: '갯수를' },
-      ];
-
-      checkType.forEach(key => {
-        if (!this.$v.data[key.value].required) {
-          this.$v.data[key.value].$touch();
-        }
-      });
-
-      const message = this.$utils.validate.checkAlertMessage(this.data, checkType);
-
-      if (message) {
-        this.$alert(message, '주문 추가 실패', { showClose: true });
-        return false;
+    checkType.forEach(key => {
+      if (!this.$v || !this.$v.data) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const dataCheck = this.$v.data[key.value] as any;
+      if (!dataCheck.required) {
+        dataCheck.$touch();
       }
+    });
 
-      return true;
-    },
+    const message = this.$utils.validate.checkAlertMessage(this.data, checkType) as 'string' | undefined;
 
-    async saveOrder() {
-      if (!this.valid()) return;
+    if (message) {
+      this.$alert(message, '주문 추가 실패', { showClose: true });
+      return false;
+    }
 
-      this.isSaving = true;
-      const params = {
-        ...this.data,
-        date: Number(this.data.date.split('-').join('')),
-        userName: this.userName,
-        price: this.data.count * this.data.unitPrice,
-        companyUid: this.loginUser.id,
-      };
-      const res = !this.editId
-        ? await this.$api.order.createOrder(Number(this.$route.params.id), params)
-        : await this.$api.order.updateOrder(this.editId, params);
+    return true;
+  }
 
-      if (res.status === 200) {
-        this.$v.$reset();
-        this.$store.commit('editOrder/SET_RESET_ORDER_DATA');
-        this.$message({ showClose: true, message: !this.editId ? '주문 추가 완료' : '주문 수정 완료' });
-        this.isSaving = false;
-        this.changeTabs('history');
-      }
-    },
+  async saveOrder() {
+    if (!this.valid()) return;
 
-    cancelEdit() {
-      this.editId = null;
-      this.data = DEFAULT_DATA;
+    this.isSaving = true;
+    const params = {
+      ...this.data,
+      date: Number(this.data.date.split('-').join('')) as number,
+      userName: this.userName as string,
+      price: (this.data.count * this.data.unitPrice) as number,
+      companyUid: this.loginUser.id as string,
+    };
+    const res: ResType = !this.editId
+      ? await this.$api.order.createOrder(Number(this.$route.params.id), params)
+      : await this.$api.order.updateOrder(this.editId, params);
+
+    if (res.status === 200) {
       this.$v.$reset();
-    },
+      this.$store.commit('editOrder/SET_RESET_ORDER_DATA');
+      this.$message({ showClose: true, message: !this.editId ? '주문 추가 완료' : '주문 수정 완료' });
+      this.isSaving = false;
+      this.changeTabs('history');
+    }
+  }
 
-    async deleteOrder() {
-      this.$confirm('주문을 삭제하시겠습니까?', '주문삭제', {
-        showClose: true,
-      })
-        .then(async () => {
-          try {
-            this.isSaving = true;
-            const res = await this.$api.order.deleteOrder(this.editId);
-            if (res.data === 'success') {
-              this.$store.commit('editOrder/SET_RESET_ORDER_DATA');
-              this.$message({ showClose: true, message: '주문 삭제 완료' });
-              this.$v.$reset();
-              this.changeTabs('history');
-            } else {
-              this.$message({ showClose: true, message: '주문 삭제 실패. 관리자에게 문의하세요' });
-            }
-          } catch (error) {
+  cancelEdit() {
+    this.editId = null;
+    this.data = DEFAULT_DATA;
+    this.$v.$reset();
+  }
+
+  async deleteOrder() {
+    this.$confirm('주문을 삭제하시겠습니까?', '주문삭제', {
+      showClose: true,
+    })
+      .then(async () => {
+        try {
+          this.isSaving = true;
+          const res: ResType = await this.$api.order.deleteOrder(this.editId);
+          if (res.data === 'success') {
+            this.$store.commit('editOrder/SET_RESET_ORDER_DATA');
+            this.$message({ showClose: true, message: '주문 삭제 완료' });
+            this.$v.$reset();
+            this.changeTabs('history');
+          } else {
             this.$message({ showClose: true, message: '주문 삭제 실패. 관리자에게 문의하세요' });
-          } finally {
-            this.isSaving = false;
           }
-        })
-        .catch(() => false);
-    },
-  },
-};
+        } catch (error) {
+          this.$message({ showClose: true, message: '주문 삭제 실패. 관리자에게 문의하세요' });
+        } finally {
+          this.isSaving = false;
+        }
+      })
+      .catch(() => false);
+  }
+}
 </script>
 
 <style lang="scss" scoped>

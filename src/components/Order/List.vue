@@ -54,35 +54,31 @@
   </el-table>
 </template>
 
-<script>
-export default {
-  props: {
-    orderList: {
-      type: Array,
-      default: () => [],
-    },
-    changeTabs: Function,
-  },
+<script lang="ts">
+import { Component, Vue, Prop } from 'vue-property-decorator';
 
-  methods: {
-    orderDate(date) {
-      return this.$filters.date(date);
-    },
+@Component
+export default class List extends Vue {
+  @Prop() public orderList!: string[];
+  @Prop() public changeTabs!: (text: string) => void;
 
-    comma(value) {
-      return this.$filters.comma(value);
-    },
+  orderDate(date: string): string {
+    return this.$filters.date(date);
+  }
 
-    handleCellClick(row) {
-      if (this.$route.name === 'detail_user') {
-        this.$store.commit('editOrder/SET_CREATE_ORDER_DATA', row);
-        return this.changeTabs('writeTrade');
-      }
+  comma(value: number): string {
+    return this.$filters.comma(value);
+  }
 
-      this.$router.push(`/users/${row.userId}?uid=${row.companyUid}`);
-    },
-  },
-};
+  handleCellClick(row: { userId: string; companyUid: string }): void {
+    if (this.$route.name === 'detail_user') {
+      this.$store.commit('editOrder/SET_CREATE_ORDER_DATA', row);
+      return this.changeTabs('writeTrade');
+    }
+
+    this.$router.push(`/users/${row.userId}?uid=${row.companyUid}`);
+  }
+}
 </script>
 
 <style lang="scss" scoped>
