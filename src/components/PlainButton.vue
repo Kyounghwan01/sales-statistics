@@ -4,14 +4,15 @@
   </button>
 </template>
 
-<script>
-export default {
-  props: {
-    type: String,
-    size: String,
-    round: { type: Boolean, default: false },
-  },
-};
+<script lang="ts">
+import { Component, Vue, Prop } from 'vue-property-decorator';
+
+@Component
+export default class PlainButton extends Vue {
+  @Prop() public type!: string;
+  @Prop() public size!: string;
+  @Prop() public round!: { type: boolean; default: false };
+}
 </script>
 
 <style lang="scss" scoped>

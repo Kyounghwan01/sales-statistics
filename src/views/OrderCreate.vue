@@ -70,6 +70,7 @@
         :require="$v.data.goods.required"
         placeholder="상품명을 입력해주세요"
         requireMessage="상품명은 필수값 입니다"
+        type="text"
       />
 
       <div class="registered-at">

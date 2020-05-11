@@ -20,38 +20,39 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    value: { type: String, default: null },
-    label: { type: String, default: null },
-    labelNumber: { type: String, default: null },
-    placeholder: { type: String, default: null },
-    requireMessage: { type: String, default: null },
-    require: { type: Boolean, default: null },
-  },
+<script lang="ts">
+import { Component, Vue, Prop } from 'vue-property-decorator';
 
-  computed: {
-    isHaveData() {
-      if (this.require) return this.require;
-      return null;
-    },
-  },
-  methods: {
-    handleInput(value) {
-      this.$emit('input', value);
-    },
-    formatContact(number) {
-      if (!number) return;
+@Component
+export default class PhoneInput extends Vue {
+  @Prop() public value!: { type: string; default: null };
+  @Prop() public label!: { type: string; default: null };
+  @Prop() public labelNumber!: { type: string; default: null };
+  @Prop() public placeholder!: { type: string; default: null };
+  @Prop() public requireMessage!: { type: string; default: null };
+  @Prop() public require!: { type: boolean; default: false };
+
+  get isHaveData() {
+    if (this.require) return this.require;
+    return null;
+  }
+
+  handleInput(value: number): void {
+    this.$emit('input', value);
+  }
+  formatContact(number: string): string | void {
+    if (number) {
       return number.replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/, '$1-$2-$3');
-    },
-    validateKey(e) {
-      const isNumber = !!e.key.replace(/\D/g, '');
-      const isMaxLength = e.srcElement.value.replace(/-/g, '').length >= 11;
-      if (!isNumber || isMaxLength) e.preventDefault();
-    },
-  },
-};
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  validateKey(e: any) {
+    const isNumber = !!e.key.replace(/\D/g, '');
+    const isMaxLength = e.srcElement.value.replace(/-/g, '').length >= 11;
+    if (!isNumber || isMaxLength) e.preventDefault();
+  }
+}
 </script>
 
 <style lang="scss" scoped>

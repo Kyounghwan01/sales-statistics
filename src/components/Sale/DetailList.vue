@@ -38,26 +38,24 @@
   </el-card>
 </template>
 
-<script>
-import PieChart from '@/components/Sale/PieChart';
+<script lang="ts">
+import { Component, Vue, Prop } from 'vue-property-decorator';
+import PieChart from '@/components/Sale/PieChart.vue';
 
-export default {
-  props: {
-    title: { type: String },
-    data: { type: Object },
-    pieOption: { type: Object },
-  },
-
+@Component({
   components: {
     PieChart,
   },
+})
+export default class DetailList extends Vue {
+  @Prop() public title!: string;
+  @Prop() public data!: object;
+  @Prop() public pieOption!: object;
 
-  methods: {
-    comma(value) {
-      return this.$filters.comma(value);
-    },
-  },
-};
+  comma(value: number): string {
+    return this.$filters.comma(value);
+  }
+}
 </script>
 
 <style lang="scss" scoped>

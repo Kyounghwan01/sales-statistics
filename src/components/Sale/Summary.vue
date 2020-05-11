@@ -18,18 +18,17 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    barChartDataSet: { type: Object },
-  },
+<script lang="ts">
+import { Component, Vue, Prop } from 'vue-property-decorator';
 
-  methods: {
-    comma(value) {
-      return this.$filters.comma(value);
-    },
-  },
-};
+@Component
+export default class Summary extends Vue {
+  @Prop() public barChartDataSet!: object;
+
+  comma(value: number): string {
+    return this.$filters.comma(value);
+  }
+}
 </script>
 
 <style lang="scss" scoped>

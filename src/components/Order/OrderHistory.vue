@@ -27,27 +27,81 @@
   </section>
 </template>
 
-<script>
-import ListFilters from '@/components/Order/ListFilters';
-import List from '@/components/Order/List';
+<script lang="ts">
+import { Component, Vue, Prop } from 'vue-property-decorator';
+import ListFilters from '@/components/Order/ListFilters.vue';
+import List from '@/components/Order/List.vue';
 
-export default {
+interface ResType {
+  status: number;
+  message: string;
+}
+
+@Component({
   components: {
     ListFilters,
     List,
   },
+})
+export default class OrderHistory extends Vue {
+  @Prop() public changeTabs!: (text: string) => void;
 
-  props: {
-    changeTabs: Function,
-  },
+  public orderLoading = false;
+  public page = 0;
+  public limit = 10;
 
-  data() {
+  get orders(): string[] {
+    return this.$store.getters['order/orders'];
+  }
+
+  get filters(): object {
+    return this.$store.getters['order/filter'];
+  }
+
+  get pageParams(): object {
+    return this.$store.getters['order/pageParams'];
+  }
+
+  get loading(): string {
+    return this.$store.getters['order/orderLoading'];
+  }
+
+  get filterOptions() {
     return {
-      orderLoading: false,
-      page: 0,
-      limit: 10,
+      soldType: {
+        multiple: false,
+        placeholder: '매출/매입',
+        options: [
+          {
+            value: false,
+            label: '매출',
+          },
+          {
+            value: true,
+            label: '매입',
+          },
+        ],
+      },
+      dateSort: {
+        multiple: false,
+        placeholder: '최신순',
+        options: [
+          {
+            value: 1,
+            label: '과거순',
+          },
+          {
+            value: 0,
+            label: '최신순',
+          },
+        ],
+      },
     };
-  },
+  }
+
+  get inComeOutCome() {
+    return this.$store.getters['order/countInComeOutCome'];
+  }
 
   async created() {
     this.orderLoading = true;
@@ -55,7 +109,7 @@ export default {
       companies: [Number(this.$route.params.id)],
     });
 
-    const res = await this.$store.dispatch('order/getOrderList');
+    const res: ResType = await this.$store.dispatch('order/getOrderList');
     if (res.message === 'success') {
       this.orderLoading = false;
     } else {
@@ -63,71 +117,14 @@ export default {
       this.$router.push('/users');
       this.$message({ showClose: true, message: '회원 정보 로딩 실패 다시 접속하세요' });
     }
-  },
+  }
 
-  computed: {
-    orders() {
-      return this.$store.getters['order/orders'];
-    },
-
-    filters() {
-      return this.$store.getters['order/filter'];
-    },
-
-    pageParams() {
-      return this.$store.getters['order/pageParams'];
-    },
-
-    loading() {
-      return this.$store.getters['order/orderLoading'];
-    },
-
-    filterOptions() {
-      return {
-        soldType: {
-          multiple: false,
-          placeholder: '매출/매입',
-          options: [
-            {
-              value: false,
-              label: '매출',
-            },
-            {
-              value: true,
-              label: '매입',
-            },
-          ],
-        },
-        dateSort: {
-          multiple: false,
-          placeholder: '최신순',
-          options: [
-            {
-              value: 1,
-              label: '과거순',
-            },
-            {
-              value: 0,
-              label: '최신순',
-            },
-          ],
-        },
-      };
-    },
-
-    inComeOutCome() {
-      return this.$store.getters['order/countInComeOutCome'];
-    },
-  },
-
-  methods: {
-    async handleCurrentChange(value) {
-      const params = { ...this.pageParams, page: value - 1 };
-      await this.$store.commit('order/SET_PAGE_PARAMS', params);
-      this.$store.dispatch('order/getOrderList', this.pageParams);
-    },
-  },
-};
+  async handleCurrentChange(value: number): Promise<void> {
+    const params = { ...this.pageParams, page: value - 1 };
+    await this.$store.commit('order/SET_PAGE_PARAMS', params);
+    this.$store.dispatch('order/getOrderList', this.pageParams);
+  }
+}
 </script>
 
 <style lang="scss" scoped>

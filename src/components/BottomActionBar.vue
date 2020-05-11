@@ -22,15 +22,16 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    message: String,
-    alert: String,
-    hideButtonBack: { type: Boolean, default: false },
-    contentMaxWidth: { type: String, default: '100%' },
-  },
-};
+<script lang="ts">
+import { Component, Vue, Prop } from 'vue-property-decorator';
+
+@Component
+export default class BottomActionBar extends Vue {
+  @Prop() public message!: string;
+  @Prop() public alert!: string;
+  @Prop() public hideButtonBack!: { type: boolean; default: false };
+  @Prop() public contentMaxWidth!: { type: string; default: '100%' };
+}
 </script>
 
 <style lang="scss" scoped>

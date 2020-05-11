@@ -33,25 +33,24 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    value: { type: String, default: null },
-    label: { type: String, default: null },
-    labelNumber: { type: String, default: null },
-    placeholder: { type: String, default: null },
-    requireMessage: { type: String, default: null },
-    require: { type: Boolean, default: null },
-    type: { type: String, default: 'text' },
-  },
+<script lang="ts">
+import { Component, Vue, Prop } from 'vue-property-decorator';
 
-  computed: {
-    isHaveData() {
-      if (this.require) return this.require;
-      return null;
-    },
-  },
-};
+@Component
+export default class TextInput extends Vue {
+  @Prop() public value!: { type: string; default: null };
+  @Prop() public label!: { type: string; default: null };
+  @Prop() public labelNumber!: { type: string; default: null };
+  @Prop() public placeholder!: { type: string; default: null };
+  @Prop() public requireMessage!: { type: string; default: null };
+  @Prop() public require!: { type: boolean; default: false };
+  @Prop() public type!: { type: string; default: 'text' };
+
+  get isHaveData() {
+    if (this.require) return this.require;
+    return null;
+  }
+}
 </script>
 
 <style lang="scss" scoped>

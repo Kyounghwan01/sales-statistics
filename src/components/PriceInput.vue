@@ -14,27 +14,28 @@
   </el-input>
 </template>
 
-<script>
-export default {
-  props: {
-    value: Number,
-    unit: String,
-  },
-  computed: {
-    formattedValue() {
-      return this.$filters.comma(parseInt(this.value));
-    },
-  },
-  methods: {
-    validateKey(e) {
-      if (!e.key.replace(/\D/g, '')) e.preventDefault();
-    },
-    handleInput(value) {
-      const filtered = Number(value.replace(/\D/g, ''));
-      this.$emit('input', filtered);
-    },
-  },
-};
+<script lang="ts">
+import { Component, Vue, Prop } from 'vue-property-decorator';
+
+@Component
+export default class PriceInput extends Vue {
+  @Prop() public value!: string;
+  @Prop() public unit!: string;
+
+  get formattedValue(): string {
+    return this.$filters.comma(parseInt(this.value));
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  validateKey(e: any) {
+    if (!e.key.replace(/\D/g, '')) e.preventDefault();
+  }
+
+  handleInput(value: string) {
+    const filtered = Number(value.replace(/\D/g, ''));
+    this.$emit('input', filtered);
+  }
+}
 </script>
 
 <style lang="scss" scoped>
