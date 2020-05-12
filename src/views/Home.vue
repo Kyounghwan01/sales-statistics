@@ -63,27 +63,18 @@
   </MainLayout>
 </template>
 
-<script>
-import MainLayout from '@/router/layouts/MainLayout';
+<script lang="ts">
+import MainLayout from '@/router/layouts/MainLayout.vue';
+import { Component, Vue } from 'vue-property-decorator';
 import { validationMixin } from 'vuelidate';
 import { required, email, minLength, maxLength } from 'vuelidate/lib/validators';
 import * as firebase from 'firebase/app';
 import 'firebase/auth';
 
-export default {
+@Component({
   components: {
     MainLayout,
   },
-  data() {
-    return {
-      data: {
-        loginId: null,
-        loginPassword: null,
-      },
-      loading: false,
-    };
-  },
-
   mixins: [validationMixin],
   validations: {
     data: {
@@ -95,50 +86,72 @@ export default {
       },
     },
   },
+})
+export default class Home extends Vue {
+  public data = {
+    loginId: '',
+    loginPassword: '',
+  };
+  public loading = false;
 
   created() {
     this.check();
-  },
+  }
 
-  methods: {
-    check() {
-      firebase.auth().onAuthStateChanged(user => {
-        if (user) {
-          this.$router.push('users').catch(error => {
-            if (error.name != 'NavigationDuplicated') {
-              throw error;
-            }
-          });
-        }
-      });
-    },
-
-    async login() {
-      ['loginId', 'loginPassword'].forEach(key => {
-        if (!this.$v.data[key].required || !this.$v.data[key].email) {
-          this.$v.data[key].$touch();
-        }
-      });
-
-      this.loading = true;
-      try {
-        const res = await firebase.auth().signInWithEmailAndPassword(this.data.loginId, this.data.loginPassword);
-        if (res) {
-          this.loading = false;
-          const response = await this.$api.loginUser.getLoginUser(res.user.uid);
-          await this.$store.dispatch('loginUser/setUser', response.data);
-          this.$router.push('users').catch(error => {
-            if (error.name != 'NavigationDuplicated') {
-              throw error;
-            }
-          });
-        }
-      } catch (error) {
-        this.loading = false;
+  check() {
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        this.$router.push('users').catch(error => {
+          if (error.name != 'NavigationDuplicated') {
+            throw error;
+          }
+        });
       }
-    },
-  },
-};
+    });
+  }
+
+  async login() {
+    ['loginId', 'loginPassword'].forEach(key => {
+      if (!this.$v || !this.$v.data) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const dataCheck = this.$v.data[key] as any;
+      if (!dataCheck.required || !dataCheck.email) {
+        dataCheck.$touch();
+      }
+    });
+
+    this.loading = true;
+    try {
+      const res = await firebase.auth().signInWithEmailAndPassword(this.data.loginId, this.data.loginPassword);
+      if (res) {
+        this.loading = false;
+        const response = await this.$api.loginUser.getLoginUser(res.user);
+        await this.$store.dispatch('loginUser/setUser', response.data);
+        this.$router.push('users').catch(error => {
+          if (error.name != 'NavigationDuplicated') {
+            throw error;
+          }
+        });
+      }
+    } catch (error) {
+      let message = '';
+
+      switch (error.code) {
+        case 'auth/user-not-found':
+          message = '없는 이메일 입니다';
+          break;
+        case 'auth/wrong-password':
+          message = '비밀번호가 틀렸습니다';
+          break;
+        default:
+          message = '로그인 실패';
+      }
+
+      this.$message.error({ showClose: true, message });
+      this.loading = false;
+    }
+  }
+}
 </script>
 <style lang="scss" scoped>
 .outter {

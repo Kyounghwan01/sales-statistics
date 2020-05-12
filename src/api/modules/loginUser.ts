@@ -7,8 +7,8 @@ export default {
     return axios.get(BASE_URL);
   },
 
-  getLoginUser: (id: string) => {
-    return axios.get(`${BASE_URL}/${id}`);
+  getLoginUser: (id: { uid: string }) => {
+    return axios.get(`${BASE_URL}/${id.uid}`);
   },
 
   createLoginUser: (data: object) => {

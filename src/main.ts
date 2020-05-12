@@ -40,7 +40,7 @@ let app: object;
 
 firebase.auth().onAuthStateChanged(async user => {
   if (user) {
-    const res = await api.loginUser.getLoginUser(user.uid);
+    const res = await api.loginUser.getLoginUser(user);
     store.dispatch('loginUser/setUser', res.data);
   }
   if (!app) {
