@@ -22,6 +22,7 @@
         :require="$v.data.name.required"
         placeholder="회사명을 입력해주세요"
         requireMessage="회사명은 필수값 입니다"
+        type="text"
       />
 
       <PhoneInput
@@ -40,6 +41,7 @@
         :require="$v.data.address.required"
         placeholder="주소를 입력해주세요"
         requireMessage="주소는 필수값 입니다"
+        type="text"
       />
 
       <TextInput
@@ -57,6 +59,7 @@
         labelNumber="05"
         v-model="data.content"
         placeholder="비고를 입력해주세요. 필수 값은 아닙니다"
+        type="text"
       />
 
       <BottomActionBar>
@@ -68,35 +71,30 @@
   </MainLayout>
 </template>
 
-<script>
-import MainLayout from '@/router/layouts/MainLayout';
-import BottomActionBar from '@/components/BottomActionBar';
-import TextInput from '@/components/TextInput';
-import PhoneInput from '@/components/PhoneInput';
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator';
+import MainLayout from '@/router/layouts/MainLayout.vue';
+import BottomActionBar from '@/components/BottomActionBar.vue';
+import TextInput from '@/components/TextInput.vue';
+import PhoneInput from '@/components/PhoneInput.vue';
 import { validationMixin } from 'vuelidate';
 import { required } from 'vuelidate/lib/validators';
 
-export default {
+interface Data {
+  name: string | null;
+  registreDate: string | null;
+  phone: string | null;
+  address: string | null;
+  content: string | null;
+}
+
+@Component({
   components: {
     MainLayout,
     BottomActionBar,
     TextInput,
     PhoneInput,
   },
-  data() {
-    return {
-      data: {
-        name: null,
-        registreDate: null,
-        phone: null,
-        address: null,
-        content: null,
-      },
-      isSaving: false,
-      edit: false,
-    };
-  },
-
   mixins: [validationMixin],
   validations: {
     data: {
@@ -106,87 +104,90 @@ export default {
       address: { required },
     },
   },
+})
+export default class MemberCreate extends Vue {
+  // TODO: data: any아닌 상태로 해당 객체에 바로 this.$route 넣는 방식 고안
 
-  created() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public data: any = { name: null, registreDate: null, phone: null, address: null, content: null };
+  public isSaving = false;
+  public edit = false;
+
+  public get loginUser(): { id: string } {
+    return this.$store.getters['loginUser/loginUser'];
+  }
+
+  public created(): void {
     if (this.$route.params.id) {
       this.edit = true;
       this.data = this.$route.query;
     }
-  },
+  }
+  valid(): boolean {
+    const checkType = [
+      { value: 'name', text: '회사명을' },
+      { value: 'phone', text: '휴대폰 번호를' },
+      { value: 'address', text: '주소를' },
+      { value: 'registreDate', text: '등록일을' },
+    ];
 
-  computed: {
-    loginUser() {
-      return this.$store.getters['loginUser/loginUser'];
-    },
-  },
+    const message = this.$utils.validate.checkAlertMessage(this.data, checkType);
 
-  methods: {
-    valid() {
-      const checkType = [
-        { value: 'name', text: '회사명을' },
-        { value: 'phone', text: '휴대폰 번호를' },
-        { value: 'address', text: '주소를' },
-        { value: 'registreDate', text: '등록일을' },
-      ];
+    if (message) {
+      this.alertMessage(message, '회원 추가 실패');
+      return false;
+    }
 
-      const message = this.$utils.validate.checkAlertMessage(this.data, checkType);
+    return true;
+  }
 
-      if (message) {
-        this.alertMessage(message, '회원 추가 실패');
-        return false;
-      }
+  alertMessage(message: string, title: string): void {
+    this.isSaving = false;
+    this.$alert(message, title, { showClose: true });
+  }
 
-      return true;
-    },
+  async registredUser(): Promise<void> {
+    if (!this.valid()) return;
+    this.isSaving = true;
+    const res = await this.$api.user.createUser({
+      ...this.data,
+      password: this.data.phone,
+      companyUid: this.loginUser.id,
+    });
 
-    alertMessage(message, title) {
-      this.isSaving = false;
-      this.$alert(message, title, { showClose: true });
-    },
+    if (res.status === 200) {
+      this.alertMessage('회원 추가 성공하였습니다.', '회원 추가 성공');
+      this.$router.push('/users');
+    } else {
+      this.alertMessage('회원 추가 실패하였습니다. 다시 시도해주세요', '회원 추가 실패');
+      this.$router.push('/users');
+    }
+  }
 
-    async registredUser() {
-      if (!this.valid()) return;
-      this.isSaving = true;
-      const res = await this.$api.user.createUser({
-        ...this.data,
-        password: this.data.phone,
-        companyUid: this.loginUser.id,
-      });
+  async updateUser(): Promise<void> {
+    if (!this.valid()) return;
+    this.isSaving = true;
 
-      if (res.status === 200) {
-        this.alertMessage('회원 추가 성공하였습니다.', '회원 추가 성공');
-        this.$router.push('/users');
-      } else {
-        this.alertMessage('회원 추가 실패하였습니다. 다시 시도해주세요', '회원 추가 실패');
-        this.$router.push('/users');
-      }
-    },
+    const res = await this.$api.user.updateUser(this.data, this.$route.params.id);
+    if (res.status === 200) {
+      this.alertMessage('회원 수정을 성공하였습니다.', '회원 수정 성공');
+      this.$router.push('/users');
+    } else {
+      this.alertMessage('관리자에게 문의해주세요', '회원 수정 실패');
+    }
+  }
 
-    async updateUser() {
-      if (!this.valid()) return;
-      this.isSaving = true;
-
-      const res = await this.$api.user.updateUser(this.data, this.$route.params.id);
-      if (res.status === 200) {
-        this.alertMessage('회원 수정을 성공하였습니다.', '회원 수정 성공');
-        this.$router.push('/users');
-      } else {
-        this.alertMessage('관리자에게 문의해주세요', '회원 수정 실패');
-      }
-    },
-
-    async deleteUser() {
-      this.isSaving = true;
-      const res = await this.$api.user.deleteUser(this.$route.params.id);
-      if (res.status === 200) {
-        this.alertMessage('회원 삭제 성공하였습니다.', '회원 삭제 성공');
-        this.$router.push('/users');
-      } else {
-        this.alertMessage('관리자에게 문의해주세요', '회원 삭제 실패');
-      }
-    },
-  },
-};
+  async deleteUser(): Promise<void> {
+    this.isSaving = true;
+    const res = await this.$api.user.deleteUser(this.$route.params.id);
+    if (res.status === 200) {
+      this.alertMessage('회원 삭제 성공하였습니다.', '회원 삭제 성공');
+      this.$router.push('/users');
+    } else {
+      this.alertMessage('관리자에게 문의해주세요', '회원 삭제 실패');
+    }
+  }
+}
 </script>
 
 <style lang="scss" scope>

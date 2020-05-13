@@ -25,13 +25,16 @@
   </MainLayout>
 </template>
 
-<script>
+<script lang="ts">
+import { Component, Vue, Watch } from 'vue-property-decorator';
 import MainLayout from '@/router/layouts/MainLayout.vue';
 import PlainButton from '@/components/PlainButton.vue';
-import OrderCreate from '@/components/Order/OrderCreate';
-import OrderHistory from '@/components/Order/OrderHistory';
+import OrderCreate from '@/components/Order/OrderCreate.vue';
+import OrderHistory from '@/components/Order/OrderHistory.vue';
 import Tabs from '@/components/Tabs.vue';
-export default {
+import moment from 'moment';
+
+@Component({
   components: {
     MainLayout,
     PlainButton,
@@ -39,19 +42,30 @@ export default {
     OrderCreate,
     OrderHistory,
   },
-  data() {
-    return {
-      user: {},
-      loading: false,
-      currentTab: 'history',
-      tabs: [
-        { value: 'history', label: '거래내역' },
-        { value: 'writeTrade', label: '거래작성' },
-      ],
-    };
-  },
+})
+export default class MemberDetail extends Vue {
+  public user = {};
+  public loading = false;
+  public currentTab = 'history';
+  public tabs = [
+    { value: 'history', label: '거래내역' },
+    { value: 'writeTrade', label: '거래작성' },
+  ];
 
-  async created() {
+  get formRegistreDate(): string {
+    return moment(this.currentUserData.registreDate).format('YYYY년 M월 D일');
+  }
+
+  // TODO: getters에 있는 값 object로 가져오면 생기는 문제
+  get currentUserData() {
+    return this.$store.getters['users/currentUser'];
+  }
+
+  get formatMobile(): string {
+    return this.$filters.mobile(this.currentUserData.phone);
+  }
+
+  async created(): Promise<void> {
     this.loading = true;
     const params = {
       companyUid: this.$route.query.uid,
@@ -65,42 +79,28 @@ export default {
     }
 
     this.loading = false;
-  },
+  }
 
-  computed: {
-    formRegistreDate() {
-      return this.moment(this.currentUserData.registreDate).format('YYYY년 M월 D일');
-    },
-    currentUserData() {
-      return this.$store.getters['users/currentUser'];
-    },
-    formatMobile() {
-      return this.$filters.mobile(this.currentUserData.phone);
-    },
-  },
+  @Watch('currentTab', { immediate: true })
+  resetOrderData(value: string): void {
+    if (value === 'history') {
+      this.$store.commit('editOrder/SET_RESET_ORDER_DATA');
+    }
+  }
 
-  watch: {
-    currentTab: function(value) {
-      if (value === 'history') {
-        this.$store.commit('editOrder/SET_RESET_ORDER_DATA');
-      }
-    },
-  },
+  goToUserEdit() {
+    const id = this.$route.params.id;
 
-  methods: {
-    goToUserEdit() {
-      const id = this.$route.params.id;
+    this.$router.push({
+      path: `/users/edit/${id}`,
+      query: { ...this.currentUserData },
+    });
+  }
 
-      this.$router.push({
-        path: `/users/edit/${id}`,
-        query: { ...this.currentUserData },
-      });
-    },
-    changeTabs(tabName) {
-      this.currentTab = tabName;
-    },
-  },
-};
+  changeTabs(tabName: string): void {
+    this.currentTab = tabName;
+  }
+}
 </script>
 
 <style lang="scss" scoped>

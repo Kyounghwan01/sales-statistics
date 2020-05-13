@@ -94,11 +94,11 @@ export default class Home extends Vue {
   };
   public loading = false;
 
-  created() {
+  created(): void {
     this.check();
   }
 
-  check() {
+  check(): void {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         this.$router.push('users').catch(error => {
@@ -110,7 +110,7 @@ export default class Home extends Vue {
     });
   }
 
-  async login() {
+  async login(): Promise<void> {
     ['loginId', 'loginPassword'].forEach(key => {
       if (!this.$v || !this.$v.data) return;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

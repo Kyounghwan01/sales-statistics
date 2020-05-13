@@ -23,6 +23,7 @@ interface user {
   getCurrentUser: Function;
   editLoginUser: Function;
   updateUser: Function;
+  deleteUser: Function;
 }
 
 interface loginUser {
