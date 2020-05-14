@@ -16,56 +16,47 @@
   </MainLayout>
 </template>
 
-<script>
-import MainLayout from '@/router/layouts/MainLayout';
-import MembersList from '@/components/Members/List';
-import AddButton from '@/components/AddButton';
+<script lang="ts">
+import { Component, Vue, Watch } from 'vue-property-decorator';
+import MainLayout from '@/router/layouts/MainLayout.vue';
+import MembersList from '@/components/Members/List.vue';
+import AddButton from '@/components/AddButton.vue';
 
-export default {
+@Component({
   components: {
     MainLayout,
     MembersList,
     AddButton,
   },
+})
+export default class MemberList extends Vue {
+  public keyword = null;
 
-  data() {
-    return {
-      keyword: null,
-    };
-  },
+  get loginUser(): { id: string } {
+    return this.$store.getters['loginUser/loginUser'];
+  }
 
-  created() {
-    if (this.loginUser) {
+  get userList(): object {
+    if (!this.$store.getters['users/user']) {
       this.$store.dispatch('users/getUser', this.loginUser.id);
     }
-  },
+    return this.$store.getters['users/user'];
+  }
 
-  computed: {
-    loginUser() {
-      return this.$store.getters['loginUser/loginUser'];
-    },
+  get loading(): boolean {
+    return this.$store.getters['users/userLoading'];
+  }
 
-    userList() {
-      if (!this.$store.getters['users/user']) {
-        this.$store.dispatch('users/getUser', this.loginUser.id);
-      }
-      return this.$store.getters['users/user'];
-    },
+  @Watch('keyword', { immediate: true })
+  filterForKeyword(value: string): void {
+    this.$store.dispatch('users/filterUser', value);
+  }
 
-    loading() {
-      return this.$store.getters['users/userLoading'];
-    },
-  },
-
-  watch: {
-    keyword: function() {
-      this.$store.dispatch('users/filterUser', this.keyword);
-    },
-    async loginUser() {
-      await this.$store.dispatch('users/getUser', this.loginUser.id);
-    },
-  },
-};
+  @Watch('loginUser', { immediate: true })
+  getLoginUser(): void {
+    this.$store.dispatch('users/getUser', this.loginUser.id);
+  }
+}
 </script>
 
 <style lang="scss" scoped>
