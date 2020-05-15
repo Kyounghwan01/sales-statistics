@@ -146,14 +146,21 @@ export default class Sales extends Vue {
 
   get barChartDataSet() {
     const { searchRange, searchType, salesData } = this.salesStoreData;
-    const labels = [];
+    const labels: string[] = [];
 
-    searchRange[searchType].map(el => {
+    searchRange[searchType].map((el: { start: string }) => {
       const label = this.dateDisplay(el.start, searchType);
       labels.push(searchType === 'month' ? label.substr(2) : label.substr(6));
     });
 
-    const barDataSets: never = [
+    const barDataSets: {
+      label: string;
+      type: string;
+      data: number[];
+      backgroundColor: string;
+      yAxisID: string;
+      stack: number;
+    }[] = [
       {
         label: '매출',
         type: 'bar',
@@ -187,8 +194,9 @@ export default class Sales extends Vue {
       }
     }
 
-    salesData.map((orderArray, index) => {
-      orderArray.map(orders => {
+    salesData.map((orderArray: Array<boolean | number>, index: number): void => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      orderArray.map((orders: any) => {
         if (orders.type) {
           barDataSets[1].data[index] -= orders.price;
           barDataSets[2].data[index] -= orders.price;
@@ -239,7 +247,7 @@ export default class Sales extends Vue {
   }
 
   @Watch('rangeType', { immediate: true })
-  async changeRangeType(value: string): void {
+  async changeRangeType(value: string): Promise<void> {
     this.$store.dispatch('sales/getSalesDataWithChangeType', {
       searchType: value,
       date: this.time,
@@ -247,23 +255,23 @@ export default class Sales extends Vue {
     });
   }
 
-  async created() {
+  async created(): Promise<void> {
     await this.$store.dispatch('sales/getSalesData', {
-      date: this.moment().format('YYYYMMDD'),
+      date: moment().format('YYYYMMDD'),
       id: this.loginUser.id,
     });
   }
 
   dateDisplay(value: string, type: string): string {
-    let text = this.moment(value).format('YYYY년 M월 D일 (ddd)');
+    let text = moment(value).format('YYYY년 M월 D일 (ddd)');
     if (type === 'week') {
-      const endOfWeek = this.moment(value).add(6, 'days');
+      const endOfWeek = moment(value).add(6, 'days');
       const year = endOfWeek.year();
       const month = endOfWeek.month() + 1;
       const week = Math.ceil(endOfWeek.date() / 7);
       text = `${year}년 ${month}월 ${week}주`;
     } else if (type === 'month') {
-      text = this.moment(value).format('YYYY년 M월');
+      text = moment(value).format('YYYY년 M월');
     }
 
     return text;
@@ -273,10 +281,27 @@ export default class Sales extends Vue {
     return this.$filters.comma(value);
   }
 
-  handlSalesData(chartType: string) {
-    const flatArray = this.salesStoreData.currentDateSalesData.flat();
+  handlSalesData(chartType: string): object {
+    const flatArray: {
+      type: boolean;
+      goods: string;
+      userName: string;
+      price: number;
+    }[] = this.salesStoreData.currentDateSalesData.flat();
 
-    const pieData = {
+    const pieData: {
+      chart: {
+        label: string[];
+        data: number[];
+        count: number[];
+        colorSet: string[];
+      };
+      list: {
+        label: string;
+        price: number;
+        count: number;
+      }[];
+    } = {
       chart: {
         label: [],
         data: [],
@@ -287,24 +312,16 @@ export default class Sales extends Vue {
     };
 
     /** 물품 이름 넣기 */
-    flatArray.map(({ type, goods, userName }) => {
-      if ((chartType === 'pieInput' && type) || (chartType === 'pieOutput' && !type)) {
-        pieData.chart.label.push({ goods });
-      } else if ((chartType === 'pieCompanyInput' && type) || (chartType === 'pieCompanyOutput' && !type)) {
-        pieData.chart.label.push({ userName });
+    flatArray.map(el => {
+      if ((chartType === 'pieInput' && el.type) || (chartType === 'pieOutput' && !el.type)) {
+        pieData.chart.label.push(el.goods);
+      } else if ((chartType === 'pieCompanyInput' && el.type) || (chartType === 'pieCompanyOutput' && !el.type)) {
+        pieData.chart.label.push(el.userName);
       }
     });
 
     /** 물품 중복 제거 */
-    pieData.chart.label = _.uniq(
-      pieData.chart.label.map(({ goods, userName }) => {
-        if (chartType === 'pieInput' || chartType === 'pieOutput') {
-          return goods;
-        } else {
-          return userName;
-        }
-      }),
-    );
+    pieData.chart.label = _.uniq(pieData.chart.label);
 
     /** pieChart data preset */
     for (let i = 0; i < pieData.chart.label.length; i++) {
@@ -314,13 +331,13 @@ export default class Sales extends Vue {
     }
 
     /** pieChart data set */
-    flatArray.map(({ type, goods, userName, price }) => {
-      if ((chartType === 'pieInput' && type) || (chartType === 'pieOutput' && !type)) {
-        pieData.chart.data[pieData.chart.label.indexOf(goods)] += price;
-        pieData.chart.count[pieData.chart.label.indexOf(goods)]++;
-      } else if ((chartType === 'pieCompanyInput' && type) || (chartType === 'pieCompanyOutput' && !type)) {
-        pieData.chart.data[pieData.chart.label.indexOf(userName)] += price;
-        pieData.chart.count[pieData.chart.label.indexOf(userName)]++;
+    flatArray.map(el => {
+      if ((chartType === 'pieInput' && el.type) || (chartType === 'pieOutput' && !el.type)) {
+        pieData.chart.data[pieData.chart.label.indexOf(el.goods)] += el.price;
+        pieData.chart.count[pieData.chart.label.indexOf(el.goods)]++;
+      } else if ((chartType === 'pieCompanyInput' && el.type) || (chartType === 'pieCompanyOutput' && !el.type)) {
+        pieData.chart.data[pieData.chart.label.indexOf(el.userName)] += el.price;
+        pieData.chart.count[pieData.chart.label.indexOf(el.userName)]++;
       }
     });
 
@@ -334,7 +351,6 @@ export default class Sales extends Vue {
     }
 
     /** 회사별 매출/매입 현황 */
-
     return {
       labels: pieData.chart.label,
       datasets: [
@@ -349,291 +365,6 @@ export default class Sales extends Vue {
     };
   }
 }
-
-// export default {
-//   components: {
-//     MainLayout,
-//     Summary,
-//     BarChart,
-//     DetailList,
-//     LineChart,
-//   },
-
-// data() {
-//   return {
-//     options: [
-//       {
-//         value: 'week',
-//         label: '주간',
-//       },
-//       {
-//         value: 'month',
-//         label: '월간',
-//       },
-//     ],
-//     chartTypeOptions: [
-//       {
-//         value: 'bar',
-//         label: '막대 그래프',
-//       },
-//       {
-//         value: 'line',
-//         label: '꺾은선 그래프',
-//       },
-//     ],
-//     chartType: 'bar',
-//     rangeType: 'month',
-//     time: moment(new Date())
-//       .date(1)
-//       .format('YYYYMMDD'),
-//   };
-// },
-
-// computed: {
-//   loginUser() {
-//     return this.$store.getters['loginUser/loginUser'];
-//   },
-
-//   salesStoreData() {
-//     return this.$store.getters['sales/sales'];
-//   },
-
-//   loading() {
-//     return this.$store.getters['sales/loading'];
-//   },
-
-//   rangeValue: {
-//     get() {
-//       return this.time;
-//     },
-//     set(value) {
-//       if (this.rangeType === 'week') {
-//         this.time = moment(value)
-//           .subtract(1, 'day')
-//           .format('YYYYMMDD');
-//         this.$store.dispatch('sales/getSalesData', {
-//           date: this.time,
-//           id: this.loginUser.id,
-//         });
-//       } else {
-//         this.time = value;
-//         this.$store.dispatch('sales/getSalesData', {
-//           date: this.time,
-//           id: this.loginUser.id,
-//         });
-//       }
-//     },
-//   },
-
-//   barChartDataSet() {
-//     const { searchRange, searchType, salesData } = this.salesStoreData;
-//     const labels = [];
-
-//     searchRange[searchType].map(el => {
-//       const label = this.dateDisplay(el.start, searchType);
-//       labels.push(searchType === 'month' ? label.substr(2) : label.substr(6));
-//     });
-
-//     const barDataSets = [
-//       {
-//         label: '매출',
-//         type: 'bar',
-//         data: [],
-//         backgroundColor: constant.inComeColor,
-//         yAxisID: 'amount',
-//         stack: 1,
-//       },
-//       {
-//         label: '매입',
-//         type: 'bar',
-//         data: [],
-//         backgroundColor: constant.outComeColor,
-//         yAxisID: 'amount',
-//         stack: 1,
-//       },
-//       {
-//         label: '순이익',
-//         type: 'bar',
-//         data: [],
-//         backgroundColor: constant.profitColor,
-//         yAxisID: 'amount',
-//         stack: 2,
-//       },
-//     ];
-//     const count = { inCome: 0, outCome: 0 };
-
-//     for (let i = 0; i < labels.length; i++) {
-//       for (let j = 0; j < barDataSets.length; j++) {
-//         barDataSets[j].data.push(0);
-//       }
-//     }
-
-//     salesData.map((orderArray, index) => {
-//       orderArray.map(orders => {
-//         if (orders.type) {
-//           barDataSets[1].data[index] -= orders.price;
-//           barDataSets[2].data[index] -= orders.price;
-//           if (index === salesData.length - 1) {
-//             count.outCome++;
-//           }
-//         } else {
-//           barDataSets[0].data[index] += orders.price;
-//           barDataSets[2].data[index] += orders.price;
-//           if (index === salesData.length - 1) {
-//             count.inCome++;
-//           }
-//         }
-//       });
-//     });
-
-//     return {
-//       labels,
-//       datasets: barDataSets,
-//       total: [
-//         { label: '매출', price: barDataSets[0].data[barDataSets[0].data.length - 1], count: count.inCome },
-//         {
-//           label: '매입',
-//           price: barDataSets[1].data[barDataSets[1].data.length - 1],
-//           count: count.outCome,
-//         },
-//         {
-//           label: '순이익',
-//           price:
-//             barDataSets[0].data[barDataSets[0].data.length - 1] + barDataSets[1].data[barDataSets[1].data.length - 1],
-//           count: count.inCome + count.outCome,
-//         },
-//       ],
-//     };
-//   },
-
-//   lineChartDataSet() {
-//     const lineDataSets = this.barChartDataSet.datasets.map((el, index) => {
-//       return {
-//         ..._.omit(el, ['type', 'yAxisID', 'stack']),
-//         borderColor: constant.lineChartColorSet[index],
-//         backgroundColor: constant.lineChartColorSet[index],
-//         fill: false,
-//       };
-//     });
-
-//     return { labels: this.barChartDataSet.labels, datasets: lineDataSets };
-//   },
-// },
-
-//   watch: {
-//     rangeType: async function(value) {
-//       this.$store.dispatch('sales/getSalesDataWithChangeType', {
-//         searchType: value,
-//         date: this.time,
-//         id: this.loginUser.id,
-//       });
-//     },
-//   },
-
-//   async created() {
-//     await this.$store.dispatch('sales/getSalesData', {
-//       date: this.moment().format('YYYYMMDD'),
-//       id: this.loginUser.id,
-//     });
-//   },
-
-//   methods: {
-//     dateDisplay(value, type) {
-//       let text = this.moment(value).format('YYYY년 M월 D일 (ddd)');
-//       if (type === 'week') {
-//         const endOfWeek = this.moment(value).add(6, 'days');
-//         const year = endOfWeek.year();
-//         const month = endOfWeek.month() + 1;
-//         const week = Math.ceil(endOfWeek.date() / 7);
-//         text = `${year}년 ${month}월 ${week}주`;
-//       } else if (type === 'month') {
-//         text = this.moment(value).format('YYYY년 M월');
-//       }
-
-//       return text;
-//     },
-
-//     comma(value) {
-//       return this.$filters.comma(value);
-//     },
-
-//     handlSalesData(chartType) {
-//       const flatArray = this.salesStoreData.currentDateSalesData.flat();
-
-//       const pieData = {
-//         chart: {
-//           label: [],
-//           data: [],
-//           count: [],
-//           colorSet: [],
-//         },
-//         list: [],
-//       };
-
-//       /** 물품 이름 넣기 */
-//       flatArray.map(({ type, goods, userName }) => {
-//         if ((chartType === 'pieInput' && type) || (chartType === 'pieOutput' && !type)) {
-//           pieData.chart.label.push({ goods });
-//         } else if ((chartType === 'pieCompanyInput' && type) || (chartType === 'pieCompanyOutput' && !type)) {
-//           pieData.chart.label.push({ userName });
-//         }
-//       });
-
-//       /** 물품 중복 제거 */
-//       pieData.chart.label = _.uniq(
-//         pieData.chart.label.map(({ goods, userName }) => {
-//           if (chartType === 'pieInput' || chartType === 'pieOutput') {
-//             return goods;
-//           } else {
-//             return userName;
-//           }
-//         }),
-//       );
-
-//       /** pieChart data preset */
-//       for (let i = 0; i < pieData.chart.label.length; i++) {
-//         pieData.chart.data.push(0);
-//         pieData.chart.count.push(0);
-//         pieData.chart.colorSet.push(`#${constant.colorSet[i]}`);
-//       }
-
-//       /** pieChart data set */
-//       flatArray.map(({ type, goods, userName, price }) => {
-//         if ((chartType === 'pieInput' && type) || (chartType === 'pieOutput' && !type)) {
-//           pieData.chart.data[pieData.chart.label.indexOf(goods)] += price;
-//           pieData.chart.count[pieData.chart.label.indexOf(goods)]++;
-//         } else if ((chartType === 'pieCompanyInput' && type) || (chartType === 'pieCompanyOutput' && !type)) {
-//           pieData.chart.data[pieData.chart.label.indexOf(userName)] += price;
-//           pieData.chart.count[pieData.chart.label.indexOf(userName)]++;
-//         }
-//       });
-
-//       /** pieChart list data set */
-//       for (let i = 0; i < pieData.chart.label.length; i++) {
-//         pieData.list.push({
-//           label: pieData.chart.label[i],
-//           price: pieData.chart.data[i],
-//           count: pieData.chart.count[i],
-//         });
-//       }
-
-//       /** 회사별 매출/매입 현황 */
-
-//       return {
-//         labels: pieData.chart.label,
-//         datasets: [
-//           {
-//             type: 'pie',
-//             data: pieData.chart.data,
-//             backgroundColor: pieData.chart.colorSet,
-//           },
-//         ],
-//         count: pieData.chart.count,
-//         list: pieData.list,
-//       };
-//     },
-//   },
-// };
 </script>
 
 <style lang="scss" scoped>

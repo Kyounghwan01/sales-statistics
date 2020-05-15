@@ -5,6 +5,7 @@ declare module 'lodash' {
     camelCase(str?: string): string;
     omit(data?: object, arr?: any): object;
     cloneDeep(data?: object): object;
+    uniq(data?: string[]): string[];
   }
 
   // 2. 타입(인터페이스)을 가지는 변수 선언
