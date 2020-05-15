@@ -36,27 +36,93 @@
   </MainLayout>
 </template>
 
-<script>
-import MainLayout from '@/router/layouts/MainLayout';
-import ListFilters from '@/components/Order/ListFilters';
-import List from '@/components/Order/List';
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator';
+import MainLayout from '@/router/layouts/MainLayout.vue';
+import ListFilters from '@/components/Order/ListFilters.vue';
+import List from '@/components/Order/List.vue';
 import PlainButton from '@/components/PlainButton.vue';
+import moment from 'moment';
 
-export default {
+@Component({
   components: {
     MainLayout,
     ListFilters,
     List,
     PlainButton,
   },
-  data() {
-    return {
-      companies: [],
-      filterValues: {},
-    };
-  },
+})
+export default class OrderList extends Vue {
+  public companies = [];
+  public filterValues = {};
 
-  async created() {
+  get loginUser(): { id: string } {
+    return this.$store.getters['loginUser/loginUser'];
+  }
+
+  get loading(): boolean {
+    return this.$store.getters['order/orderLoading'];
+  }
+
+  get orderList(): object {
+    return this.$store.getters['order/orders'];
+  }
+
+  get pageParams(): { page: number; limit: number; total: number } {
+    return this.$store.getters['order/pageParams'];
+  }
+
+  get inComeOutCome(): { outcome: number; income: number } {
+    return this.$store.getters['order/countInComeOutCome'];
+  }
+
+  get filterOptions(): object {
+    // TODO: 기간내 매출/매입 리스트가 있는 회사만 가져오기
+    const companiesOptions = this.companies.map(({ id, name }) => ({
+      value: id,
+      label: name,
+    }));
+    return {
+      companies: {
+        multiple: true,
+        placeholder: '모든 회사',
+        options: companiesOptions,
+      },
+      soldType: {
+        multiple: false,
+        placeholder: '매출/매입',
+        options: [
+          {
+            value: false,
+            label: '매출',
+          },
+          {
+            value: true,
+            label: '매입',
+          },
+        ],
+      },
+      dateSort: {
+        multiple: false,
+        placeholder: '최신순',
+        options: [
+          {
+            value: 1,
+            label: '과거순',
+          },
+          {
+            value: 0,
+            label: '최신순',
+          },
+        ],
+      },
+    };
+  }
+  get filters(): object {
+    return this.$store.getters['order/filter'];
+  }
+
+  async created(): Promise<void> {
     const res = await this.$store.dispatch('order/getOrderList', this.pageParams);
 
     if (res.message === 'fail') {
@@ -64,106 +130,36 @@ export default {
     }
 
     this.getCompanies();
-  },
+  }
 
-  computed: {
-    loginUser() {
-      return this.$store.getters['loginUser/loginUser'];
-    },
+  async getCompanies(): Promise<void> {
+    if (!this.$store.getters['users/user'].length) {
+      await this.$store.dispatch('users/getUser', this.loginUser.id);
+    }
 
-    loading() {
-      return this.$store.getters['order/orderLoading'];
-    },
+    this.companies = this.$store.getters['users/user'];
+  }
 
-    orderList() {
-      return this.$store.getters['order/orders'];
-    },
+  downloadExcel(data: object): void {
+    this.$store.commit('order/SET_ORDER_LOADING', true);
+    const res = this.$utils.excel.formatJSON(data);
+    const title = `데이터목록_${moment().format('YYYYMMDD_HHmm')}.xlsx`;
 
-    pageParams() {
-      return this.$store.getters['order/pageParams'];
-    },
+    this.$utils.excel.excelDownload(res, title);
+    this.$store.commit('order/SET_ORDER_LOADING', false);
+  }
 
-    inComeOutCome() {
-      return this.$store.getters['order/countInComeOutCome'];
-    },
+  async entireDownloadExcel(): Promise<void> {
+    const res = await this.$api.order.getOrderForExcel(this.loginUser.id);
+    this.downloadExcel(res.data.order);
+  }
 
-    filterOptions() {
-      // TODO: 기간내 매출/매입 리스트가 있는 회사만 가져오기
-      const companiesOptions = this.companies.map(({ id, name }) => ({
-        value: id,
-        label: name,
-      }));
-      return {
-        companies: {
-          multiple: true,
-          placeholder: '모든 회사',
-          options: companiesOptions,
-        },
-        soldType: {
-          multiple: false,
-          placeholder: '매출/매입',
-          options: [
-            {
-              value: false,
-              label: '매출',
-            },
-            {
-              value: true,
-              label: '매입',
-            },
-          ],
-        },
-        dateSort: {
-          multiple: false,
-          placeholder: '최신순',
-          options: [
-            {
-              value: 1,
-              label: '과거순',
-            },
-            {
-              value: 0,
-              label: '최신순',
-            },
-          ],
-        },
-      };
-    },
-    filters() {
-      return this.$store.getters['order/filter'];
-    },
-  },
-
-  methods: {
-    async getCompanies() {
-      if (!this.$store.getters['users/user'].length) {
-        await this.$store.dispatch('users/getUser', this.loginUser.id);
-      }
-
-      this.companies = this.$store.getters['users/user'];
-    },
-
-    downloadExcel(data) {
-      this.$store.commit('order/SET_ORDER_LOADING', true);
-      const res = this.$utils.excel.formatJSON(data);
-      const title = `데이터목록_${this.moment().format('YYYYMMDD_HHmm')}.xlsx`;
-
-      this.$utils.excel.excelDownload(res, title);
-      this.$store.commit('order/SET_ORDER_LOADING', false);
-    },
-
-    async entireDownloadExcel() {
-      const res = await this.$api.order.getOrderForExcel(this.loginUser.id);
-      this.downloadExcel(res.data.order);
-    },
-
-    async handleCurrentChange(value) {
-      const params = { ...this.pageParams, page: value - 1 };
-      await this.$store.commit('order/SET_PAGE_PARAMS', params);
-      this.$store.dispatch('order/getOrderList', this.pageParams);
-    },
-  },
-};
+  async handleCurrentChange(value: number): Promise<void> {
+    const params = { ...this.pageParams, page: value - 1 };
+    await this.$store.commit('order/SET_PAGE_PARAMS', params);
+    this.$store.dispatch('order/getOrderList', this.pageParams);
+  }
+}
 </script>
 <style lang="scss" scoped>
 .order-list {

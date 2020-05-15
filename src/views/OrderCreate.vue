@@ -1,6 +1,6 @@
 <template>
   <MainLayout :padded="false">
-    <section class="create-user" v-loading="!userList && loading">
+    <section class="create-user" v-loading="!userList.length && loading">
       <div class="header">
         <h3>매출/매입 추가</h3>
         <el-tooltip class="item" effect="light" placement="top">
@@ -37,7 +37,7 @@
             <span class="required" v-if="!$v.data.userId.required">회사명은 필수값 입니다</span>
           </div>
         </div>
-        <ul v-if="showMeber">
+        <ul v-if="showMember">
           <li
             :class="['user-list', search && keyword === list.name ? 'selected' : null]"
             v-for="list in userList"
@@ -48,7 +48,7 @@
             <span class="selected-span" v-if="search && keyword === list.name">선택</span>
           </li>
         </ul>
-        <div class="no-have" v-if="showMeber && !userList.length">
+        <div class="no-have" v-if="showMember && !userList.length">
           <span>회사가 없습니다. 먼저 회사를 등록해주세요</span>
         </div>
       </div>
@@ -130,16 +130,29 @@
   </MainLayout>
 </template>
 
-<script>
-import _ from 'lodash';
-import MainLayout from '@/router/layouts/MainLayout';
-import TextInput from '@/components/TextInput';
-import PriceInput from '@/components/PriceInput';
-import BottomActionBar from '@/components/BottomActionBar';
+<script lang="ts">
+import { Component, Vue, Watch } from 'vue-property-decorator';
+import MainLayout from '@/router/layouts/MainLayout.vue';
+import TextInput from '@/components/TextInput.vue';
+import PriceInput from '@/components/PriceInput.vue';
+import BottomActionBar from '@/components/BottomActionBar.vue';
 import { validationMixin } from 'vuelidate';
 import { required } from 'vuelidate/lib/validators';
 
-const DEFAULT_DATA = {
+interface DataInterface {
+  type: boolean;
+  date: null | string;
+  price: null | number;
+  memo: null | string;
+  goods: null | string;
+  unitPrice: null | number;
+  count: null | number;
+  outstanding: number;
+  userId: null | string;
+  userName: null | string;
+}
+
+const DEFAULT_DATA: DataInterface = {
   type: true,
   date: null,
   price: null,
@@ -152,25 +165,13 @@ const DEFAULT_DATA = {
   userName: null,
 };
 
-export default {
+@Component({
   components: {
     MainLayout,
     TextInput,
     PriceInput,
     BottomActionBar,
   },
-  data() {
-    return {
-      data: { ...DEFAULT_DATA },
-      edit: false,
-      keyword: null,
-      loading: false,
-      search: false,
-      showMeber: false,
-      isSaving: false,
-    };
-  },
-
   mixins: [validationMixin],
   validations: {
     data: {
@@ -181,107 +182,113 @@ export default {
       count: { required },
     },
   },
+})
+export default class OrderCreate extends Vue {
+  public data: DataInterface = { ...DEFAULT_DATA };
+  public edit = false;
+  public keyword = '';
+  public loading = false;
+  public search = false;
+  public showMember = false;
+  public isSaving = false;
 
-  async created() {
-    this.loading = true;
+  get loginUser(): { id: string } {
+    return this.$store.getters['loginUser/loginUser'];
+  }
+
+  get userList(): object {
+    if (!this.$store.getters['users/user']) {
+      this.$store.dispatch('users/getUser', this.loginUser.id);
+    }
+    return this.$store.getters['users/user'];
+  }
+
+  get totalPrice(): string {
+    if (this.data.unitPrice && this.data.count) {
+      return this.$filters.comma(this.data.unitPrice * this.data.count);
+    }
+    return '';
+  }
+
+  @Watch('keyword', { immediate: true })
+  searchForKeyword(value: string): void {
+    this.$store.dispatch('users/filterUser', value);
+  }
+
+  async created(): Promise<void> {
     if (this.loginUser) {
       this.$store.dispatch('users/getUser', this.loginUser.id);
     }
-    this.loading = false;
-  },
+  }
 
-  computed: {
-    loginUser() {
-      return this.$store.getters['loginUser/loginUser'];
-    },
+  choiceUser(id: string, name: string): void {
+    this.search = !this.search;
+    this.keyword = name;
+    if (this.search) {
+      this.data.userId = id;
+      this.data.userName = name;
+    } else {
+      this.data.userId = null;
+    }
+  }
 
-    userList() {
-      if (!this.$store.getters['users/user']) {
-        this.$store.dispatch('users/getUser', this.loginUser.id);
-      }
-      return this.$store.getters['users/user'];
-    },
+  formatMobile(phone: string): string {
+    return this.$filters.mobile(phone);
+  }
 
-    totalPrice() {
-      return this.$filters.comma(this.data.unitPrice * this.data.count);
-    },
-  },
+  showMemberList(): void {
+    if (!this.search) this.showMember = !this.showMember;
+  }
 
-  watch: {
-    keyword: function() {
-      this.$store.dispatch('users/filterUser', this.keyword);
-    },
-  },
+  valid(): boolean {
+    const checkType = [
+      { value: 'userId', text: '회사를' },
+      { value: 'date', text: '거래일을' },
+      { value: 'goods', text: '상품명을' },
+      { value: 'unitPrice', text: '단가를' },
+      { value: 'count', text: '갯수를' },
+    ];
 
-  methods: {
-    choiceUser(id, name) {
-      this.search = !this.search;
-      this.keyword = name;
-      if (this.search) {
-        this.data.userId = id;
-        this.data.userName = name;
-      } else {
-        this.data.userId = null;
-      }
-    },
+    const message = this.$utils.validate.checkAlertMessage(this.data, checkType);
 
-    formatMobile(phone) {
-      return this.$filters.mobile(phone);
-    },
+    if (message) {
+      this.alertMessage(message, '매출/매입 추가 실패');
+      return false;
+    }
 
-    showMemberList() {
-      if (!this.search) this.showMeber = !this.showMeber;
-    },
+    return true;
+  }
 
-    valid() {
-      const checkType = [
-        { value: 'userId', text: '회사를' },
-        { value: 'date', text: '거래일을' },
-        { value: 'goods', text: '상품명을' },
-        { value: 'unitPrice', text: '단가를' },
-        { value: 'count', text: '갯수를' },
-      ];
+  alertMessage(message: string, title: string): void {
+    this.isSaving = false;
+    this.$alert(message, title, { showClose: true });
+  }
 
-      const message = this.$utils.validate.checkAlertMessage(this.data, checkType);
+  async saveOrder(): Promise<void> {
+    if (!this.valid() || !this.data.date || !this.data.count || !this.data.unitPrice) return;
 
-      if (message) {
-        this.alertMessage(message, '매출/매입 추가 실패');
-        return false;
-      }
+    this.isSaving = true;
 
-      return true;
-    },
+    const params = {
+      ...this.data,
+      date: Number(this.data.date.split('-').join('')),
+      price: this.data.unitPrice * this.data.count,
+      companyUid: this.loginUser.id,
+    };
 
-    alertMessage(message, title) {
+    const res = await this.$api.order.createOrder(this.data.userId, params);
+    if (res.status === 200) {
       this.isSaving = false;
-      this.$alert(message, title, { showClose: true });
-    },
-
-    async saveOrder() {
-      if (!this.valid()) return;
-      this.isSaving = true;
-
-      const params = {
-        ...this.data,
-        date: Number(this.data.date.split('-').join('')),
-        price: this.data.unitPrice * this.data.count,
-        companyUid: this.loginUser.id,
-      };
-
-      const res = await this.$api.order.createOrder(this.data.userId, params);
-      if (res.status === 200) {
-        this.isSaving = false;
-        this.$message({ showClose: true, message: '주문 정보 추가 완료' });
-        this.data = _.cloneDeep(DEFAULT_DATA);
-        this.search = !this.search;
-        this.$v.$reset();
-      } else {
-        this.isSaving = false;
-        this.$message({ showClose: true, message: '주문 정보 추가 실패. 관리자에게 문의하세요' });
-      }
-    },
-  },
-};
+      this.$message({ showClose: true, message: '주문 정보 추가 완료' });
+      this.data = { ...DEFAULT_DATA };
+      this.search = !this.search;
+      this.$v.$reset();
+    } else {
+      this.isSaving = false;
+      this.$message({ showClose: true, message: '주문 정보 추가 실패. 관리자에게 문의하세요' });
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

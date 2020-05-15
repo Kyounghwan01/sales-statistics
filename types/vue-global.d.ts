@@ -15,6 +15,7 @@ interface order {
   createOrder: Function;
   updateOrder: Function;
   deleteOrder: Function;
+  getOrderForExcel: Function;
 }
 
 interface user {
@@ -42,8 +43,13 @@ interface apis {
 }
 
 interface utils {
-  excel: Function;
+  excel: excel;
   validate: validate;
+}
+
+interface excel {
+  excelDownload: Function;
+  formatJSON: Function;
 }
 
 interface validate {

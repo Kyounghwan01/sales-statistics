@@ -5,6 +5,13 @@
   </div>
 </template>
 
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator';
+
+@Component
+export default class AddButton extends Vue {}
+</script>
+
 <style lang="scss" scoped>
 .floating-action-button {
   width: 56px;

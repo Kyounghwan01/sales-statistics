@@ -76,7 +76,7 @@
         </div>
 
         <div class="login-button">
-          <el-button @click="signUp">회원가입</el-button>
+          <el-button @click="signUp" v-loading="loading">회원가입</el-button>
         </div>
         <div class="register padding-top">
           <el-button @click="$router.push('/')">로그인</el-button>
@@ -86,25 +86,17 @@
   </MainLayout>
 </template>
 
-<script>
-import MainLayout from '@/router/layouts/MainLayout';
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator';
+import MainLayout from '@/router/layouts/MainLayout.vue';
 import { validationMixin } from 'vuelidate';
 import { required, email, minLength, maxLength } from 'vuelidate/lib/validators';
 import * as firebase from 'firebase/app';
 import 'firebase/auth';
 
-export default {
+@Component({
   components: {
     MainLayout,
-  },
-  data() {
-    return {
-      data: {
-        registredId: null,
-        registredPassword: null,
-        registredName: null,
-      },
-    };
   },
   mixins: [validationMixin],
   validations: {
@@ -118,58 +110,76 @@ export default {
       registredName: { required },
     },
   },
-  methods: {
-    async signUp() {
-      let isError = false;
-      ['registredId', 'registredPassword', 'registredName'].forEach(key => {
-        if (key === 'registredId' && !this.$v.data[key].email) {
-          isError = true;
-          this.$v.data[key].$touch();
-        }
-        if (!this.$v.data[key].required) {
-          isError = true;
-          this.$v.data[key].$touch();
-        }
-        if (!this.$v.data[key].maxLength || !this.$v.data[key].minLength) {
-          this.$v.data[key].$touch();
-        }
-      });
+})
+export default class SignUp extends Vue {
+  public data: { registredId: string | null; registredPassword: string | null; registredName: string | null } = {
+    registredId: null,
+    registredPassword: null,
+    registredName: null,
+  };
 
-      if (isError) return;
-      try {
-        const user = await firebase
-          .auth()
-          .createUserWithEmailAndPassword(this.data.registredId, this.data.registredPassword);
-        if (user) {
-          const res = await this.$api.loginUser.createLoginUser({
+  public loading = false;
+
+  async signUp(): Promise<void> {
+    let isError = false;
+
+    ['registredId', 'registredPassword', 'registredName'].forEach(key => {
+      if (!this.$v || !this.$v.data) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const dataCheck = this.$v.data[key] as any;
+
+      if (key === 'registredId' && !dataCheck.email) {
+        isError = true;
+        dataCheck.$touch();
+      }
+      if (!dataCheck.required) {
+        isError = true;
+        dataCheck.$touch();
+      }
+      if (!dataCheck.maxLength || !dataCheck.minLength) {
+        dataCheck.$touch();
+      }
+    });
+
+    if (isError) return;
+    try {
+      this.loading = true;
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const user: any = await firebase
+        .auth()
+        .createUserWithEmailAndPassword(this.data.registredId || '', this.data.registredPassword || '');
+      if (user) {
+        const res = await this.$api.loginUser.createLoginUser({
+          id: user.user.uid,
+          name: this.data.registredName,
+          email: this.data.registredId,
+        });
+        if (res.status === 200) {
+          const { name, email } = res.data;
+          const resStore = await this.$store.dispatch('loginUser/setUser', {
             id: user.user.uid,
-            name: this.data.registredName,
-            email: this.data.registredId,
+            name: name,
+            email: email,
           });
-          if (res.status === 200) {
-            const { name, email } = res.data;
-            const resStore = await this.$store.dispatch('loginUser/setUser', {
-              id: user.user.uid,
-              name: name,
-              email: email,
-            });
-            if (resStore === 'success') {
-              this.$alert('회원가입 성공하였습니다.', '회원가입 성공', {
-                showClose: true,
-                dangerouslyUseHTMLString: true,
-              }).then(() => this.$router.push('/'));
-            }
+          if (resStore === 'success') {
+            this.$alert('회원가입 성공하였습니다.', '회원가입 성공', {
+              showClose: true,
+              dangerouslyUseHTMLString: true,
+            }).then(() => this.$router.push('/'));
           }
         }
-      } catch (err) {
-        this.$alert(err.message, '회원가입 실패', {
-          showClose: true,
-          dangerouslyUseHTMLString: true,
-        });
       }
-    },
-  },
-};
+    } catch (err) {
+      this.$alert(err.message, '회원가입 실패', {
+        showClose: true,
+        dangerouslyUseHTMLString: true,
+      });
+    } finally {
+      this.loading = false;
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

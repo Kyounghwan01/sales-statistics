@@ -10,7 +10,7 @@
           </div>
         </div>
       </div>
-      <MembersList :users="userList" v-loading="loading" :companyUid="loginUser.id" />
+      <MembersList :users="userList" v-loading="!userList.length" :companyUid="loginUser.id" />
       <AddButton @click="$router.push('/users/create')" />
     </section>
   </MainLayout>
@@ -41,10 +41,6 @@ export default class MemberList extends Vue {
       this.$store.dispatch('users/getUser', this.loginUser.id);
     }
     return this.$store.getters['users/user'];
-  }
-
-  get loading(): boolean {
-    return this.$store.getters['users/userLoading'];
   }
 
   @Watch('keyword', { immediate: true })
