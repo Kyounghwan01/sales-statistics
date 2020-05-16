@@ -1,5 +1,16 @@
 declare module 'element-ui/lib/locale/lang/ko' {}
-declare module 'lodash/camelCase' {}
+declare module '@types/lodash.camelCase' {}
+declare module 'lodash/camelCase' {
+  interface camelCase {
+    camelCase: object;
+  }
+
+  // 2. 타입(인터페이스)을 가지는 변수 선언
+  const _: camelCase;
+
+  // 3. 내보내기(CommonJS)
+  export = _;
+}
 declare module 'lodash' {
   interface ILodash {
     camelCase(str?: string): string;
