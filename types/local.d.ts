@@ -1,5 +1,4 @@
 declare module 'element-ui/lib/locale/lang/ko' {}
-declare module '@types/lodash.camelCase' {}
 declare module 'lodash/camelCase' {
   interface camelCase {
     camelCase: object;
