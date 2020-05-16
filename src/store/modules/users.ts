@@ -55,7 +55,6 @@ const module: Module<UsersInter, RootState> = {
 
     SET_CURRENT_USER(state, currentUser) {
       state.currentUser = currentUser;
-      console.log(state.currentUser);
     },
   },
 

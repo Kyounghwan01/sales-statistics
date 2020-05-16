@@ -15,7 +15,7 @@ declare module 'lodash' {
   interface ILodash {
     camelCase(str?: string): string;
     omit(data?: object, arr?: any): object;
-    cloneDeep(data?: object): object;
+    cloneDeep<T>(val: T, customizer?: (value: any) => any, thisArg?: any): T;
     uniq(data?: string[]): string[];
   }
 
