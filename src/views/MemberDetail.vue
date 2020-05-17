@@ -56,8 +56,7 @@ export default class MemberDetail extends Vue {
     return moment(this.currentUserData.registreDate).format('YYYY년 M월 D일');
   }
 
-  // TODO: getters에 있는 값 object로 가져오면 생기는 문제
-  get currentUserData() {
+  get currentUserData(): { registreDate: string; phone: string } {
     return this.$store.getters['users/currentUser'];
   }
 

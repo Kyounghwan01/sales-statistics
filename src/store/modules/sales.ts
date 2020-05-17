@@ -7,6 +7,7 @@ import api from '@/api';
 interface SalesInter {
   sales: {
     searchType: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     searchRange: any;
     salesData: string[];
     currentDateSalesData: string[];
@@ -108,6 +109,7 @@ const module: Module<SalesInter, RootState> = {
         commit('SET_LOADING', true);
         commit('SET_SEARCH_RANGE', date.date);
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const res: any = await Promise.all(
           state.sales.searchRange[state.sales.searchType].map((el: object) =>
             api.order.getOrderAllForSales(date.id, el),
@@ -121,6 +123,7 @@ const module: Module<SalesInter, RootState> = {
         commit('SET_SALES_DATA', {
           salesData: res.map((el: { data: { order: object } }) => el.data.order),
           currentDateSalesData: res
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .filter((el: any, index: number) => index === res.length - 1)
             .map((el: { data: { order: object } }) => el.data.order),
         });

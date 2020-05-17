@@ -106,8 +106,6 @@ interface Data {
   },
 })
 export default class MemberCreate extends Vue {
-  // TODO: data: any아닌 상태로 해당 객체에 바로 this.$route 넣는 방식 고안
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public data: any = { name: null, registreDate: null, phone: null, address: null, content: null };
   public isSaving = false;
