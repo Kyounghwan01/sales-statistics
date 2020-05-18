@@ -38,9 +38,19 @@
       </template>
     </el-table-column>
 
+    <el-table-column label="" min-width="30" header-align="center" align="center">
+      <template v-slot="scope">
+        <el-tag v-if="scope.row.outstanding" size="small" type="danger">
+          미수금
+        </el-tag>
+      </template>
+    </el-table-column>
+
     <el-table-column label="가격" min-width="140" header-align="center" align="center">
       <template v-slot="scope">
-        <div class="members-list__address">{{ comma(scope.row.price) }}원</div>
+        <div class="members-list__price">
+          <p>{{ comma(scope.row.price) }}원</p>
+        </div>
       </template>
     </el-table-column>
 
@@ -85,6 +95,16 @@ export default class List extends Vue {
 .el-table {
   /deep/ .members-list__row {
     cursor: pointer;
+  }
+}
+.members-list {
+  &__price {
+    display: flex;
+    justify-content: space-around;
+    p {
+      width: 100px;
+      margin: 0;
+    }
   }
 }
 </style>
