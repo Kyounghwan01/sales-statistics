@@ -57,6 +57,8 @@ Features
 - Vue
 - Vuex
 - Vue Router
+- vue-property-decorator
+- TypeScript
 - Scss
 - vue-chartjs
 - element-ui
