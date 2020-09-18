@@ -10,7 +10,7 @@
           </div>
         </div>
       </div>
-      <MembersList :users="userList" v-loading="!userList.length" :companyUid="loginUser.id" />
+      <MembersList :users="userList" v-loading="loading" :companyUid="loginUser.id" />
       <AddButton @click="$router.push('/users/create')" />
     </section>
   </MainLayout>
@@ -31,15 +31,18 @@ import AddButton from '@/components/AddButton.vue';
 })
 export default class MemberList extends Vue {
   public keyword = null;
+  public loading = false;
 
   get loginUser(): { id: string } {
     return this.$store.getters['loginUser/loginUser'];
   }
 
   get userList(): object {
+    this.loading = true;
     if (!this.$store.getters['users/user']) {
       this.$store.dispatch('users/getUser', this.loginUser.id);
     }
+    this.loading = false;
     return this.$store.getters['users/user'];
   }
 
