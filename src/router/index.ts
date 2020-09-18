@@ -1,18 +1,20 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import Home from '../views/Home.vue';
+// import Home from '../views/Home.vue';
 import SignUp from '@/views/SignUp.vue';
 import MemberList from '../views/MemberList.vue';
 import MemberCreate from '@/views/MemberCreate.vue';
 import MemberDetail from '@/views/MemberDetail.vue';
 import OrderCreate from '@/views/OrderCreate.vue';
 import OrderList from '@/views/OrderList.vue';
-import Sales from '@/views/Sales.vue';
+// import Sales from '@/views/Sales.vue';
 import * as firebase from 'firebase/app';
 import store from '@/store';
 import 'firebase/auth';
 
 Vue.use(VueRouter);
+const Home = () => import(/* webpackChunkName: "home" */ '../views/Home.vue');
+const Sales = () => import(/* webpackChunkName: "Sales" */ '@/views/Sales.vue');
 
 const routes = [
   {

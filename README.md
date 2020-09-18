@@ -1,5 +1,7 @@
 # sales-statistics
 
+## [배포주소](https://sales-statistics.netlify.com/)
+
 ## Intorduction
 
 - **sales-statistics** 매출, 매입을 손쉽게 등록하고 기간별로 통계내어 현황 관찰을 쉽게 보기도록 이용하는 웹입니다.
@@ -57,6 +59,8 @@ Features
 - Vue
 - Vuex
 - Vue Router
+- vue-property-decorator
+- TypeScript
 - Scss
 - vue-chartjs
 - element-ui
