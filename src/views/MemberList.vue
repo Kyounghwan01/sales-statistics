@@ -1,5 +1,5 @@
 <template>
-  <MainLayout :padded="false">
+  <MainLayout :padded="false" v-loading="loading">
     <section class="user-list">
       <div class="user-list__header">
         <h3>회사 관리</h3>
@@ -10,7 +10,7 @@
           </div>
         </div>
       </div>
-      <MembersList :users="userList" v-loading="loading" :companyUid="loginUser.id" />
+      <MembersList :users="userList" :companyUid="loginUser.id" />
       <AddButton @click="$router.push('/users/create')" />
     </section>
   </MainLayout>

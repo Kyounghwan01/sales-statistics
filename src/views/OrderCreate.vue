@@ -124,7 +124,7 @@
       <TextInput label="메모" labelNumber="10" v-model="data.memo" placeholder="메모를 입력해주세요" type="text" />
 
       <BottomActionBar>
-        <el-button v-loading="isSaving" @click="saveOrder">기입</el-button>
+        <el-button v-loading="isSaving" :disabled="isSaving" @click="saveOrder">기입</el-button>
       </BottomActionBar>
     </section>
   </MainLayout>

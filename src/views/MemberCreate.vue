@@ -63,9 +63,11 @@
       />
 
       <BottomActionBar>
-        <el-button v-if="!edit" v-loading="isSaving" @click="registredUser">등록</el-button>
-        <el-button type="danger" v-if="edit" plain v-loading="isSaving" @click="deleteUser">삭제</el-button>
-        <el-button v-if="edit" v-loading="isSaving" @click="updateUser">수정</el-button>
+        <el-button v-if="!edit" v-loading="isSaving" :disabled="isSaving" @click="registredUser">등록</el-button>
+        <el-button type="danger" v-if="edit" plain v-loading="isSaving" :disabled="isSaving" @click="deleteUser"
+          >삭제</el-button
+        >
+        <el-button v-if="edit" v-loading="isSaving" :disabled="isSaving" @click="updateUser">수정</el-button>
       </BottomActionBar>
     </section>
   </MainLayout>
@@ -106,8 +108,7 @@ interface Data {
   },
 })
 export default class MemberCreate extends Vue {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public data: any = { name: null, registreDate: null, phone: null, address: null, content: null };
+  public data: Data = { name: null, registreDate: null, phone: null, address: null, content: null };
   public isSaving = false;
   public edit = false;
 
@@ -118,7 +119,7 @@ export default class MemberCreate extends Vue {
   public created(): void {
     if (this.$route.params.id) {
       this.edit = true;
-      this.data = this.$route.query;
+      this.data = (this.$route.query as unknown) as Data;
     }
   }
   valid(): boolean {
