@@ -5,6 +5,7 @@
         <div class="header">
           <h3>매출 관리 툴 로그인</h3>
         </div>
+        <h4 class="example-auth">예시 계정 (id: noh5524@gmail.com, pw: 123456)</h4>
         <div class="id">
           <div class="label-group">
             <label>01 </label>
@@ -174,6 +175,10 @@ export default class Home extends Vue {
     font-size: 25px;
     margin: 0;
   }
+}
+.example-auth {
+  display: flex;
+  justify-content: center;
 }
 
 .login-button,
