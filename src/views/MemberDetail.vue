@@ -44,10 +44,9 @@ import moment from 'moment';
   },
 })
 export default class MemberDetail extends Vue {
-  public user = {};
   public loading = false;
   public currentTab = 'history';
-  public tabs = [
+  public tabs: { value: string; label: string }[] = [
     { value: 'history', label: '거래내역' },
     { value: 'writeTrade', label: '거래작성' },
   ];

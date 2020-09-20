@@ -43,6 +43,7 @@ import ListFilters from '@/components/Order/ListFilters.vue';
 import List from '@/components/Order/List.vue';
 import PlainButton from '@/components/PlainButton.vue';
 import moment from 'moment';
+import { User } from '@/store/modules/users';
 
 @Component({
   components: {
@@ -53,7 +54,7 @@ import moment from 'moment';
   },
 })
 export default class OrderList extends Vue {
-  public companies = [];
+  public companies: User[] = [];
   public filterValues = {};
 
   get loginUser(): { id: string } {
@@ -118,7 +119,7 @@ export default class OrderList extends Vue {
       },
     };
   }
-  get filters(): object {
+  get filters(): { companies: User[]; dateRange: string[]; dateSort: string; soldType: string } {
     return this.$store.getters['order/filter'];
   }
 

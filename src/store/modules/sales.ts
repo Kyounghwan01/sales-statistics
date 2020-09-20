@@ -7,8 +7,7 @@ import api from '@/api';
 interface SalesInter {
   sales: {
     searchType: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    searchRange: any;
+    searchRange: Record<string, { start: string; end: string }[]>;
     salesData: string[];
     currentDateSalesData: string[];
   };

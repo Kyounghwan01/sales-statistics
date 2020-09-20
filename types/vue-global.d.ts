@@ -1,7 +1,7 @@
-//지우면 vue-chart.js name error 지우지 말것
+// 지우면 vue-chart.js name error 지우지 말것
 import Vue from 'vue';
 
-//api파일들에 대해 interface를 정의하는 부분입니다.
+// api 파일들에 대해 interface를 정의하는 부분입니다.
 interface firebase {
   getData: Function;
 }
@@ -70,7 +70,7 @@ interface constant {
   lineChartColorSet: string[];
 }
 
-//이곳이 가장 중요한 곳입니다.
+// 이곳이 가장 중요한 곳입니다. 정의한 모듈을 전역으로 쓰기 위해 타입 지정하는 곳
 declare module 'vue/types/vue' {
   interface Vue {
     $api: apis;

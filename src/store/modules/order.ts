@@ -11,11 +11,9 @@ interface OrderInter {
   orderCopy: string[];
   countInComeOutCome: { income: number | string; outcome: number | string };
   searchId: null | string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  filter: any;
+  filter: Record<string, string | string[] | unknown>;
   pageParams: { page: number; limit: number; total: number };
 }
-
 interface ResType {
   data: {
     order: {

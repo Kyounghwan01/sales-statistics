@@ -194,18 +194,17 @@ export default class Sales extends Vue {
       }
     }
 
-    salesData.map((orderArray: Array<boolean | number>, index: number): void => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      orderArray.map((orders: any) => {
-        if (orders.type) {
-          barDataSets[1].data[index] -= orders.price;
-          barDataSets[2].data[index] -= orders.price;
+    salesData.map((orderArray: { type: string; price: number }[], index: number): void => {
+      orderArray.map(({ type, price }) => {
+        if (type) {
+          barDataSets[1].data[index] -= price;
+          barDataSets[2].data[index] -= price;
           if (index === salesData.length - 1) {
             count.outCome++;
           }
         } else {
-          barDataSets[0].data[index] += orders.price;
-          barDataSets[2].data[index] += orders.price;
+          barDataSets[0].data[index] += price;
+          barDataSets[2].data[index] += price;
           if (index === salesData.length - 1) {
             count.inCome++;
           }

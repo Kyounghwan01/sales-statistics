@@ -89,7 +89,7 @@ import 'firebase/auth';
   },
 })
 export default class Home extends Vue {
-  public data = {
+  public data: { loginId: string; loginPassword: string } = {
     loginId: '',
     loginPassword: '',
   };
@@ -124,6 +124,7 @@ export default class Home extends Vue {
     this.loading = true;
     try {
       const res = await firebase.auth().signInWithEmailAndPassword(this.data.loginId, this.data.loginPassword);
+      console.log(res);
       if (res) {
         this.loading = false;
         const response = await this.$api.loginUser.getLoginUser(res.user);

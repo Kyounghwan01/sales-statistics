@@ -46,20 +46,3 @@ const module: Module<EditOrder, RootState> = {
 };
 
 export default module;
-
-// export const state = {
-//   orderData: _.cloneDeep(DEFAULT_ORDERDATA),
-// };
-
-// export const getters = {
-//   orderData: state => state.orderData,
-// };
-
-// export const mutations = {
-//   SET_CREATE_ORDER_DATA(state, orderData) {
-//     state.orderData = orderData;
-//   },
-//   SET_RESET_ORDER_DATA(state) {
-//     state.orderData = _.cloneDeep(DEFAULT_ORDERDATA);
-//   },
-// };

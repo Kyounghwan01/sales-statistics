@@ -2,13 +2,14 @@ import api from '@/api';
 import { Module } from 'vuex';
 import { RootState } from '@/store/index.ts';
 
+interface LoginUser {
+  id: null | string;
+  name: null | string;
+  email: null | string;
+}
 interface LoginUserInter {
   loading: boolean;
-  loginUser: {
-    id: null | string;
-    name: null | string;
-    email: null | string;
-  };
+  loginUser: LoginUser;
 }
 
 const module: Module<LoginUserInter, RootState> = {
@@ -27,7 +28,7 @@ const module: Module<LoginUserInter, RootState> = {
       state.loading = loading;
     },
 
-    SET_LOGIN_USER(state, loginUser) {
+    SET_LOGIN_USER(state, loginUser: LoginUser) {
       state.loginUser = loginUser;
     },
   },

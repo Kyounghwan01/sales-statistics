@@ -30,7 +30,7 @@ import AddButton from '@/components/AddButton.vue';
   },
 })
 export default class MemberList extends Vue {
-  public keyword = null;
+  public keyword: null | string = null;
 
   get loginUser(): { id: string } {
     return this.$store.getters['loginUser/loginUser'];

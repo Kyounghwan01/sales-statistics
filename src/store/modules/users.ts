@@ -2,7 +2,7 @@ import { Module } from 'vuex';
 import api from '@/api';
 import { RootState } from '@/store/index.ts';
 
-interface User {
+export interface User {
   id: number;
   companyUid: string;
   name: string;
