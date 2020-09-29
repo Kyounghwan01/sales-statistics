@@ -1,17 +1,18 @@
 import { Module } from 'vuex';
 import { RootState } from '@/store/index.ts';
 
+interface Order {
+  type: boolean;
+  date: string | null;
+  price: number | null;
+  memo: string | null;
+  goods: string | null;
+  unitPrice: number | null;
+  count: number | null;
+  outstanding: number;
+}
 interface EditOrder {
-  orderData: {
-    type: boolean;
-    date: string | null;
-    price: number | null;
-    memo: string | null;
-    goods: string | null;
-    unitPrice: number | null;
-    count: number | null;
-    outstanding: number;
-  };
+  orderData: Order;
 }
 
 const DEFAULT_ORDERDATA = {
@@ -36,7 +37,7 @@ const module: Module<EditOrder, RootState> = {
   },
 
   mutations: {
-    SET_CREATE_ORDER_DATA(state, orderData) {
+    SET_CREATE_ORDER_DATA(state, orderData: Order) {
       state.orderData = orderData;
     },
     SET_RESET_ORDER_DATA(state) {

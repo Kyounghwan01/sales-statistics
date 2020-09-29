@@ -5,6 +5,11 @@ import filters from '@/filters';
 import store from '@/store';
 import moment from 'moment';
 
+interface PageParams {
+  page: number;
+  limit: number;
+  total: number;
+}
 interface OrderInter {
   orderLoading: boolean;
   orders: string[];
@@ -12,7 +17,7 @@ interface OrderInter {
   countInComeOutCome: { income: number | string; outcome: number | string };
   searchId: null | string;
   filter: Record<string, string | string[] | unknown>;
-  pageParams: { page: number; limit: number; total: number };
+  pageParams: PageParams;
 }
 interface ResType {
   data: {
@@ -55,21 +60,21 @@ const module: Module<OrderInter, RootState> = {
   },
 
   mutations: {
-    SET_ORDER_LOADING(state, loading) {
+    SET_ORDER_LOADING(state, loading: boolean) {
       state.orderLoading = loading;
     },
 
     /** 보여주는 배열, 원본배열 유지 */
-    SET_ORDERS(state, orders) {
+    SET_ORDERS(state, orders: string[]) {
       state.orders = orders;
       state.orderCopy = orders;
     },
 
-    SET_FILTER_ORDERS(state, orders) {
+    SET_FILTER_ORDERS(state, orders: string[]) {
       state.orders = orders;
     },
 
-    SET_COUNT(state, count) {
+    SET_COUNT(state, count: { income: number; outcome: number }) {
       state.countInComeOutCome.income = filters.comma(count.income);
       state.countInComeOutCome.outcome = filters.comma(count.outcome);
     },
@@ -78,13 +83,13 @@ const module: Module<OrderInter, RootState> = {
       state.filter[Object.keys(data)[0]] = Object.values(data)[0];
     },
 
-    SET_PAGE_PARAMS(state, params) {
+    SET_PAGE_PARAMS(state, params: PageParams) {
       state.pageParams = { ...state.pageParams, ...params };
     },
   },
 
   actions: {
-    async getOrdersByUser({ commit }, params) {
+    async getOrdersByUser({ commit }, params: PageParams & { id: number }) {
       try {
         commit('SET_ORDER_LOADING', true);
         const res = await api.order.getOrderByUser(params.id, params.page, params.limit);

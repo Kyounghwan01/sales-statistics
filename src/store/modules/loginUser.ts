@@ -34,7 +34,7 @@ const module: Module<LoginUserInter, RootState> = {
   },
 
   actions: {
-    async setUser({ commit }, data) {
+    async setUser({ commit }, data: LoginUser) {
       try {
         commit('SET_LOADING', true);
         commit('SET_LOGIN_USER', data);
@@ -55,11 +55,7 @@ const module: Module<LoginUserInter, RootState> = {
       return 'success';
     },
 
-    async filterUser({ commit }, keyword) {
-      commit('FILTER_USER', keyword);
-    },
-
-    async getCurrentUser({ commit }, id) {
+    async getCurrentUser({ commit }, id: number) {
       try {
         commit('SET_USER_LOADING', true);
         const res = await api.user.getCurrentUser(id);
