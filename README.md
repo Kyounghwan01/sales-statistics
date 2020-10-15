@@ -12,10 +12,9 @@
 
 - [Requirements](#Requirements)
 - [Installation](#Installation)
-- [Features](#Features)
 - [Skills](#Skills)
-- [Test](#Test)
 - [Deployment & Continuous Integration](#Deployment-&-Continuous-Integration)
+- [api](#api)
 - [Challenges](#Challenges)
 - [Things To Do](#Things-To-Do)
 
@@ -90,6 +89,7 @@ Features
 
 ### AWS lambda + api gateway 백엔드 api docs
 
+## api
 ## 로그인 유저 api
 
 ### GET
